@@ -1,6 +1,7 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -34,7 +35,10 @@ class AppDrawer extends StatelessWidget {
                 'Tags',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                context.go('/tagmanagement');
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading: Icon(Icons.lock, color: Colorpallete.drawericonColor),
@@ -42,7 +46,10 @@ class AppDrawer extends StatelessWidget {
                 'Diary Lock',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                context.go('/diarylock');
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading: Icon(Icons.backup, color: Colorpallete.drawericonColor),
@@ -50,7 +57,10 @@ class AppDrawer extends StatelessWidget {
                 'Backup & Restore',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                context.go('/backup');
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading: Icon(Icons.import_export,
@@ -59,7 +69,10 @@ class AppDrawer extends StatelessWidget {
                 'Export Diary',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                context.go('/exportdata');
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading:
@@ -68,6 +81,21 @@ class AppDrawer extends StatelessWidget {
                 'Follow Us',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
+              onTap: () async {
+                final Uri url =
+                    Uri.parse('https://www.facebook.com/TwitterInc/');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  // Handle the error or inform the user they can't open the URL
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Could not open the page. Please try again later.'),
+                    ),
+                  );
+                }
+              },
             ),
             ListTile(
               leading: Icon(Icons.apps, color: Colorpallete.drawericonColor),
@@ -75,7 +103,21 @@ class AppDrawer extends StatelessWidget {
                 'More Apps',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
-              onTap: () {},
+              onTap: () async {
+                final Uri url =
+                    Uri.parse('https://play.google.com/store/apps?hl=en');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  // Handle the error or inform the user they can't open the URL
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Could not open the page. Please try again later.'),
+                    ),
+                  );
+                }
+              },
             ),
             ListTile(
               leading: Icon(Icons.settings_accessibility_rounded,
@@ -84,7 +126,10 @@ class AppDrawer extends StatelessWidget {
                 'Settings',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                context.go('/settings');
+                Navigator.pop(context);
+              },
             ),
             ListTile(
               leading: Icon(Icons.settings_accessibility_rounded,
@@ -93,7 +138,10 @@ class AppDrawer extends StatelessWidget {
                 'Logout',
                 style: TextStyle(color: Colorpallete.drawertextColor),
               ),
-              onTap: () {},
+              onTap: () {
+                context.go('/login');
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

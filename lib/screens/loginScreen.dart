@@ -1,6 +1,7 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/screens/signupScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -32,16 +33,21 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-             Text("Login",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colorpallete.textColor)),
+            Text("Login",
+                style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colorpallete.textColor)),
             SizedBox(height: 20),
             TextField(
               controller: emailController,
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 hintStyle: TextStyle(
-                    color: Colorpallete.textColor,
-                  ),
-                  labelStyle: TextStyle(color: Colorpallete.textColor,),
+                  color: Colorpallete.textColor,
+                ),
+                labelStyle: TextStyle(
+                  color: Colorpallete.textColor,
+                ),
                 labelText: "Email",
                 border: OutlineInputBorder(),
               ),
@@ -49,11 +55,13 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 10),
             TextField(
               controller: passwordController,
-              decoration:  InputDecoration(
+              decoration: InputDecoration(
                 hintStyle: TextStyle(
-                    color: Colorpallete.textColor,
-                  ),
-                  labelStyle: TextStyle(color: Colorpallete.textColor,),
+                  color: Colorpallete.textColor,
+                ),
+                labelStyle: TextStyle(
+                  color: Colorpallete.textColor,
+                ),
                 labelText: "Password",
                 border: OutlineInputBorder(),
               ),
@@ -67,17 +75,24 @@ class LoginScreen extends StatelessWidget {
                   backgroundColor: Colorpallete.textColor,
                   foregroundColor: Colorpallete.backgroundColor,
                 ),
-                onPressed: () {},
-                child:  Text("Login", style: TextStyle(fontSize: 24,),),
+                onPressed: () {
+                  context.go('/');
+                },
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 24,
+                  ),
+                ),
               ),
             ),
             Container(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colorpallete.textColor,
-                    foregroundColor: Colorpallete.backgroundColor,
-                  ),
+                  backgroundColor: Colorpallete.textColor,
+                  foregroundColor: Colorpallete.backgroundColor,
+                ),
                 onPressed: _authenticate,
                 child: const Text("Login with Biometrics"),
               ),
@@ -86,7 +101,10 @@ class LoginScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(context, SignupScreen.route());
               },
-              child:  Text("Don't have an account? Sign Up", style: TextStyle(color: Colorpallete.textColor),),
+              child: Text(
+                "Don't have an account? Sign Up",
+                style: TextStyle(color: Colorpallete.textColor),
+              ),
             )
           ],
         ),

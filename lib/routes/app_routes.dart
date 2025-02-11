@@ -1,7 +1,11 @@
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
+import 'package:daily_dairies/screens/backupscreen.dart';
+import 'package:daily_dairies/screens/exportdataScreen.dart';
 import 'package:daily_dairies/screens/homeScreen.dart';
 import 'package:daily_dairies/screens/loginScreen.dart';
+import 'package:daily_dairies/screens/settingScreen.dart';
 import 'package:daily_dairies/screens/signupScreen.dart';
+import 'package:daily_dairies/screens/tagScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -35,10 +39,26 @@ class AppRoutes {
             path: '/add-diary',
             builder: (context, state) => AddDiaryScreen(),
           ),
-          // GoRoute(
-          //   path: '/settings',
-          //   builder: (context, state) => const SettingsScreen(),
-          // ),
+          GoRoute(
+            path: '/tagmanagement',
+            builder: (context, state) => const Tagscreen(),
+          ),
+          GoRoute(
+            path: '/diarylock',
+            builder: (context, state) => AddDiaryScreen(),
+          ),
+          GoRoute(
+            path: '/backup',
+            builder: (context, state) => const Backupscreen(),
+          ),
+          GoRoute(
+            path: '/exportdata',
+            builder: (context, state) => const Exportdatascreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const Settingscreen(),
+          ),
         ],
       ),
     ],
