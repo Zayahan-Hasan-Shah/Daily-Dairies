@@ -9,6 +9,8 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+
+  SignupScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +30,7 @@ class SignupScreen extends StatelessWidget {
                     color: Colorpallete.textColor,
                   ),
                   labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Full Name", border: OutlineInputBorder()),
+                  labelText: "Full Name", border: const OutlineInputBorder()),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -38,7 +40,7 @@ class SignupScreen extends StatelessWidget {
                     color: Colorpallete.textColor,
                   ),
                   labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Email", border: OutlineInputBorder()),
+                  labelText: "Email", border: const OutlineInputBorder()),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -48,7 +50,7 @@ class SignupScreen extends StatelessWidget {
                     color: Colorpallete.textColor,
                   ),
                   labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Password", border: OutlineInputBorder()),
+                  labelText: "Password", border: const OutlineInputBorder()),
               obscureText: true,
             ),
             const SizedBox(height: 10),
@@ -59,11 +61,11 @@ class SignupScreen extends StatelessWidget {
                     color: Colorpallete.textColor,
                   ),
                   labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Confirm Password", border: OutlineInputBorder()),
+                  labelText: "Confirm Password", border: const OutlineInputBorder()),
               obscureText: true,
             ),
             const SizedBox(height: 20),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(

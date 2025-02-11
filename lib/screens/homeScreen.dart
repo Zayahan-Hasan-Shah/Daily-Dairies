@@ -1,31 +1,44 @@
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colorpallete.backgroundColor,
+      backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: Text("Journal Dashboard"),
+        title: const Text("Journal Dashboard"),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
+        // Add this to show the drawer icon
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
       ),
+      // Add the drawer here
+      drawer: AppDrawer(),
+      // Rest of your existing code remains the same
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: double.infinity,
-              height: 200, // Added height
-              padding: EdgeInsets.all(2),
+              height: 200,
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(32), // Define border radius
+                borderRadius: BorderRadius.circular(32),
               ),
               child: ClipRRect(
-                borderRadius:
-                    BorderRadius.circular(32), // Apply border radius to image
+                borderRadius: BorderRadius.circular(32),
                 child: Image.asset(
                   'assets/images/homeScreenImage.png',
                   fit: BoxFit.cover,
@@ -41,11 +54,10 @@ class HomeScreen extends StatelessWidget {
                 color: Colorpallete.bottomNavigationColor,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
-              // Correctly placing Expanded
               child: ListView.builder(
-                itemCount: 5, // Replace with dynamic data
+                itemCount: 5,
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(
@@ -65,23 +77,24 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {}, // Navigate to Add Entry Screen
+        onPressed: () {},
         backgroundColor: Colorpallete.textColor,
         child: Icon(Icons.add, color: Colorpallete.backgroundColor),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         color: Colorpallete.bottomNavigationColor,
-        shape: CircularNotchedRectangle(),
+        shape: const CircularNotchedRectangle(),
         notchMargin: 10.0,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(icon: Icon(Icons.book), onPressed: () {}),
-              SizedBox(width: 40), // Space for Floating Action Button
-              IconButton(icon: Icon(Icons.calendar_today), onPressed: () {}),
+              IconButton(icon: const Icon(Icons.book), onPressed: () {}),
+              const SizedBox(width: 40),
+              IconButton(
+                  icon: const Icon(Icons.calendar_today), onPressed: () {}),
             ],
           ),
         ),
