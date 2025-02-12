@@ -1,7 +1,10 @@
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/screens/addDiaryScreen.dart';
+import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,6 +14,14 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, SearchScreen.route());
+            },
+            icon: Icon(Icons.search_rounded),
+          ),
+        ],
         title: const Text("Journal Dashboard"),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
@@ -77,13 +88,29 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colorpallete.textColor,
-        child: Icon(Icons.add, color: Colorpallete.backgroundColor),
+        backgroundColor: Colorpallete.backgroundColor.withOpacity(0.4),
+        elevation: 0,
+        onPressed: () {
+          Navigator.push(context, AddDiaryScreen.route());
+        },
+        child: RippleAnimation(
+          color: Colorpallete.backgroundColor,
+          minRadius: 10,
+          maxRadius: 16, 
+          delay: const Duration(milliseconds: 320),
+          repeat: true,
+          ripplesCount: 4,
+          duration: const Duration(
+              milliseconds: 6 *  360), 
+          child: Icon(
+            Icons.add,
+            color: Colorpallete.backgroundColor,
+          ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        color: Colorpallete.bottomNavigationColor,
+        color: Colorpallete.bottomNavigationColor.withOpacity(0.4),
         shape: const CircularNotchedRectangle(),
         notchMargin: 10.0,
         child: Padding(
