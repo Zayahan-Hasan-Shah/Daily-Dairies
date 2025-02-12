@@ -1,5 +1,7 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
+import 'package:daily_dairies/screens/calendarScreen.dart';
+import 'package:daily_dairies/screens/diaryDetailScreen.dart';
 import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
@@ -68,18 +70,83 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: 5,
+                itemCount: 10,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      "Journal Entry #$index",
-                      style: TextStyle(color: Colorpallete.textColor),
+                  return Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              // color:
+                              //     Colorpallete.backgroundColor.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                DiaryDetailScreen.route(
+                                  "My Diary Title",
+                                  "This is the full content of my diary entry...",
+                                  "😊",
+                                  DateTime.now(),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colorpallete.backgroundColor
+                                        .withOpacity(0.4),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "2025-02-10",
+                                              style: TextStyle(
+                                                  color: Colorpallete.textColor,
+                                                  fontSize: 20),
+                                            ),
+                                            Text(
+                                              "😑",
+                                              style: TextStyle(
+                                                  color: Colorpallete.textColor,
+                                                  fontSize: 20),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          "Journal Entry #$index",
+                                          style: TextStyle(
+                                              color: Colorpallete.textColor),
+                                        ),
+                                        const SizedBox(height: 20),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // const SizedBox(
+                        //   height: 20,
+                        // ),
+                      ],
                     ),
-                    subtitle: Text(
-                      "Date: 2025-02-10",
-                      style: TextStyle(color: Colorpallete.textColor),
-                    ),
-                    onTap: () {},
                   );
                 },
               ),
@@ -96,12 +163,11 @@ class HomeScreen extends StatelessWidget {
         child: RippleAnimation(
           color: Colorpallete.backgroundColor,
           minRadius: 10,
-          maxRadius: 16, 
+          maxRadius: 16,
           delay: const Duration(milliseconds: 320),
           repeat: true,
           ripplesCount: 4,
-          duration: const Duration(
-              milliseconds: 6 *  360), 
+          duration: const Duration(milliseconds: 6 * 360),
           child: Icon(
             Icons.add,
             color: Colorpallete.backgroundColor,
@@ -121,7 +187,10 @@ class HomeScreen extends StatelessWidget {
               IconButton(icon: const Icon(Icons.book), onPressed: () {}),
               const SizedBox(width: 40),
               IconButton(
-                  icon: const Icon(Icons.calendar_today), onPressed: () {}),
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () {
+                    Navigator.push(context, CalendarScreen.route());
+                  }),
             ],
           ),
         ),

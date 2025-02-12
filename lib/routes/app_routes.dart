@@ -1,5 +1,6 @@
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/backupscreen.dart';
+import 'package:daily_dairies/screens/calendarScreen.dart';
 import 'package:daily_dairies/screens/exportdataScreen.dart';
 import 'package:daily_dairies/screens/homeScreen.dart';
 import 'package:daily_dairies/screens/loginScreen.dart';
@@ -58,6 +59,10 @@ class AppRoutes {
           GoRoute(
             path: '/settings',
             builder: (context, state) => const Settingscreen(),
+          ),
+          GoRoute(
+            path: '/calendar',
+            builder: (context, state) => CalendarScreen(),
           ),
         ],
       ),
