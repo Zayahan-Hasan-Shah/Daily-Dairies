@@ -1,5 +1,9 @@
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/screens/homeScreen.dart';
+import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart'; // For formatting the date
 
 class AddDiaryScreen extends StatefulWidget {
@@ -101,14 +105,17 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   }
 
   Widget _buildBottomBar() {
+    var screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
+      width: screenWidth,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: const BoxDecoration(
-        color: Color.fromRGBO(28, 50, 91, 1), // Darker bottom bar
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
+        color: Color.fromRGBO(28, 50, 91, 1),
+        // borderRadius: BorderRadius.only(
+        //   topLeft: Radius.circular(16),
+        //   topRight: Radius.circular(16),
+        // ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -142,13 +149,16 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       appBar: AppBar(
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
+
+        // backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+          // => Navigator.pop(context),
+        ),
         actions: [
           Container(
-            
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8)
-            
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
@@ -209,18 +219,16 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                       ),
                     ),
 
-                    Container(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 1,
-                          shadowColor: Colors.transparent,
-                          backgroundColor: Colors.transparent,
-                        ),
-                        onPressed: _showEmojiPicker,
-                        child: Text(
-                          selectedEmoji,
-                          style: const TextStyle(fontSize: 24),
-                        ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 1,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                      ),
+                      onPressed: _showEmojiPicker,
+                      child: Text(
+                        selectedEmoji,
+                        style: const TextStyle(fontSize: 24),
                       ),
                     )
                   ],
@@ -272,4 +280,3 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 }
-

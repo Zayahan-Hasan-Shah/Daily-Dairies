@@ -22,7 +22,9 @@ class Tagscreen extends StatelessWidget {
         ),
       ),
       drawer: AppDrawer(),
-      // body: ,
+      body: Center(
+        child: Text("No tags in your Diaries"),
+      ),
     );
   }
 }

@@ -2,15 +2,15 @@ import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 
-class Diarylock extends StatelessWidget {
-  const Diarylock({super.key});
+class Faqscreen extends StatelessWidget {
+  const Faqscreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Set Diary Lock"),
+        title: const Text("FAQ"),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         // Add this to show the drawer icon

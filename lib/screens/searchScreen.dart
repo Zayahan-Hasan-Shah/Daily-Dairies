@@ -1,10 +1,8 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SearchScreen extends StatefulWidget {
-  static Route route() =>
-      MaterialPageRoute(builder: (_) => const SearchScreen());
-
   const SearchScreen({super.key});
 
   @override
@@ -42,6 +40,11 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         backgroundColor: Colorpallete.backgroundColor,
+        iconTheme: IconThemeData(color: Colorpallete.textColor),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
       ),
       body: Container(
         child: Padding(
@@ -54,16 +57,19 @@ class _SearchScreenState extends State<SearchScreen> {
                 decoration: InputDecoration(
                   hintText: "Search entries...",
                   hintStyle: TextStyle(color: Colorpallete.backgroundColor),
-                  prefixIcon: Icon(Icons.search, color: Colorpallete.backgroundColor),
+                  prefixIcon:
+                      Icon(Icons.search, color: Colorpallete.backgroundColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12), // Rounded corners
                     borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor, width: 2), // Border color and width
+                        color: Colorpallete.backgroundColor,
+                        width: 2), // Border color and width
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor, width: 1.5), // Default border
+                        color: Colorpallete.backgroundColor,
+                        width: 1.5), // Default border
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -101,4 +107,3 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 }
-

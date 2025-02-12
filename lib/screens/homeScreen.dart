@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, SearchScreen.route());
+              context.go('/search');
             },
             icon: Icon(Icons.search_rounded),
           ),
@@ -96,12 +96,11 @@ class HomeScreen extends StatelessWidget {
         child: RippleAnimation(
           color: Colorpallete.backgroundColor,
           minRadius: 10,
-          maxRadius: 16, 
+          maxRadius: 16,
           delay: const Duration(milliseconds: 320),
           repeat: true,
           ripplesCount: 4,
-          duration: const Duration(
-              milliseconds: 6 *  360), 
+          duration: const Duration(milliseconds: 6 * 360),
           child: Icon(
             Icons.add,
             color: Colorpallete.backgroundColor,
