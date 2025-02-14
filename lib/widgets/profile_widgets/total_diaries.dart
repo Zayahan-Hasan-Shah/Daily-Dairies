@@ -11,8 +11,10 @@ class TotalDiaries extends StatelessWidget {
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(
-          image: AssetImage('assets/images/profile_screen_background.png',),
+        image: const DecorationImage(
+          image: AssetImage(
+            'assets/images/profile_screen_background.png',
+          ),
           fit: BoxFit.cover,
         ),
       ),
@@ -23,26 +25,29 @@ class TotalDiaries extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text(
+              Text(
                 'Keep writing diaries',
                 style: TextStyle(fontSize: 18, color: Colorpallete.bgColor),
               ),
               IconButton(
                 onPressed: () {},
-                icon:  Icon(
-                  Icons.share,
-                  color: Colorpallete.bgColor
-                ),
+                icon: Icon(Icons.share, color: Colorpallete.bgColor),
               ),
             ],
           ),
-           Text(
+          Text(
             '5',
-            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold,color: Colorpallete.backgroundColor),
+            style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colorpallete.backgroundColor),
           ),
-           Text(
+          Text(
             'A Diary Mean Yes Indeed',
-            style: TextStyle(fontStyle: FontStyle.italic, fontSize: 20, color: Colorpallete.bgColor),
+            style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: 20,
+                color: Colorpallete.bgColor),
           ),
         ],
       ),

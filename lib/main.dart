@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.lightBlue,
         useMaterial3: true,
       ),
-    
     );
   }
 }

@@ -114,18 +114,21 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         //   topRight: Radius.circular(16),
         // ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _bottomBarButton(Icons.brush, "Style"),
-          _bottomBarButton(Icons.image, "Image"),
-          _bottomBarButton(Icons.star, "Favorite"),
-          _bottomBarButton(Icons.emoji_emotions, "Mood"),
-          _bottomBarButton(Icons.format_size, "Text"),
-          _bottomBarButton(Icons.list, "List"),
-          _bottomBarButton(Icons.label, "Tags"),
-          _bottomBarButton(Icons.mic, "Voice"),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _bottomBarButton(Icons.brush, "Style"),
+            _bottomBarButton(Icons.image, "Image"),
+            _bottomBarButton(Icons.star, "Favorite"),
+            _bottomBarButton(Icons.emoji_emotions, "Mood"),
+            _bottomBarButton(Icons.format_size, "Text"),
+            _bottomBarButton(Icons.list, "List"),
+            _bottomBarButton(Icons.label, "Tags"),
+            _bottomBarButton(Icons.mic, "Voice"),
+          ],
+        ),
       ),
     );
   }
@@ -146,13 +149,6 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       appBar: AppBar(
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
-
-        // backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
-          // => Navigator.pop(context),
-        ),
         actions: [
           Container(
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
@@ -172,10 +168,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: _buildBottomBar(),
-      ),
+      bottomNavigationBar: _buildBottomBar(),
       body: Container(
         height: double.infinity,
         decoration: BoxDecoration(

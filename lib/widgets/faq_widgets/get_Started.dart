@@ -10,7 +10,7 @@ class GetStartedWidget extends StatelessWidget {
   const GetStartedWidget({
     super.key,
     required this.text,
-    required this.route,
+    required this.route, required MaterialColor iconColor,
   });
 
   @override

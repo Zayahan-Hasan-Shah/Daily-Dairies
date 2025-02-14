@@ -88,17 +88,17 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colorpallete.textColor,
-                  foregroundColor: Colorpallete.backgroundColor,
-                ),
-                onPressed: _authenticate,
-                child: const Text("Login with Biometrics"),
-              ),
-            ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   child: ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colorpallete.textColor,
+            //       foregroundColor: Colorpallete.backgroundColor,
+            //     ),
+            //     onPressed: _authenticate,
+            //     child: const Text("Login with Biometrics"),
+            //   ),
+            // ),
             TextButton(
               onPressed: () {
                 Navigator.push(context, SignupScreen.route());

@@ -25,12 +25,15 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.search_rounded),
           ),
         ],
-        title: const Text("Journal Dashboard"),
+        title: const Text(
+          "Daily Diary",
+          style: TextStyle(fontFamily: 'Poppins'),
+        ),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         // Add this to show the drawer icon
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: Icon(Icons.menu),
           onPressed: () {
             Scaffold.of(context).openDrawer();
           },
@@ -99,7 +102,7 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: Colorpallete.backgroundColor,
+                                    color: Colorpallete.drawericonColor,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Padding(
@@ -156,7 +159,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colorpallete.backgroundColor.withOpacity(0.4),
+        backgroundColor: Colorpallete.textColor.withOpacity(0.4),
         elevation: 0,
         onPressed: () {
           Navigator.push(context, AddDiaryScreen.route());

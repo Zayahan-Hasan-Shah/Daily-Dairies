@@ -27,42 +27,6 @@ class DiaryDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(28, 50, 91, 1),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _bottomBarButton(Icons.brush, "Style"),
-          _bottomBarButton(Icons.image, "Image"),
-          _bottomBarButton(Icons.star, "Favorite"),
-          _bottomBarButton(Icons.emoji_emotions, "Mood"),
-          _bottomBarButton(Icons.format_size, "Text"),
-          _bottomBarButton(Icons.list, "List"),
-          _bottomBarButton(Icons.label, "Tags"),
-          _bottomBarButton(Icons.mic, "Voice"),
-        ],
-      ),
-    );
-  }
-
-  Widget _bottomBarButton(IconData icon, String tooltip) {
-    return IconButton(
-      icon: Icon(icon, color: Colors.white),
-      onPressed: () {
-        // Placeholder action
-      },
-      tooltip: tooltip,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,30 +34,22 @@ class DiaryDetailScreen extends StatelessWidget {
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         actions: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue.withOpacity(0.6),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  // Handle future editing logic
-                },
-                child: const Text("Edit"),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.lightBlue.withOpacity(0.6),
+                foregroundColor: Colors.white,
               ),
+              onPressed: () {
+                // Handle future editing logic
+              },
+              child: const Text("Edit"),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: _buildBottomBar(),
-      ),
+      bottomNavigationBar: _buildBottomBar(),
       body: Container(
         height: double.infinity,
         decoration: BoxDecoration(
@@ -149,6 +105,38 @@ class DiaryDetailScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildBottomBar() {
+    return BottomAppBar(
+      color: const Color.fromRGBO(28, 50, 91, 1),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _bottomBarButton(Icons.brush, "Style"),
+            _bottomBarButton(Icons.image, "Image"),
+            _bottomBarButton(Icons.star, "Favorite"),
+            _bottomBarButton(Icons.emoji_emotions, "Mood"),
+            _bottomBarButton(Icons.format_size, "Text"),
+            _bottomBarButton(Icons.list, "List"),
+            _bottomBarButton(Icons.label, "Tags"),
+            _bottomBarButton(Icons.mic, "Voice"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _bottomBarButton(IconData icon, String tooltip) {
+    return IconButton(
+      icon: Icon(icon, color: Colors.white),
+      onPressed: () {
+        // Placeholder action
+      },
+      tooltip: tooltip,
     );
   }
 }

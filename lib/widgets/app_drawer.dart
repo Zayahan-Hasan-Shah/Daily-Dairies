@@ -1,4 +1,5 @@
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/screens/diarylock.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -61,8 +62,9 @@ class AppDrawer extends StatelessWidget {
                   style: TextStyle(color: Colorpallete.drawertextColor),
                 ),
                 onTap: () {
-                  context.go('/diarylock');
-                  Navigator.pop(context);
+                  // context.go('/diarylock');
+                  Navigator.push(context, DiarylockScreen.route());
+                  // Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -159,7 +161,7 @@ class AppDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.settings_accessibility_rounded,
+                leading: Icon(Icons.logout_outlined,
                     color: Colorpallete.drawericonColor),
                 title: Text(
                   'Logout',

@@ -29,7 +29,10 @@ class Achievments extends StatelessWidget {
                 },
                 child: Text(
                   'MORE',
-                  style: TextStyle(fontSize: 16, color: Colorpallete.bgColor),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      color: Colorpallete.bgColor),
                 ),
               ),
             ],

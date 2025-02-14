@@ -18,9 +18,11 @@ import 'package:daily_dairies/screens/homeScreen.dart';
 import 'package:daily_dairies/screens/languageScreen.dart';
 import 'package:daily_dairies/screens/loginScreen.dart';
 import 'package:daily_dairies/screens/moodStyleScreen.dart';
+import 'package:daily_dairies/screens/profileScreen.dart';
 import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:daily_dairies/screens/settingScreen.dart';
 import 'package:daily_dairies/screens/signupScreen.dart';
+import 'package:daily_dairies/screens/splashScreen.dart';
 import 'package:daily_dairies/screens/tagScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +31,7 @@ import 'package:go_router/go_router.dart';
 
 class AppRoutes {
   static final router = GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -39,6 +41,10 @@ class AppRoutes {
           );
         },
         routes: [
+          GoRoute(
+            path: '/splash',
+            builder: (context, state) => const SplashScreen(),
+          ),
           GoRoute(
             path: '/login',
             builder: (context, state) => LoginScreen(),
@@ -65,7 +71,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/diarylock',
-            builder: (context, state) => DiarylockScreen(),
+            builder: (context, state) => const DiarylockScreen(),
           ),
           GoRoute(
             path: '/backup',
@@ -93,7 +99,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/profile',
-            builder: (context, state) => const LanguageScreen(),
+            builder: (context, state) => const ProfileScreen(),
           ),
           GoRoute(
             path: '/achievements',
@@ -113,14 +119,14 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/setdiarylock',
-            builder: (context, state) => const  SetDiaryScreen(),
+            builder: (context, state) => const SetDiaryScreen(),
           ),
           GoRoute(
             path: '/forgetpassword',
             builder: (context, state) => const ForgertPasswordScreen(),
           ),
           GoRoute(
-            path: '/forgetpassword',
+            path: '/dataprivacy',
             builder: (context, state) => const DataPrivacyScreen(),
           ),
           GoRoute(

@@ -47,11 +47,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 formatButtonVisible: false,
                 titleCentered: true,
                 titleTextStyle: TextStyle(
-                    fontSize: 20, color: Colorpallete.backgroundColor),
+                    fontSize: 20,
+                    fontFamily: 'Poppins',
+                    color: Colorpallete.backgroundColor),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
                 weekdayStyle: TextStyle(color: Colorpallete.backgroundColor),
-                weekendStyle: TextStyle(color: Colors.redAccent),
+                weekendStyle: TextStyle(color: Colors.red),
               ),
               calendarStyle: CalendarStyle(
                 selectedDecoration: BoxDecoration(
@@ -63,13 +65,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   shape: BoxShape.circle,
                 ),
                 defaultTextStyle: TextStyle(
-                    fontSize: 16, color: Colorpallete.backgroundColor),
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    color: Colorpallete.backgroundColor),
                 weekendTextStyle: TextStyle(
-                    fontSize: 16, color: Colorpallete.backgroundColor),
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    color: Colorpallete.backgroundColor),
               ),
             ),
             SizedBox(height: 20),
-            SizedBox(height: 20),
+            // SizedBox(height: 20),
             Text(
               "${DateFormat('EEEE, yyyy-MM-dd').format(_selectedDay.toLocal())} ${DateFormat('dd-MM-yyyy').format(_selectedDay.toLocal())}",
               style: TextStyle(
@@ -77,30 +83,32 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 fontStyle: FontStyle.italic,
                 color: Colorpallete.backgroundColor,
                 fontSize: 16,
-                
               ),
             ),
             SizedBox(height: 20),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colorpallete.backgroundColor.withOpacity(0.4),
-        elevation: 0,
-        onPressed: () {
-          Navigator.push(context, AddDiaryScreen.route());
-        },
-        child: RippleAnimation(
-          color: Colorpallete.backgroundColor,
-          minRadius: 10,
-          maxRadius: 32,
-          delay: const Duration(milliseconds: 320),
-          repeat: true,
-          ripplesCount: 5,
-          duration: const Duration(milliseconds: 6 * 360),
-          child: Icon(
-            Icons.add,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: FloatingActionButton(
+          backgroundColor: Colorpallete.bottomNavigationColor.withOpacity(0.4),
+          elevation: 0,
+          onPressed: () {
+            Navigator.push(context, AddDiaryScreen.route());
+          },
+          child: RippleAnimation(
             color: Colorpallete.backgroundColor,
+            minRadius: 10,
+            maxRadius: 32,
+            delay: const Duration(milliseconds: 320),
+            repeat: true,
+            ripplesCount: 5,
+            duration: const Duration(milliseconds: 6 * 360),
+            child: Icon(
+              Icons.add,
+              color: Colorpallete.backgroundColor,
+            ),
           ),
         ),
       ),

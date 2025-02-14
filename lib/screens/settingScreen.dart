@@ -2,6 +2,7 @@ import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:daily_dairies/widgets/setting_widget/setting_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Settingscreen extends StatelessWidget {
   const Settingscreen({super.key});
@@ -11,11 +12,16 @@ class Settingscreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Settings"),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        title: const Text(
+          "Settings",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        foregroundColor: Colors.white,
         backgroundColor: Colorpallete.backgroundColor,
+        elevation: 5,
+        shadowColor: Colors.black54,
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () {
             Scaffold.of(context).openDrawer();
           },
@@ -27,105 +33,58 @@ class Settingscreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'General',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colorpallete.backgroundColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colorpallete.backgroundColor.withOpacity(0.4),
-              ),
-              child: SettingWidget(
-                  text: 'Mood Style',
-                  icon: Icon(Icons.emoji_emotions_outlined,
-                      size: 28, color: Colorpallete.drawericonColor),
-                  route: '/moodstylemanagment'),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colorpallete.backgroundColor.withOpacity(0.4),
-              ),
-              child: SettingWidget(
-                  text: 'Tag',
-                  icon: Icon(Icons.tag_outlined,
-                      size: 28, color: Colorpallete.drawericonColor),
-                  route: '/tagmanagement'),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colorpallete.backgroundColor.withOpacity(0.4),
-              ),
-              child: SettingWidget(
-                  text: 'Diary Lock',
-                  icon: Icon(Icons.lock_outline_sharp,
-                      size: 28, color: Colorpallete.drawericonColor),
-                  route: '/diarylock'),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colorpallete.backgroundColor.withOpacity(0.4),
-              ),
-              child: SettingWidget(
-                  text: 'Backup and Restore',
-                  icon: Icon(Icons.backup_outlined,
-                      size: 28, color: Colorpallete.drawericonColor),
-                  route: '/backup'),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            Text(
-              'About',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colorpallete.backgroundColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colorpallete.backgroundColor.withOpacity(0.4),
-              ),
-              child: SettingWidget(
-                  text: 'Language',
-                  icon: Icon(Icons.language_outlined,
-                      size: 28, color: Colorpallete.drawericonColor),
-                  route: '/lanaguagemanagement'),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
+            _buildSectionTitle("General"),
+            _buildSettingItem("Mood Style", Icons.emoji_emotions_outlined,
+                '/moodstylemanagment', context),
+            _buildSettingItem(
+                "Tag", Icons.tag_outlined, '/tagmanagement', context),
+            _buildSettingItem(
+                "Diary Lock", Icons.lock_outline_sharp, '/diarylock', context),
+            _buildSettingItem("Backup and Restore", Icons.backup_outlined,
+                '/backup', context),
+            const SizedBox(height: 20),
+            _buildSectionTitle("About"),
+            _buildSettingItem("Language", Icons.language_outlined,
+                '/lanaguagemanagement', context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 20,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.bold,
+          color: Colors.white, // White font color
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingItem(
+      String text, IconData icon, String route, BuildContext context) {
+    return Card(
+      color: Colorpallete.backgroundColor.withOpacity(0.6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Icon(icon, size: 28, color: Colors.blue), // Icons in blue
+        title: Text(
+          text,
+          style: const TextStyle(
+              fontSize: 18, color: Colors.white), // Text in white
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios,
+            color: Colors.blue, size: 18), // Arrow in blue
+        onTap: () {
+          context.go(route); // Use GoRouter for navigation
+        },
       ),
     );
   }

@@ -72,7 +72,9 @@ class _DailyStatisticsState extends State<DailyStatistics> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: hasEntries ? Colors.orange : Colors.transparent,
+                      color: hasEntries
+                          ? Colorpallete.bgColor
+                          : Colors.transparent,
                       border: Border.all(color: Colors.white, width: 1),
                       shape: BoxShape.circle,
                     ),

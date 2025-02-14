@@ -14,8 +14,7 @@ class ProfileSectionWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colorpallete.backgroundColor),
+                  borderRadius: BorderRadius.circular(50), color: Colors.white),
               child: Icon(
                 Icons.person,
                 size: 40,
@@ -29,10 +28,11 @@ class ProfileSectionWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Sign in',
+                  'Sign In',
                   style: TextStyle(
                     color: Colorpallete.backgroundColor,
-                    fontSize: 22,
+                    fontSize: 20,
+                    fontFamily: 'Poppins',
                     fontWeight: FontWeight.w900,
                   ),
                 ),

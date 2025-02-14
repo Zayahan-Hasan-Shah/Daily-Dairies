@@ -3,6 +3,8 @@ import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 
 class DiarylockScreen extends StatelessWidget {
+  static Route route() =>
+      MaterialPageRoute(builder: (_) => const DiarylockScreen());
   const DiarylockScreen({super.key});
 
   @override
