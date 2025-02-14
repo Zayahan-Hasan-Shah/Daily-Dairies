@@ -23,6 +23,18 @@ class AppDrawer extends StatelessWidget {
                 ),
               ),
               ListTile(
+                leading: Icon(Icons.home_outlined,
+                    color: Colorpallete.drawericonColor),
+                title: Text(
+                  'Home',
+                  style: TextStyle(color: Colorpallete.drawertextColor),
+                ),
+                onTap: () {
+                  context.go('/');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
                 leading:
                     const Icon(Icons.workspace_premium, color: Colors.amber),
                 title: Text(
@@ -78,6 +90,18 @@ class AppDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
+                leading: Icon(Icons.question_answer_outlined,
+                    color: Colorpallete.drawericonColor),
+                title: Text(
+                  'FAQs',
+                  style: TextStyle(color: Colorpallete.drawertextColor),
+                ),
+                onTap: () {
+                  context.go('/faqs');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
                 leading:
                     Icon(Icons.facebook, color: Colorpallete.drawericonColor),
                 title: Text(
@@ -92,7 +116,7 @@ class AppDrawer extends StatelessWidget {
                   } else {
                     // Handle the error or inform the user they can't open the URL
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
                             'Could not open the page. Please try again later.'),
                       ),
@@ -114,7 +138,7 @@ class AppDrawer extends StatelessWidget {
                   } else {
                     // Handle the error or inform the user they can't open the URL
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
                             'Could not open the page. Please try again later.'),
                       ),
@@ -135,19 +159,7 @@ class AppDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.question_answer_outlined,
-                    color: Colorpallete.drawericonColor),
-                title: Text(
-                  'FAQ',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/faq');
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.logout_outlined,
+                leading: Icon(Icons.settings_accessibility_rounded,
                     color: Colorpallete.drawericonColor),
                 title: Text(
                   'Logout',

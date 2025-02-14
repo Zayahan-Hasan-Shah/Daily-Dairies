@@ -2,8 +2,8 @@ import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 
-class Diarylock extends StatelessWidget {
-  const Diarylock({super.key});
+class DiarylockScreen extends StatelessWidget {
+  const DiarylockScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,16 +13,7 @@ class Diarylock extends StatelessWidget {
         title: const Text("Set Diary Lock"),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
-        // Add this to show the drawer icon
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
       ),
-      drawer: const AppDrawer(),
-      // body: ,
     );
   }
 }
