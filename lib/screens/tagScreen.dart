@@ -21,8 +21,8 @@ class Tagscreen extends StatelessWidget {
           },
         ),
       ),
-      drawer: AppDrawer(),
-      body: Center(
+      drawer: const AppDrawer(),
+      body: const Center(
         child: Text("No tags in your Diaries"),
       ),
     );

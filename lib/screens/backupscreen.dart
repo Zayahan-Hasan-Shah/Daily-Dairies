@@ -15,20 +15,20 @@ class BackupAndRestoreScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Text(
+          title: const Text(
             'Reminder Interval',
             style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 15,
                 fontWeight: FontWeight.w400),
           ),
-          content: Container(
+          content: SizedBox(
             width: double.infinity,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 RadioListTile<String>(
-                  title: Text('Every day'),
+                  title: const Text('Every day'),
                   value: 'Every day',
                   groupValue: controller.selectedReminderInterval.value,
                   onChanged: (value) {
@@ -38,7 +38,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
                   activeColor: Colors.blue,
                 ),
                 RadioListTile<String>(
-                  title: Text('3 days'),
+                  title: const Text('3 days'),
                   value: '3 days',
                   groupValue: controller.selectedReminderInterval.value,
                   onChanged: (value) {
@@ -48,7 +48,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
                   activeColor: Colors.blue,
                 ),
                 RadioListTile<String>(
-                  title: Text('4 days'),
+                  title: const Text('4 days'),
                   value: '4 days',
                   groupValue: controller.selectedReminderInterval.value,
                   onChanged: (value) {
@@ -58,7 +58,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
                   activeColor: Colors.blue,
                 ),
                 RadioListTile<String>(
-                  title: Text('5 days'),
+                  title: const Text('5 days'),
                   value: '5 days',
                   groupValue: controller.selectedReminderInterval.value,
                   onChanged: (value) {
@@ -79,7 +79,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context); // Close the dialog
               },
-              child: Text('Select', style: TextStyle(color: Colors.blue)),
+              child: const Text('Select', style: TextStyle(color: Colors.blue)),
             ),
           ],
         );
@@ -115,18 +115,18 @@ class BackupAndRestoreScreen extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 2,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 // borderRadius: BorderRadius.circular(12),
               ),
               // padding: const EdgeInsets.all(16),
               child: ListTile(
-                leading: CircleAvatar(
+                leading: const CircleAvatar(
                   backgroundColor: Colors.blue,
                   child: Text('G', style: TextStyle(color: Colors.white)),
                 ),
-                title: Text('Backup to Google Drive'),
-                subtitle: Text('Tap to login'),
+                title: const Text('Backup to Google Drive'),
+                subtitle: const Text('Tap to login'),
                 onTap: () {
                   // Implement Google Drive login
                 },
@@ -149,7 +149,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
               title: Text('Backup Data',
                   style: TextStyle(color: Colors.grey[600])),
               subtitle:
-                  Text('Haven\'t synced', style: TextStyle(color: Colors.grey)),
+                  const Text('Haven\'t synced', style: TextStyle(color: Colors.grey)),
             ),
           ),
 
@@ -210,14 +210,14 @@ class BackupAndRestoreScreen extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 2,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 // borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 children: [
                   ListTile(
-                    title: Text('More Backup Account'),
+                    title: const Text('More Backup Account'),
                     trailing: Obx(() => Icon(
                           controller.isBackupAccountExpanded.value
                               ? Icons.keyboard_arrow_up
@@ -229,22 +229,22 @@ class BackupAndRestoreScreen extends StatelessWidget {
                       ? Column(
                           children: [
                             ListTile(
-                              leading: Icon(Icons.cloud),
-                              title: Text('Dropbox'),
+                              leading: const Icon(Icons.cloud),
+                              title: const Text('Dropbox'),
                               onTap: () {
                                 // Implement Dropbox connection
                               },
                             ),
                             ListTile(
-                              leading: Icon(Icons.cloud),
-                              title: Text('OneDrive'),
+                              leading: const Icon(Icons.cloud),
+                              title: const Text('OneDrive'),
                               onTap: () {
                                 // Implement OneDrive connection
                               },
                             ),
                           ],
                         )
-                      : SizedBox.shrink()),
+                      : const SizedBox.shrink()),
                 ],
               ),
             ),
@@ -258,12 +258,12 @@ class BackupAndRestoreScreen extends StatelessWidget {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 2,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 // borderRadius: BorderRadius.circular(12),
               ),
               child: ListTile(
-                title: Text('Backup Reminder'),
+                title: const Text('Backup Reminder'),
                 subtitle:
                     Obx(() => Text(controller.selectedReminderInterval.value)),
                 onTap: () => _showReminderDialog(context),

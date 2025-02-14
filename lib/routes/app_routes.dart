@@ -21,7 +21,7 @@ class AppRoutes {
       ShellRoute(
         builder: (context, state, child) {
           return Scaffold(
-            drawer: AppDrawer(),
+            drawer: const AppDrawer(),
             body: child,
           );
         },
@@ -40,11 +40,11 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/search',
-            builder: (context, state) => SearchScreen(),
+            builder: (context, state) => const SearchScreen(),
           ),
           GoRoute(
             path: '/add-diary',
-            builder: (context, state) => AddDiaryScreen(),
+            builder: (context, state) => const AddDiaryScreen(),
           ),
           GoRoute(
             path: '/tagmanagement',
@@ -52,7 +52,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/diarylock',
-            builder: (context, state) => Diarylock(),
+            builder: (context, state) => const Diarylock(),
           ),
           GoRoute(
             path: '/backup',

@@ -21,7 +21,7 @@ class Settingscreen extends StatelessWidget {
           },
         ),
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       // body: ,
     );
   }

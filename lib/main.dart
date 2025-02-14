@@ -1,6 +1,5 @@
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/routes/app_routes.dart';
-import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
             onPressed: () {
               context.go('/search');
             },
-            icon: Icon(Icons.search_rounded),
+            icon: const Icon(Icons.search_rounded),
           ),
         ],
         title: const Text("Journal Dashboard"),
@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       // Add the drawer here
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       // Rest of your existing code remains the same
       body: Padding(
         padding: const EdgeInsets.all(16.0),

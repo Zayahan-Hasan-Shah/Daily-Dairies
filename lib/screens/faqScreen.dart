@@ -21,7 +21,7 @@ class Faqscreen extends StatelessWidget {
           },
         ),
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       // body: ,
     );
   }

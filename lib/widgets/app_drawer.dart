@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({Key? key}) : super(key: key);
+  const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +92,7 @@ class AppDrawer extends StatelessWidget {
                   } else {
                     // Handle the error or inform the user they can't open the URL
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text(
                             'Could not open the page. Please try again later.'),
                       ),
@@ -114,7 +114,7 @@ class AppDrawer extends StatelessWidget {
                   } else {
                     // Handle the error or inform the user they can't open the URL
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text(
                             'Could not open the page. Please try again later.'),
                       ),

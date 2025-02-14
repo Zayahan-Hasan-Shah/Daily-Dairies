@@ -10,6 +10,8 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  LoginScreen({super.key});
+
   Future<void> _authenticate() async {
     try {
       bool authenticated = await auth.authenticate(
@@ -29,7 +31,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colorpallete.backgroundColor,
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -38,7 +40,7 @@ class LoginScreen extends StatelessWidget {
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colorpallete.textColor)),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: emailController,
               decoration: InputDecoration(
@@ -49,7 +51,7 @@ class LoginScreen extends StatelessWidget {
                   color: Colorpallete.textColor,
                 ),
                 labelText: "Email",
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
@@ -63,12 +65,12 @@ class LoginScreen extends StatelessWidget {
                   color: Colorpallete.textColor,
                 ),
                 labelText: "Password",
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               obscureText: true,
             ),
             const SizedBox(height: 20),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -78,7 +80,7 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () {
                   context.go('/');
                 },
-                child: Text(
+                child: const Text(
                   "Login",
                   style: TextStyle(
                     fontSize: 24,
@@ -86,7 +88,7 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(

@@ -1,8 +1,5 @@
 import 'package:daily_dairies/core/colorPallete.dart';
-import 'package:daily_dairies/screens/homeScreen.dart';
-import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart'; // For formatting the date
 

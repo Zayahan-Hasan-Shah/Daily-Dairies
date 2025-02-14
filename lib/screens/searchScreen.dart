@@ -10,8 +10,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  TextEditingController _searchController = TextEditingController();
-  List<String> _allEntries = [
+  final TextEditingController _searchController = TextEditingController();
+  final List<String> _allEntries = [
     "Morning Reflection",
     "Workout Log",
     "Project Ideas",
@@ -42,7 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
         backgroundColor: Colorpallete.backgroundColor,
         iconTheme: IconThemeData(color: Colorpallete.textColor),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
       ),

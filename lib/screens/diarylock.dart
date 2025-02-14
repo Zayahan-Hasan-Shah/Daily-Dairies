@@ -21,7 +21,7 @@ class Diarylock extends StatelessWidget {
           },
         ),
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       // body: ,
     );
   }
