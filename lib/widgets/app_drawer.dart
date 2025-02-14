@@ -22,6 +22,18 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
             ListTile(
+              leading: Icon(Icons.home_outlined,
+                  color: Colorpallete.drawericonColor),
+              title: Text(
+                'Home',
+                style: TextStyle(color: Colorpallete.drawertextColor),
+              ),
+              onTap: () {
+                context.go('/');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.workspace_premium, color: Colors.amber),
               title: Text(
                 'Upgrade to PRO',
@@ -71,6 +83,18 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () {
                 context.go('/exportdata');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.question_answer_outlined,
+                  color: Colorpallete.drawericonColor),
+              title: Text(
+                'FAQs',
+                style: TextStyle(color: Colorpallete.drawertextColor),
+              ),
+              onTap: () {
+                context.go('/faqs');
                 Navigator.pop(context);
               },
             ),

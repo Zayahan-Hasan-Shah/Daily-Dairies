@@ -1,5 +1,4 @@
 import 'package:daily_dairies/core/colorPallete.dart';
-import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 
 class Tagscreen extends StatelessWidget {
@@ -13,16 +12,7 @@ class Tagscreen extends StatelessWidget {
         title: const Text("Tag Management"),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
-        // Add this to show the drawer icon
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
       ),
-      drawer: AppDrawer(),
-      // body: ,
     );
   }
 }

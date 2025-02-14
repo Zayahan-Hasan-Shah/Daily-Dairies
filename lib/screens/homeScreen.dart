@@ -2,6 +2,7 @@ import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/calendarScreen.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
+import 'package:daily_dairies/screens/profileScreen.dart';
 import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
@@ -98,8 +99,7 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: Colorpallete.backgroundColor
-                                        .withOpacity(0.4),
+                                    color: Colorpallete.backgroundColor,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Padding(
@@ -116,7 +116,7 @@ class HomeScreen extends StatelessWidget {
                                               "2025-02-10",
                                               style: TextStyle(
                                                   color: Colorpallete.textColor,
-                                                  fontSize: 20),
+                                                  fontSize: 22),
                                             ),
                                             Text(
                                               "😑",
@@ -130,6 +130,7 @@ class HomeScreen extends StatelessWidget {
                                         Text(
                                           "Journal Entry #$index",
                                           style: TextStyle(
+                                              fontSize: 18,
                                               color: Colorpallete.textColor),
                                         ),
                                         const SizedBox(height: 20),
@@ -184,7 +185,11 @@ class HomeScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(icon: const Icon(Icons.book), onPressed: () {}),
+              IconButton(
+                  icon: Icon(Icons.person),
+                  onPressed: () {
+                    Navigator.push(context, ProfileScreen.route());
+                  }),
               const SizedBox(width: 40),
               IconButton(
                   icon: const Icon(Icons.calendar_today),
