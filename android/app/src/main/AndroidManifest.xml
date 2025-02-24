@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:label="daily_dairies"
+        android:allowBackup="true"
+        android:enableOnBackInvokedCallback="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

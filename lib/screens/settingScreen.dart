@@ -1,8 +1,8 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
-import 'package:daily_dairies/widgets/setting_widget/setting_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Settingscreen extends StatelessWidget {
   const Settingscreen({super.key});
@@ -12,9 +12,10 @@ class Settingscreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text(
-          "Settings",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          "settings".tr(), // Localized text
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         foregroundColor: Colors.white,
         backgroundColor: Colorpallete.backgroundColor,
@@ -33,19 +34,20 @@ class Settingscreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle("General"),
-            _buildSettingItem("Mood Style", Icons.emoji_emotions_outlined,
+            _buildSectionTitle("general".tr()), // General Section
+            _buildSettingItem("mood_style".tr(), Icons.emoji_emotions_outlined,
                 '/moodstylemanagment', context),
             _buildSettingItem(
-                "Tag", Icons.tag_outlined, '/tagmanagement', context),
-            _buildSettingItem(
-                "Diary Lock", Icons.lock_outline_sharp, '/diarylock', context),
-            _buildSettingItem("Backup and Restore", Icons.backup_outlined,
+                "tag".tr(), Icons.tag_outlined, '/tagmanagement', context),
+            _buildSettingItem("diary_lock".tr(), Icons.lock_outline_sharp,
+                '/diarylock', context),
+            _buildSettingItem("backup_restore".tr(), Icons.backup_outlined,
                 '/backup', context),
             const SizedBox(height: 20),
-            _buildSectionTitle("About"),
-            _buildSettingItem("Language", Icons.language_outlined,
+            _buildSectionTitle("about".tr()), // About Section
+            _buildSettingItem("language".tr(), Icons.language_outlined,
                 '/lanaguagemanagement', context),
+                
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Tagscreen extends StatelessWidget {
   const Tagscreen({super.key});
@@ -10,10 +11,9 @@ class Tagscreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Tag Management"),
+        title: Text("tag_management".tr()), // Localized title
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
-        // Add this to show the drawer icon
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
@@ -22,8 +22,11 @@ class Tagscreen extends StatelessWidget {
         ),
       ),
       drawer: const AppDrawer(),
-      body: const Center(
-        child: Text("No tags in your Diaries"),
+      body: Center(
+        child: Text(
+          "no_tags_message".tr(), // Localized message
+          style: const TextStyle(color: Colors.white, fontSize: 16),
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,23 +26,20 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.search_rounded),
           ),
         ],
-        title: const Text(
-          "Daily Diary",
-          style: TextStyle(fontFamily: 'Poppins'),
+        title: Text(
+          "app_title".tr(),
+          style: const TextStyle(fontFamily: 'Poppins'),
         ),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
-        // Add this to show the drawer icon
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () {
             Scaffold.of(context).openDrawer();
           },
         ),
       ),
-      // Add the drawer here
       drawer: const AppDrawer(),
-      // Rest of your existing code remains the same
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -64,7 +62,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "Diaries",
+              "diaries".tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -76,80 +74,52 @@ class HomeScreen extends StatelessWidget {
               child: ListView.builder(
                 itemCount: 10,
                 itemBuilder: (context, index) {
-                  return Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              // color:
-                              //     Colorpallete.backgroundColor.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(16)),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                DiaryDetailScreen.route(
-                                  "My Diary Title",
-                                  "This is the full content of my diary entry...",
-                                  "😊",
-                                  DateTime.now(),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        DiaryDetailScreen.route(
+                          "my_diary_title".tr(),
+                          "diary_entry_content".tr(),
+                          "😊",
+                          DateTime.now(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colorpallete.drawericonColor,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "2025-02-10",
+                                style: TextStyle(
+                                  color: Colorpallete.textColor,
+                                  fontSize: 22,
                                 ),
-                              );
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colorpallete.drawericonColor,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              "2025-02-10",
-                                              style: TextStyle(
-                                                  color: Colorpallete.textColor,
-                                                  fontSize: 22),
-                                            ),
-                                            Text(
-                                              "😑",
-                                              style: TextStyle(
-                                                  color: Colorpallete.textColor,
-                                                  fontSize: 20),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          "Journal Entry #$index",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colorpallete.textColor),
-                                        ),
-                                        const SizedBox(height: 20),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                              ],
+                              ),
+                              const Text("😑"),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "journal_entry".tr(args: ["${index + 1}"]),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colorpallete.textColor,
                             ),
                           ),
-                        ),
-                        // const SizedBox(
-                        //   height: 20,
-                        // ),
-                      ],
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -171,7 +141,7 @@ class HomeScreen extends StatelessWidget {
           delay: const Duration(milliseconds: 320),
           repeat: true,
           ripplesCount: 4,
-          duration: const Duration(milliseconds: 6 * 360),
+          duration: const Duration(milliseconds: 2160),
           child: Icon(
             Icons.add,
             color: Colorpallete.backgroundColor,
@@ -189,16 +159,18 @@ class HomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                  icon: Icon(Icons.person),
-                  onPressed: () {
-                    Navigator.push(context, ProfileScreen.route());
-                  }),
+                icon: const Icon(Icons.person),
+                onPressed: () {
+                  Navigator.push(context, ProfileScreen.route());
+                },
+              ),
               const SizedBox(width: 40),
               IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () {
-                    Navigator.push(context, CalendarScreen.route());
-                  }),
+                icon: const Icon(Icons.calendar_today),
+                onPressed: () {
+                  Navigator.push(context, CalendarScreen.route());
+                },
+              ),
             ],
           ),
         ),

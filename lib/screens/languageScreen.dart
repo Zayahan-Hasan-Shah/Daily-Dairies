@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 
 class LanguageScreen extends StatefulWidget {
+  static Route route() =>
+      MaterialPageRoute(builder: (_) => const LanguageScreen());
+
   const LanguageScreen({super.key});
 
   @override
@@ -9,26 +13,26 @@ class LanguageScreen extends StatefulWidget {
 }
 
 class _LanguageScreenState extends State<LanguageScreen> {
-  final List<Map<String, String>> languages = [
-    {'name': 'English', 'code': 'en'},
-    {'name': 'Urdu', 'code': 'ur'},
-    {'name': 'French', 'code': 'fr'},
-    {'name': 'Spanish', 'code': 'es'},
-    {'name': 'Arabic', 'code': 'ar'},
-    {'name': 'German', 'code': 'de'},
-    {'name': 'Chinese', 'code': 'zh'},
-    {'name': 'Japanese', 'code': 'ja'},
-    {'name': 'Russian', 'code': 'ru'},
+  final List<Map<String, dynamic>> languages = [
+    {'name': 'English', 'code': 'en', 'locale': const Locale('en')},
+    {'name': 'Urdu', 'code': 'ur', 'locale': const Locale('ur')},
+    {'name': 'Arabic', 'code': 'ar', 'locale': const Locale('ar')},
   ];
 
-  String selectedLanguage = 'en'; // Default selected language
+  String selectedLanguage = "en"; // Default language
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    selectedLanguage = context.locale.languageCode; // Get saved language safely
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Select Language"),
+        title: Text("select_language".tr()), // Localized text
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
@@ -42,7 +46,8 @@ class _LanguageScreenState extends State<LanguageScreen> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedLanguage = language['code']!;
+                      selectedLanguage = language['code'];
+                      context.setLocale(language['locale']); // Change language
                     });
                   },
                   child: Container(
@@ -60,7 +65,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      language['name']!,
+                      language['name'], // Show language name
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,

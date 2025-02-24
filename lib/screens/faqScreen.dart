@@ -1,6 +1,7 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/faq_widgets/get_Started.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FAQScreen extends StatelessWidget {
   const FAQScreen({super.key});
@@ -10,7 +11,8 @@ class FAQScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("FAQ", style: TextStyle(color: Colors.white)),
+        title:
+            Text("faq_title".tr(), style: const TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.blue), // Blue arrow
         backgroundColor: Colorpallete.backgroundColor,
         leading: IconButton(
@@ -26,20 +28,20 @@ class FAQScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              sectionTitle('Get Started'),
-              faqItem('Start a diary', '/getstarteddiary'),
-              faqItem('Get diary ideas', '/getstarteddiary'),
-              sectionTitle('Lock and Privacy Protection'),
-              faqItem('Set diary lock', '/setdiarylock'),
-              faqItem('Forget password', '/setdiarylock'),
-              faqItem('Data privacy', '/setdiarylock'),
-              sectionTitle('Backup and Restore'),
-              faqItem('Backup Failed', '/backupfailed'),
-              faqItem('Get your backed-up data', '/getyourbackedupdata'),
-              sectionTitle('Manage Entries'),
-              faqItem('Tag management', '/tagmanagment'),
-              sectionTitle('Other'),
-              faqItem('Other questions', '/otherquestions'),
+              sectionTitle("get_started".tr()),
+              faqItem("start_diary".tr(), '/getstarteddiary'),
+              faqItem("diary_ideas".tr(), '/getdiaryideas'),
+              sectionTitle("lock_privacy".tr()),
+              faqItem("set_diary_lock".tr(), '/setdiarylock'),
+              faqItem("forget_password".tr(), '/forgetpassword'),
+              faqItem("data_privacy".tr(), '/dataprivacy'),
+              sectionTitle("backup_restore".tr()),
+              faqItem("backup_failed".tr(), '/backupfailed'),
+              faqItem("get_backedup_data".tr(), '/getyourbackedupdata'),
+              sectionTitle("manage_entries".tr()),
+              faqItem("tag_management".tr(), '/tagmanagment'),
+              sectionTitle("other".tr()),
+              faqItem("other_questions".tr(), '/otherquestions'),
             ],
           ),
         ),
@@ -54,7 +56,7 @@ class FAQScreen extends StatelessWidget {
         text,
         style: const TextStyle(
           fontSize: 20,
-          color: Colors.white, // White text
+          color: Colors.white,
           fontWeight: FontWeight.w600,
         ),
       ),

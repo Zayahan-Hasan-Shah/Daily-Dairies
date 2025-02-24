@@ -41,6 +41,7 @@ dependencies:
   url_launcher: ^6.0.20
   simple_ripple_animation: ^0.1.0
   table_calendar: ^3.1.3
+  easy_localization: ^3.0.3
   intl: ^0.19.0
   fl_chart: ^0.69.0
   animated_splash_screen: ^1.3.0
@@ -72,6 +73,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/lang/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

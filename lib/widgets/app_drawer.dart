@@ -1,5 +1,6 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/screens/diarylock.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,158 +24,126 @@ class AppDrawer extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              ListTile(
-                leading: Icon(Icons.home_outlined,
-                    color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Home',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/');
-                  Navigator.pop(context);
-                },
+              _buildDrawerItem(
+                context,
+                icon: Icons.home_outlined,
+                text: 'home'.tr(),
+                route: '/',
               ),
-              ListTile(
-                leading:
-                    const Icon(Icons.workspace_premium, color: Colors.amber),
-                title: Text(
-                  'Upgrade to PRO',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {},
+              _buildDrawerItem(
+                context,
+                icon: Icons.workspace_premium,
+                text: 'upgrade_pro'.tr(),
+                color: Colors.amber,
               ),
-              ListTile(
-                leading: Icon(Icons.tag, color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Tags',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/tagmanagement');
-                  Navigator.pop(context);
-                },
+              _buildDrawerItem(
+                context,
+                icon: Icons.tag,
+                text: 'tags'.tr(),
+                route: '/tagmanagement',
               ),
-              ListTile(
-                leading: Icon(Icons.lock, color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Diary Lock',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.lock,
+                text: 'diary_lock'.tr(),
                 onTap: () {
-                  // context.go('/diarylock');
                   Navigator.push(context, DiarylockScreen.route());
-                  // Navigator.pop(context);
                 },
               ),
-              ListTile(
-                leading:
-                    Icon(Icons.backup, color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Backup & Restore',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/backup');
-                  Navigator.pop(context);
-                },
+              _buildDrawerItem(
+                context,
+                icon: Icons.backup,
+                text: 'backup_restore'.tr(),
+                route: '/backup',
               ),
-              ListTile(
-                leading: Icon(Icons.import_export,
-                    color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Export Diary',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/exportdata');
-                  Navigator.pop(context);
-                },
+              _buildDrawerItem(
+                context,
+                icon: Icons.import_export,
+                text: 'export_diary'.tr(),
+                route: '/exportdata',
               ),
-              ListTile(
-                leading: Icon(Icons.question_answer_outlined,
-                    color: Colorpallete.drawericonColor),
-                title: Text(
-                  'FAQs',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/faqs');
-                  Navigator.pop(context);
-                },
+              _buildDrawerItem(
+                context,
+                icon: Icons.question_answer_outlined,
+                text: 'faqs'.tr(),
+                route: '/faqs',
               ),
-              ListTile(
-                leading:
-                    Icon(Icons.facebook, color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Follow Us',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.facebook,
+                text: 'follow_us'.tr(),
                 onTap: () async {
                   final Uri url =
                       Uri.parse('https://www.facebook.com/TwitterInc/');
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url);
                   } else {
-                    // Handle the error or inform the user they can't open the URL
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Could not open the page. Please try again later.'),
-                      ),
-                    );
+                    _showError(context);
                   }
                 },
               ),
-              ListTile(
-                leading: Icon(Icons.apps, color: Colorpallete.drawericonColor),
-                title: Text(
-                  'More Apps',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
+              _buildDrawerItem(
+                context,
+                icon: Icons.apps,
+                text: 'more_apps'.tr(),
                 onTap: () async {
                   final Uri url =
                       Uri.parse('https://play.google.com/store/apps?hl=en');
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url);
                   } else {
-                    // Handle the error or inform the user they can't open the URL
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Could not open the page. Please try again later.'),
-                      ),
-                    );
+                    _showError(context);
                   }
                 },
               ),
-              ListTile(
-                leading: Icon(Icons.settings_accessibility_rounded,
-                    color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Settings',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/settings');
-                  Navigator.pop(context);
-                },
+              _buildDrawerItem(
+                context,
+                icon: Icons.settings_accessibility_rounded,
+                text: 'settings'.tr(),
+                route: '/settings',
               ),
-              ListTile(
-                leading: Icon(Icons.logout_outlined,
-                    color: Colorpallete.drawericonColor),
-                title: Text(
-                  'Logout',
-                  style: TextStyle(color: Colorpallete.drawertextColor),
-                ),
-                onTap: () {
-                  context.go('/login');
-                  Navigator.pop(context);
-                },
+              _buildDrawerItem(
+                context,
+                icon: Icons.logout_outlined,
+                text: 'logout'.tr(),
+                route: '/login',
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem(
+    BuildContext context, {
+    required IconData icon,
+    required String text,
+    String? route,
+    Color? color,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: color ?? Colorpallete.drawericonColor),
+      title: Text(
+        text,
+        style: TextStyle(color: Colorpallete.drawertextColor),
+      ),
+      onTap: () {
+        if (route != null) {
+          context.go(route);
+        } else {
+          onTap?.call();
+        }
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  void _showError(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('error_opening_page'.tr()),
       ),
     );
   }

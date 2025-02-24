@@ -109,22 +109,25 @@ class DiaryDetailScreen extends StatelessWidget {
   }
 
   Widget _buildBottomBar() {
-    return BottomAppBar(
-      color: const Color.fromRGBO(28, 50, 91, 1),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _bottomBarButton(Icons.brush, "Style"),
-            _bottomBarButton(Icons.image, "Image"),
-            _bottomBarButton(Icons.star, "Favorite"),
-            _bottomBarButton(Icons.emoji_emotions, "Mood"),
-            _bottomBarButton(Icons.format_size, "Text"),
-            _bottomBarButton(Icons.list, "List"),
-            _bottomBarButton(Icons.label, "Tags"),
-            _bottomBarButton(Icons.mic, "Voice"),
-          ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: BottomAppBar(
+        color: const Color.fromRGBO(28, 50, 91, 1),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _bottomBarButton(Icons.brush, "Style"),
+              _bottomBarButton(Icons.image, "Image"),
+              _bottomBarButton(Icons.star, "Favorite"),
+              _bottomBarButton(Icons.emoji_emotions, "Mood"),
+              _bottomBarButton(Icons.format_size, "Text"),
+              _bottomBarButton(Icons.list, "List"),
+              _bottomBarButton(Icons.label, "Tags"),
+              _bottomBarButton(Icons.mic, "Voice"),
+            ],
+          ),
         ),
       ),
     );
