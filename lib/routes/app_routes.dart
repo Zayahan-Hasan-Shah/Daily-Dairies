@@ -1,3 +1,5 @@
+import 'package:daily_dairies/screens/SetPatternScreen.dart';
+import 'package:daily_dairies/screens/SetPinScreen.dart';
 import 'package:daily_dairies/screens/achievmentScreen.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/backupscreen.dart';
@@ -145,6 +147,12 @@ class AppRoutes {
             path: '/otherquestions',
             builder: (context, state) => const OtherScreen(),
           ),
+          GoRoute(
+              path: '/setPattern',
+              builder: (context, state) => const SetPatternScreen()),
+          GoRoute(
+              path: '/setPin',
+              builder: (context, state) => const SetPinScreen()),
         ],
       ),
     ],

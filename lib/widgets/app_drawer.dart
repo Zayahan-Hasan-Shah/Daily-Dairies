@@ -47,7 +47,7 @@ class AppDrawer extends StatelessWidget {
                 icon: Icons.lock,
                 text: 'diary_lock'.tr(),
                 onTap: () {
-                  Navigator.push(context, DiarylockScreen.route());
+                  context.go('/diarylock');
                 },
               ),
               _buildDrawerItem(
