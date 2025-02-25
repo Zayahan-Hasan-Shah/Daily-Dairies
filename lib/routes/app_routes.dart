@@ -33,7 +33,8 @@ import 'package:go_router/go_router.dart';
 
 class AppRoutes {
   static final router = GoRouter(
-    initialLocation: '/splash',
+    // initialLocation: '/splash',
+    initialLocation: '/login',
     routes: [
       ShellRoute(
         builder: (context, state, child) {

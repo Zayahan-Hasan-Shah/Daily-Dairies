@@ -1,16 +1,16 @@
+import 'package:daily_dairies/controllers/signup_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
-import 'package:daily_dairies/screens/loginScreen.dart';
+import 'package:daily_dairies/models/signup_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class SignupScreen extends StatelessWidget {
   static Route route() => MaterialPageRoute(builder: (_) => SignupScreen());
-  final TextEditingController fullNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final SignupController signupController = Get.put(SignupController());
 
   SignupScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,71 +20,101 @@ class SignupScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-             Text("Sign Up",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colorpallete.textColor )),
-            const SizedBox(height: 20),
-            TextField(
-              controller: fullNameController,
-              decoration:  InputDecoration(
-                  hintStyle: TextStyle(
-                    color: Colorpallete.textColor,
-                  ),
-                  labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Full Name", border: const OutlineInputBorder()),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: emailController,
-              decoration:  InputDecoration(
-                hintStyle: TextStyle(
-                    color: Colorpallete.textColor,
-                  ),
-                  labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Email", border: const OutlineInputBorder()),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: passwordController,
-              decoration:  InputDecoration(
-                hintStyle: TextStyle(
-                    color: Colorpallete.textColor,
-                  ),
-                  labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Password", border: const OutlineInputBorder()),
-              obscureText: true,
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: confirmPasswordController,
-              decoration:  InputDecoration(
-                hintStyle: TextStyle(
-                    color: Colorpallete.textColor,
-                  ),
-                  labelStyle: TextStyle(color: Colorpallete.textColor,),
-                  labelText: "Confirm Password", border: const OutlineInputBorder()),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colorpallete.textColor,
-                  foregroundColor: Colorpallete.backgroundColor,
-                ),
-                onPressed: () {},
-                child: const Text("Sign Up", style: TextStyle(fontSize: 24),),
+            Text(
+              "Sign Up",
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colorpallete.textColor,
               ),
             ),
+            const SizedBox(height: 20),
+            _buildTextField(
+              controller: signupController.fullNameController,
+              labelText: "Full Name",
+            ),
+            const SizedBox(height: 10),
+            _buildTextField(
+              controller: signupController.emailController,
+              labelText: "Email",
+            ),
+            const SizedBox(height: 10),
+            _buildTextField(
+              controller: signupController.passwordController,
+              labelText: "Password",
+              obscureText: true,
+            ),
+            const SizedBox(height: 10),
+            _buildTextField(
+              controller: signupController.confirmPasswordController,
+              labelText: "Confirm Password",
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            signupButton(signupController, context),
+            const SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                Navigator.push(context, LoginScreen.route());
+                context.go('/login');
               },
-              child:  Text("Already have an account? Login", style: TextStyle(color: Colorpallete.textColor),),
-            )
+              child: Text(
+                "Already have an account? Login",
+                style: TextStyle(color: Colorpallete.textColor),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    bool obscureText = false,
+  }) {
+    return TextField(
+      style: const TextStyle(color: Colors.white),
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        hintStyle: TextStyle(color: Colorpallete.textColor),
+        labelStyle: TextStyle(color: Colorpallete.textColor),
+        labelText: labelText,
+        border: const OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget signupButton(SignupController signupController, BuildContext context) {
+    return Obx(() => signupController.isLoading.value
+        ? const CircularProgressIndicator()
+        : Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+            ),
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colorpallete.backgroundColor,
+              ),
+              onPressed: () async {
+                final model = SignupModel(
+                  fullName: signupController.fullNameController.text.trim(),
+                  email: signupController.emailController.text.trim(),
+                  password: signupController.passwordController.text,
+                  confirmPassword:
+                      signupController.confirmPasswordController.text,
+                );
+
+                await signupController.signup(model);
+                context.go('/');
+              },
+              child: const Text("Sign Up", style: TextStyle(fontSize: 24)),
+            ),
+          ));
   }
 }

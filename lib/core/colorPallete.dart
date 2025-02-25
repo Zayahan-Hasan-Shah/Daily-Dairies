@@ -7,4 +7,5 @@ class Colorpallete {
   static Color textColor = const Color.fromRGBO(229, 227, 212, 1);
   static Color drawertextColor = const Color.fromARGB(255, 0, 0, 0);
   static Color bottomNavigationColor = const Color.fromARGB(255, 255, 255, 255);
+  static Color disabledErrorColor = const Color.fromARGB(255, 200, 30, 30);
 }

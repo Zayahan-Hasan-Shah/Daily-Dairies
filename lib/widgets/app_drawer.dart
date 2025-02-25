@@ -131,7 +131,7 @@ class AppDrawer extends StatelessWidget {
       ),
       onTap: () {
         if (route != null) {
-          context.go(route);
+          context.push(route);
         } else {
           onTap?.call();
         }

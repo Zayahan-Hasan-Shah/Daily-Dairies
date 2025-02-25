@@ -13,7 +13,7 @@ class FAQScreen extends StatelessWidget {
       appBar: AppBar(
         title:
             Text("faq_title".tr(), style: const TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.blue), // Blue arrow
+        iconTheme: const IconThemeData(color: Colors.white), // Blue arrow
         backgroundColor: Colorpallete.backgroundColor,
         leading: IconButton(
           icon: const Icon(Icons.menu),
@@ -79,3 +79,5 @@ class FAQScreen extends StatelessWidget {
     );
   }
 }
+
+
