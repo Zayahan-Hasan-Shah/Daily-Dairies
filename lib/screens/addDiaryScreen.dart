@@ -2,6 +2,9 @@ import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
 
 class AddDiaryScreen extends StatefulWidget {
   static Route route() =>
@@ -22,6 +25,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       TextEditingController(); // Date Controller
   String? selectedTool;
   List<TextSpan> textSpans = [];
+  List<File> selectedImages = [];
 
   @override
   void dispose() {
@@ -104,9 +108,13 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   }
 
   void _onToolSelected(String tool) {
-    setState(() {
-      selectedTool = (selectedTool == tool) ? null : tool;
-    });
+    if (tool == "Image") {
+      _pickImage();
+    } else {
+      setState(() {
+        selectedTool = (selectedTool == tool) ? null : tool;
+      });
+    }
   }
 
   void _onTextChanged(String value) {
@@ -215,26 +223,69 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 
+  // Widget descriptionField() {
+  //   return SizedBox(
+  //     height: 300,
+  //     child: TextField(
+  //       textAlignVertical: TextAlignVertical.top,
+  //       controller: contentController,
+  //       maxLines: null,
+  //       expands: true,
+  //       decoration: InputDecoration(
+  //         border: OutlineInputBorder(
+  //           borderSide: BorderSide.none,
+  //           borderRadius: BorderRadius.circular(0),
+  //         ),
+  //         hintText: "Write your diary entry here...",
+  //         hintStyle: TextStyle(
+  //           color: Colorpallete.backgroundColor,
+  //         ),
+  //       ),
+  //       style: _getTextStyle(),
+  //     ),
+  //   );
+  // }
+
   Widget descriptionField() {
-    return SizedBox(
-      height: 300,
-      child: TextField(
-        textAlignVertical: TextAlignVertical.top,
-        controller: contentController,
-        maxLines: null,
-        expands: true,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(0),
-          ),
-          hintText: "Write your diary entry here...",
-          hintStyle: TextStyle(
-            color: Colorpallete.backgroundColor,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 300,
+          child: TextField(
+            textAlignVertical: TextAlignVertical.top,
+            controller: contentController,
+            maxLines: null,
+            expands: true,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(0),
+              ),
+              hintText: "Write your diary entry here...",
+              hintStyle: TextStyle(
+                color: Colorpallete.backgroundColor,
+              ),
+            ),
+            style: _getTextStyle(),
           ),
         ),
-        style: _getTextStyle(),
-      ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          children: selectedImages.map((image) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.file(
+                image,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
@@ -250,6 +301,18 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         return const TextStyle(decoration: TextDecoration.underline);
       default:
         return const TextStyle(color: Colors.black);
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        selectedImages.add(File(pickedFile.path));
+      });
     }
   }
 
