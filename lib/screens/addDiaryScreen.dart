@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
+import 'package:video_player/video_player.dart';
 
 class AddDiaryScreen extends StatefulWidget {
   static Route route() =>
@@ -26,6 +26,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   String? selectedTool;
   List<TextSpan> textSpans = [];
   List<File> selectedImages = [];
+  List<File> seletedVideos = [];
 
   @override
   void dispose() {
@@ -110,6 +111,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   void _onToolSelected(String tool) {
     if (tool == "Image") {
       _pickImage();
+    } if (tool == "Video") {
+      _pickVideo();
     } else {
       setState(() {
         selectedTool = (selectedTool == tool) ? null : tool;
@@ -143,6 +146,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
           children: [
             _bottomBarButton(Icons.brush, "Style"),
             _bottomBarButton(Icons.image, "Image"),
+            _bottomBarButton(Icons.video_camera_back_rounded, "Video"),
             _bottomBarButton(Icons.star, "Favorite"),
             _bottomBarButton(Icons.emoji_emotions, "Mood"),
             _bottomBarButton(Icons.format_size, "Text"),
@@ -223,29 +227,6 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 
-  // Widget descriptionField() {
-  //   return SizedBox(
-  //     height: 300,
-  //     child: TextField(
-  //       textAlignVertical: TextAlignVertical.top,
-  //       controller: contentController,
-  //       maxLines: null,
-  //       expands: true,
-  //       decoration: InputDecoration(
-  //         border: OutlineInputBorder(
-  //           borderSide: BorderSide.none,
-  //           borderRadius: BorderRadius.circular(0),
-  //         ),
-  //         hintText: "Write your diary entry here...",
-  //         hintStyle: TextStyle(
-  //           color: Colorpallete.backgroundColor,
-  //         ),
-  //       ),
-  //       style: _getTextStyle(),
-  //     ),
-  //   );
-  // }
-
   Widget descriptionField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,14 +254,52 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         const SizedBox(height: 10),
         Wrap(
           spacing: 8,
-          children: selectedImages.map((image) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.file(
-                image,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+          children: selectedImages.asMap().entries.map((entry) {
+            int index = entry.key;
+            File image = entry.value;
+            return GestureDetector(
+              onTap: () => _showDeleteImageDialog(index),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Stack(
+                  children: [
+                    Image.file(
+                      image,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          children: seletedVideos.map((video) {
+            return GestureDetector(
+              onTap: () {
+                _playVideo(video);
+              },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.black12,
+                    ),
+                    child: const Icon(
+                      Icons.play_circle_fill,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                  ),
+                ],
               ),
             );
           }).toList(),
@@ -306,14 +325,88 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile =
+    final XFile? pickedVideo =
         await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
+    if (pickedVideo != null) {
       setState(() {
-        selectedImages.add(File(pickedFile.path));
+        selectedImages.add(File(pickedVideo.path));
       });
     }
+  }
+
+  void _showDeleteImageDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colorpallete.bgColor,
+          title: const Text("Delete Image"),
+          content: const Text("Are you sure you want to delete this image?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  selectedImages.removeAt(index);
+                });
+                Navigator.pop(context);
+              },
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickVideo() async {
+    print("Video picker triggered");
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedVideo =
+        await picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedVideo != null) {
+      print("Video selected: ${pickedVideo.path}");
+      setState(() {
+        seletedVideos.add(File(pickedVideo.path));
+      });
+    } else {
+      print("No video selected");
+    }
+  }
+
+  void _playVideo(File video) {
+    VideoPlayerController controller = VideoPlayerController.file(video);
+
+    controller.initialize().then((_) {
+      setState(() {});
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: AspectRatio(
+              aspectRatio: controller.value.aspectRatio,
+              child: VideoPlayer(controller),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  controller.dispose();
+                  Navigator.pop(context);
+                },
+                child: Text("Close"),
+              ),
+            ],
+          );
+        },
+      );
+      controller.play();
+    });
   }
 
   @override
