@@ -1,7 +1,7 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart'; // For formatting the date
+import 'package:intl/intl.dart';
 
 class AddDiaryScreen extends StatefulWidget {
   static Route route() =>
@@ -20,6 +20,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   final TextEditingController contentController = TextEditingController();
   final TextEditingController dateController =
       TextEditingController(); // Date Controller
+  String? selectedTool;
+  List<TextSpan> textSpans = [];
 
   @override
   void dispose() {
@@ -101,6 +103,22 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 
+  void _onToolSelected(String tool) {
+    setState(() {
+      selectedTool = (selectedTool == tool) ? null : tool;
+    });
+  }
+
+  void _onTextChanged(String value) {
+    setState(() {
+      textSpans.add(
+        TextSpan(
+            text: value,
+            style: _getTextStyle()), // Apply style only to new text
+      ); // Clear the input field
+    });
+  }
+
   Widget _buildBottomBar() {
     var screenWidth = MediaQuery.of(context).size.width;
 
@@ -109,10 +127,6 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: const BoxDecoration(
         color: Color.fromRGBO(28, 50, 91, 1),
-        // borderRadius: BorderRadius.only(
-        //   topLeft: Radius.circular(16),
-        //   topRight: Radius.circular(16),
-        // ),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -135,12 +149,108 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
 
   Widget _bottomBarButton(IconData icon, String tooltip) {
     return IconButton(
-      icon: Icon(icon, color: Colors.white),
+      icon: Icon(icon,
+          color: selectedTool == tooltip ? Colors.yellow[400] : Colors.white),
       onPressed: () {
-        // Add functionality for each button
+        _onToolSelected(tooltip);
       },
       tooltip: tooltip,
     );
+  }
+
+  Widget dateselected() {
+    return Container(
+      padding: const EdgeInsets.all(0),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(0)),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 1,
+          shadowColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+        ),
+        onPressed: () => _selectDate(context),
+        child: Text(
+          DateFormat("dd-MM-yyyy").format(selectedDate).toString(),
+          style: TextStyle(
+            fontSize: 16,
+            color: Colorpallete.backgroundColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget emojoButton() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        elevation: 1,
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+      ),
+      onPressed: _showEmojiPicker,
+      child: Text(
+        selectedEmoji,
+        style: const TextStyle(fontSize: 24),
+      ),
+    );
+  }
+
+  Widget titleField() {
+    return TextField(
+      textAlignVertical: TextAlignVertical.top,
+      maxLines: 1,
+      controller: titleController,
+      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(0),
+        ),
+        hintText: "Enter diary title",
+        labelStyle: TextStyle(color: Colorpallete.backgroundColor),
+        hintStyle: TextStyle(
+          color: Colorpallete.backgroundColor,
+        ),
+      ),
+    );
+  }
+
+  Widget descriptionField() {
+    return SizedBox(
+      height: 300,
+      child: TextField(
+        textAlignVertical: TextAlignVertical.top,
+        controller: contentController,
+        maxLines: null,
+        expands: true,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(0),
+          ),
+          hintText: "Write your diary entry here...",
+          hintStyle: TextStyle(
+            color: Colorpallete.backgroundColor,
+          ),
+        ),
+        style: _getTextStyle(),
+      ),
+    );
+  }
+
+  TextStyle _getTextStyle() {
+    switch (selectedTool) {
+      case "Style":
+        return const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue);
+      case "Text":
+        return const TextStyle(fontSize: 20, fontStyle: FontStyle.italic);
+      case "Mood":
+        return const TextStyle(color: Colors.pinkAccent);
+      case "Favorite":
+        return const TextStyle(decoration: TextDecoration.underline);
+      default:
+        return const TextStyle(color: Colors.black);
+    }
   }
 
   @override
@@ -186,82 +296,15 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Date Picker Field
-                    Container(
-                      padding: const EdgeInsets.all(0),
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(0)),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 1,
-                          shadowColor: Colors.transparent,
-                          backgroundColor: Colors.transparent,
-                        ),
-                        onPressed: () => _selectDate(context),
-                        child: Text(
-                          DateFormat("dd-MM-yyyy")
-                              .format(selectedDate)
-                              .toString(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colorpallete.backgroundColor,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 1,
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Colors.transparent,
-                      ),
-                      onPressed: _showEmojiPicker,
-                      child: Text(
-                        selectedEmoji,
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    )
+                    dateselected(),
+                    // emjoi button
+                    emojoButton(),
                   ],
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  textAlignVertical: TextAlignVertical.top,
-                  maxLines: 1,
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                    hintText: "Enter diary title",
-                    labelStyle: TextStyle(color: Colorpallete.backgroundColor),
-                    hintStyle: TextStyle(
-                      color: Colorpallete.backgroundColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 300,
-                  child: TextField(
-                    textAlignVertical: TextAlignVertical.top,
-                    controller: contentController,
-                    maxLines: null,
-                    expands: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      hintText: "Write your diary entry here...",
-                      labelStyle:
-                          TextStyle(color: Colorpallete.backgroundColor),
-                      hintStyle: TextStyle(
-                        color: Colorpallete.backgroundColor,
-                      ),
-                    ),
-                  ),
-                ),
+                titleField(),
+                const SizedBox(height: 2),
+                descriptionField(),
               ],
             ),
           ),
