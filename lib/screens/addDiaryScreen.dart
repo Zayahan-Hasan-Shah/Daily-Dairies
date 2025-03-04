@@ -5,6 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:video_player/video_player.dart';
+import 'package:record/record.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:async';
 
 class AddDiaryScreen extends StatefulWidget {
   static Route route() =>
@@ -27,6 +32,21 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   List<TextSpan> textSpans = [];
   List<File> selectedImages = [];
   List<File> seletedVideos = [];
+  List<File> recordedAudio = [];
+  // final Record _audioRecorder = Record();
+  final AudioRecorder _audioRecorder = AudioRecorder();
+  bool isRecording = false;
+  Timer? _timer;
+  int _recordingDuration = 0;
+  String recordDuration = '00:00';
+  List<double> audioAmplitudes = [];
+  bool isPlaying = false;
+  Color currentTextColor = Colors.black;
+
+  Future<void> _requestPermissions() async {
+    await Permission.microphone.request();
+    await Permission.storage.request();
+  }
 
   @override
   void dispose() {
@@ -109,10 +129,14 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   }
 
   void _onToolSelected(String tool) {
-    if (tool == "Image") {
+    if (tool == "Style") {
+      _showColorPicker();
+    } else if (tool == "Image") {
       _pickImage();
-    } if (tool == "Video") {
+    } else if (tool == "Video") {
       _pickVideo();
+    } else if (tool == "Voice") {
+      _toggleRecording();
     } else {
       setState(() {
         selectedTool = (selectedTool == tool) ? null : tool;
@@ -227,6 +251,108 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 
+  Widget _buildAudioList() {
+    return Column(
+      children: [
+        if (isRecording)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.mic, color: Colors.red),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 100,
+                  height: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(
+                      10,
+                      (index) => Container(
+                        width: 3,
+                        height: (index % 2 == 0) ? 15.0 : 8.0,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(recordDuration,
+                    style: const TextStyle(color: Colors.white)),
+                const SizedBox(width: 8),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ...recordedAudio.asMap().entries.map((entry) {
+          final index = entry.key;
+          final audio = entry.value;
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colorpallete.backgroundColor,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    isPlaying ? Icons.pause : Icons.play_arrow,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => _playAudio(audio),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 100,
+                  height: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(
+                      15,
+                      (i) => Container(
+                        width: 2,
+                        height: (i % 3 == 0)
+                            ? 15.0
+                            : (i % 2 == 0)
+                                ? 10.0
+                                : 5.0,
+                        color: Colors.white.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    setState(() {
+                      recordedAudio.removeAt(index);
+                    });
+                  },
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
+    );
+  }
+
   Widget descriptionField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,6 +430,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
             );
           }).toList(),
         ),
+        const SizedBox(height: 10),
+        _buildAudioList(),
       ],
     );
   }
@@ -311,15 +439,15 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   TextStyle _getTextStyle() {
     switch (selectedTool) {
       case "Style":
-        return const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue);
+        return TextStyle(color: currentTextColor);
       case "Text":
         return const TextStyle(fontSize: 20, fontStyle: FontStyle.italic);
       case "Mood":
         return const TextStyle(color: Colors.pinkAccent);
-      case "Favorite":
-        return const TextStyle(decoration: TextDecoration.underline);
+      // case "Favorite":
+      //   return const TextStyle(decoration: TextDecoration.underline);
       default:
-        return const TextStyle(color: Colors.black);
+        return TextStyle(color: currentTextColor);
     }
   }
 
@@ -399,7 +527,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                   controller.dispose();
                   Navigator.pop(context);
                 },
-                child: Text("Close"),
+                child: const Text("Close"),
               ),
             ],
           );
@@ -407,6 +535,135 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       );
       controller.play();
     });
+  }
+
+  void _startTimer() {
+    _recordingDuration = 0;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      setState(() {
+        _recordingDuration++;
+        recordDuration = _formatDuration(_recordingDuration);
+      });
+    });
+  }
+
+  String _formatDuration(int seconds) {
+    final minutes = (seconds / 60).floor().toString().padLeft(2, '0');
+    final remainingSeconds = (seconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$remainingSeconds';
+  }
+
+  Future<void> _toggleRecording() async {
+    if (isRecording) {
+      _timer?.cancel();
+      final path = await _audioRecorder.stop();
+      if (path != null) {
+        setState(() {
+          recordedAudio.add(File(path));
+          isRecording = false;
+        });
+      }
+    } else {
+      await _requestPermissions();
+      final dir = await getApplicationDocumentsDirectory();
+      final filePath =
+          '${dir.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+
+      await _audioRecorder.start(
+        RecordConfig(),
+        path: filePath,
+      );
+      setState(() {
+        isRecording = true;
+      });
+      _startTimer();
+    }
+  }
+
+  void _playAudio(File audioFile) async {
+    final player = AudioPlayer();
+    await player.play(DeviceFileSource(audioFile.path));
+  }
+
+  void _showColorPicker() {
+    final List<Color> colors = [
+      Colors.black,
+      Colors.red,
+      Colors.pink,
+      Colors.purple,
+      Colors.deepPurple,
+      Colors.indigo,
+      Colors.blue,
+      Colors.lightBlue,
+      Colors.cyan,
+      Colors.teal,
+      Colors.green,
+      Colors.lightGreen,
+      Colors.lime,
+      Colors.yellow,
+      Colors.amber,
+      Colors.orange,
+      Colors.deepOrange,
+      Colors.brown,
+      Colors.grey,
+      Colors.blueGrey,
+      Colors.redAccent,
+      Colors.pinkAccent,
+      Colors.purpleAccent,
+      Colors.deepPurpleAccent,
+      Colors.indigoAccent,
+      Colors.blueAccent,
+      Colors.lightBlueAccent,
+      Colors.cyanAccent,
+      Colors.tealAccent,
+      Colors.greenAccent,
+    ];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colorpallete.backgroundColor,
+          title: const Text(
+            'Pick a color',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Container(
+            width: double.maxFinite,
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: colors.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      currentTextColor = colors[index];
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colors[index],
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: currentTextColor == colors[index] ? 2 : 0,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override

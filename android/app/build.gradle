@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.daily_dairies"
-        minSdkVersion 21  // Set a minimum SDK version if needed
+        minSdkVersion 23  // Set a minimum SDK version if needed
         targetSdkVersion 35
         versionCode 1
         versionName "1.0"
