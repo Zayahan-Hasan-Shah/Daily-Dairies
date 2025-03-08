@@ -84,7 +84,7 @@ class DiaryDetailScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colorpallete.textColor,
+                    color: Colorpallete.backgroundColor,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -95,7 +95,7 @@ class DiaryDetailScreen extends StatelessWidget {
                       content,
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colorpallete.textColor,
+                        color: Colorpallete.backgroundColor,
                       ),
                     ),
                   ),

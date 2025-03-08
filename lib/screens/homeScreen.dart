@@ -1,4 +1,5 @@
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/dummyData/dummData.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/calendarScreen.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
@@ -72,17 +73,17 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: 10,
+                itemCount: dummyData.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         DiaryDetailScreen.route(
-                          "my_diary_title".tr(),
-                          "diary_entry_content".tr(),
-                          "😊",
-                          DateTime.now(),
+                          dummyData[index]["title"],
+                          dummyData[index]["description"],
+                          dummyData[index]["emoji"],
+                          DateFormat("dd-MM-yyyy").parse(dummyData[index]["date"]),
                         ),
                       );
                     },
@@ -100,18 +101,18 @@ class HomeScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "2025-02-10",
+                                dummyData[index]["date"],
                                 style: TextStyle(
                                   color: Colorpallete.textColor,
                                   fontSize: 22,
                                 ),
                               ),
-                              const Text("😑"),
+                               Text(dummyData[index]["emoji"], style: const TextStyle(fontSize: 18),),
                             ],
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            "journal_entry".tr(args: ["${index + 1}"]),
+                            dummyData[index]["title"],
                             style: TextStyle(
                               fontSize: 18,
                               color: Colorpallete.textColor,
