@@ -359,7 +359,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.question_answer_outlined, color: Colors.white),
-            onPressed: () => context.go('/faq'),
+            onPressed: () => context.go('/faqs'),
           ),
         ],
       ),

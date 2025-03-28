@@ -90,6 +90,7 @@ lib/generated_plugin_registrant.dart
 .history
 .svn/
 migrate_working_dir/
+*.txt
 
 # Test related
 /coverage/

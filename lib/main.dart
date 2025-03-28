@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:daily_dairies/api/firebase_api.dart';
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/routes/app_routes.dart';
 import 'package:easy_localization/easy_localization.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,8 +17,14 @@ void main() async {
   // await Firebase.initializeApp();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
+  );
 
+  // Will get same data from cache
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+  );
+
+  await FirebaseApi().initNotifications();
   // Initialize EasyLocalization
   await EasyLocalization.ensureInitialized();
 
@@ -49,6 +58,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.lightBlue,
         useMaterial3: true,
       ),
+      // navigatorKey: navigatorKey,
       locale: context.locale, // Use EasyLocalization locale
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,

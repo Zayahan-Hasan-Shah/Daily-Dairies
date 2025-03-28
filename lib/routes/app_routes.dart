@@ -27,6 +27,7 @@ import 'package:daily_dairies/screens/signupScreen.dart';
 import 'package:daily_dairies/screens/splashScreen.dart';
 import 'package:daily_dairies/screens/tagScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:get/get.dart';
@@ -57,7 +58,10 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/',
-            builder: (context, state) => const HomeScreen(),
+            builder: (context, state) {
+              final user = FirebaseAuth.instance.currentUser;
+              return user == null ? LoginScreen() : const HomeScreen();
+            },
           ),
           GoRoute(
             path: '/search',
@@ -81,7 +85,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/exportdata',
-            builder: (context, state) => const Exportdatascreen(),
+            builder: (context, state) => ExportScreen(),
           ),
           GoRoute(
             path: '/settings',
