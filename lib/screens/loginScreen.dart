@@ -213,7 +213,7 @@ class LoginScreen extends StatelessWidget {
                   await loginController.login(LoginModel(
                     email: loginController.emailController.text.trim(),
                     password: loginController.passwordController.text.trim(),
-                  ));
+                  ), context);
                   context.go('/');
                 },
           child: loginController.isLoading.value
@@ -237,7 +237,7 @@ class LoginScreen extends StatelessWidget {
           backgroundColor: Colors.transparent,
         ),
         onPressed: () async {
-          await loginController.authenticateWithBiometrics();
+          await loginController.authenticateWithBiometrics(context);
         },
         child: const Text("Login with Fingerprint"),
       ),

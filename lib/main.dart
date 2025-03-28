@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  // await Firebase.initializeApp();
+  await Firebase.initializeApp();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
 );
@@ -39,6 +40,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp.router(
+  //     title: 'Daily Diary',
+  //     routerConfig: AppRoutes.router, // GoRouter Configuration
+  //     debugShowCheckedModeBanner: false,
+  //     theme: ThemeData(
+  //       primarySwatch: Colors.lightBlue,
+  //       useMaterial3: true,
+  //     ),
+  //     locale: context.locale, // Use EasyLocalization locale
+  //     supportedLocales: context.supportedLocales,
+  //     localizationsDelegates: context.localizationDelegates,
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
@@ -54,4 +71,5 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
     );
   }
+
 }
