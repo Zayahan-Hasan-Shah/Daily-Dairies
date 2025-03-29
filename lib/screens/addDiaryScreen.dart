@@ -1,6 +1,5 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
