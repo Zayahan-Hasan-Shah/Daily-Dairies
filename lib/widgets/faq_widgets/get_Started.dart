@@ -1,5 +1,4 @@
 import 'package:daily_dairies/core/colorPallete.dart';
-import 'package:daily_dairies/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,7 +9,8 @@ class GetStartedWidget extends StatelessWidget {
   const GetStartedWidget({
     super.key,
     required this.text,
-    required this.route, required MaterialColor iconColor,
+    required this.route,
+    required MaterialColor iconColor,
   });
 
   @override

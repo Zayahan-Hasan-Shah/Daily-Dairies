@@ -45,25 +45,25 @@ class DiaryEntry {
   }
 
   // Add fromMap method for Firebase
-  factory DiaryEntry.fromMap(Map<String, dynamic> map) {
-    return DiaryEntry(
-      id: map['id'],
-      title: map['title'],
-      content: map['content'],
-      date: DateTime.parse(map['date']),
-      mood: map['mood'],
-      textColor: Color(map['textColor']),
-      textStyle: TextStyle(
-        fontSize: map['textStyle']['fontSize'],
-        fontStyle: map['textStyle']['fontStyle'] != null
-            ? FontStyle.values[map['textStyle']['fontStyle']]
-            : null,
-      ),
-      images: map['images'] != null ? List<String>.from(map['images']) : null,
-      videos: map['videos'] != null ? List<String>.from(map['videos']) : null,
-      audioRecordings: map['audioRecordings'] != null
-          ? List<String>.from(map['audioRecordings'])
-          : null,
-    );
-  }
+  // factory DiaryEntry.fromMap(Map<String, dynamic> map) {
+  //   return DiaryEntry(
+  //     id: map['id'],
+  //     title: map['title'],
+  //     content: map['content'],
+  //     date: DateTime.parse(map['date']),
+  //     mood: map['mood'],
+  //     textColor: Color(map['textColor']),
+  //     textStyle: TextStyle(
+  //       fontSize: map['textStyle']['fontSize'],
+  //       fontStyle: map['textStyle']['fontStyle'] != null
+  //           ? FontStyle.values[map['textStyle']['fontStyle']]
+  //           : null,
+  //     ),
+  //     images: map['images'] != null ? List<String>.from(map['images']) : null,
+  //     videos: map['videos'] != null ? List<String>.from(map['videos']) : null,
+  //     audioRecordings: map['audioRecordings'] != null
+  //         ? List<String>.from(map['audioRecordings'])
+  //         : null,
+  //   );
+  // }
 }

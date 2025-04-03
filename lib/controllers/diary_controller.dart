@@ -103,8 +103,8 @@ class DiaryController extends GetxController {
           .collection('diaries')
           .add(entryMap);
 
-      final newEntry = DiaryEntry.fromMap({...entryMap, 'id': docRef.id});
-      entries.add(newEntry);
+      // final newEntry = DiaryEntry.fromMap({...entryMap, 'id': docRef.id});
+      // entries.add(newEntry);
       
     } catch (e) {
       errorMessage.value = 'Failed to add entry: $e';
@@ -182,9 +182,10 @@ class DiaryController extends GetxController {
           .orderBy('date', descending: true)
           .get();
 
-      entries.value = snapshot.docs
-          .map((doc) => DiaryEntry.fromMap({...doc.data(), 'id': doc.id}))
-          .toList();
+      // entries.value = snapshot.docs
+      //     .map((doc) => DiaryEntry.fromMap({...doc.data(), 'id': doc.id}))
+      //     .toList();
+
     } catch (e) {
       errorMessage.value = 'Failed to fetch entries: $e';
     } finally {

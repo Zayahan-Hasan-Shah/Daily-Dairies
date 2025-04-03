@@ -1,5 +1,5 @@
 import 'package:daily_dairies/core/colorPallete.dart';
-import 'package:daily_dairies/widgets/faq_widgets/get_Started.dart';
+import 'package:daily_dairies/widgets/faq_widgets/get_started.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 

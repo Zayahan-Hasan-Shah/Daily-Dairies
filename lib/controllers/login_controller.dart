@@ -63,7 +63,6 @@
 //   }
 // }
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -107,78 +106,126 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<bool> login(LoginModel loginModel, BuildContext context) async {
-    String email = loginModel.email;
-    String password = loginModel.password;
+  // Future<bool> login(LoginModel loginModel, BuildContext context) async {
+  //   String email = loginModel.email;
+  //   String password = loginModel.password;
 
-    // Input validation
-    if (email.isEmpty || password.isEmpty) {
-      errorMessage.value = "Email and Password cannot be empty";
-      return false;
-    }
+  //   // Input validation
+  //   if (email.isEmpty || password.isEmpty) {
+  //     errorMessage.value = "Email and Password cannot be empty";
+  //     return false;
+  //   }
 
-    if (!GetUtils.isEmail(email)) {
-      errorMessage.value = "Please enter a valid email";
-      return false;
+  //   if (!GetUtils.isEmail(email)) {
+  //     errorMessage.value = "Please enter a valid email";
+  //     return false;
+  //   }
+
+  //   try {
+  //     isLoading.value = true;
+
+  //     // Attempt to sign in
+  //     final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+  //       email: email,
+  //       password: password
+  //     );
+
+  //     if (userCredential.user != null) {
+  //       // Update last login timestamp
+  //       await _firestore.collection('users').doc(userCredential.user!.uid).update({
+  //         'lastLogin': FieldValue.serverTimestamp(),
+  //       });
+
+  //       // Save email for biometric login if not already saved
+  //       if (!canUseBiometric.value) {
+  //         await _prefs.setString('biometric_email', email);
+  //         await _prefs.setString('biometric_password', password); // Consider encrypting this
+  //         canUseBiometric.value = true;
+  //       }
+
+  //       isLoading.value = false;
+  //       errorMessage.value = '';
+
+  //       if (context.mounted) {
+  //         context.go('/');
+  //       }
+  //       return true;
+  //     }
+
+  //     isLoading.value = false;
+  //     return false;
+
+  //   } on FirebaseAuthException catch (e) {
+  //     isLoading.value = false;
+  //     switch (e.code) {
+  //       case 'user-not-found':
+  //         errorMessage.value = "No user found with this email";
+  //         break;
+  //       case 'wrong-password':
+  //         errorMessage.value = "Incorrect password";
+  //         break;
+  //       case 'user-disabled':
+  //         errorMessage.value = "This account has been disabled";
+  //         break;
+  //       case 'too-many-requests':
+  //         errorMessage.value = "Too many attempts. Please try again later";
+  //         break;
+  //       default:
+  //         errorMessage.value = "Login failed: ${e.message}";
+  //     }
+  //     return false;
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     errorMessage.value = "An unexpected error occurred";
+  //     return false;
+  //   }
+  // }
+
+  Future<void> login(LoginModel loginModel, BuildContext context) async {
+    // Check if email and password fields are filled
+    if (loginModel.email.isEmpty || loginModel.password.isEmpty) {
+      errorMessage.value = 'Email and Password cannot be empty.';
+      return;
     }
 
     try {
+      // Set loading state
       isLoading.value = true;
-      
-      // Attempt to sign in
-      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password
+
+      // Authenticate with Firebase Auth
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: loginModel.email,
+        password: loginModel.password,
       );
 
-      if (userCredential.user != null) {
-        // Update last login timestamp
-        await _firestore.collection('users').doc(userCredential.user!.uid).update({
-          'lastLogin': FieldValue.serverTimestamp(),
-        });
+      // After successful login, fetch user data from Firestore
+      var userDoc = await _firestore
+          .collection('users')
+          .doc(userCredential.user?.uid)
+          .get();
 
-        // Save email for biometric login if not already saved
-        if (!canUseBiometric.value) {
-          await _prefs.setString('biometric_email', email);
-          await _prefs.setString('biometric_password', password); // Consider encrypting this
-          canUseBiometric.value = true;
-        }
-
+      if (!userDoc.exists) {
+        errorMessage.value = 'User does not exist in Firestore.';
         isLoading.value = false;
-        errorMessage.value = '';
-        
-        if (context.mounted) {
-          context.go('/');
-        }
-        return true;
+        return;
       }
 
-      isLoading.value = false;
-      return false;
-
+      // User exists, move to the next screen
+      context.go('/'); // Navigate to your home or next page
     } on FirebaseAuthException catch (e) {
-      isLoading.value = false;
-      switch (e.code) {
-        case 'user-not-found':
-          errorMessage.value = "No user found with this email";
-          break;
-        case 'wrong-password':
-          errorMessage.value = "Incorrect password";
-          break;
-        case 'user-disabled':
-          errorMessage.value = "This account has been disabled";
-          break;
-        case 'too-many-requests':
-          errorMessage.value = "Too many attempts. Please try again later";
-          break;
-        default:
-          errorMessage.value = "Login failed: ${e.message}";
+      // Handle login errors
+      if (e.code == 'user-not-found') {
+        errorMessage.value = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage.value = 'Incorrect password.';
+      } else {
+        errorMessage.value = 'Login failed. Please try again.';
       }
-      return false;
     } catch (e) {
+      errorMessage.value = 'An unknown error occurred.';
+    } finally {
+      // Reset loading state
       isLoading.value = false;
-      errorMessage.value = "An unexpected error occurred";
-      return false;
     }
   }
 
@@ -189,7 +236,8 @@ class LoginController extends GetxController {
       final String? savedPassword = _prefs.getString('biometric_password');
 
       if (savedEmail == null || savedPassword == null) {
-        errorMessage.value = "Please login with email first to set up biometric login";
+        errorMessage.value =
+            "Please login with email first to set up biometric login";
         return;
       }
 
@@ -202,10 +250,12 @@ class LoginController extends GetxController {
 
       if (authenticated) {
         // Use saved credentials to login
-        await login(LoginModel(
-          email: savedEmail,
-          password: savedPassword,
-        ), context);
+        await login(
+            LoginModel(
+              email: savedEmail,
+              password: savedPassword,
+            ),
+            context);
       } else {
         errorMessage.value = "Authentication failed or was canceled.";
       }
@@ -226,7 +276,8 @@ class LoginController extends GetxController {
   Future<void> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-      errorMessage.value = "Password reset email sent. Please check your inbox.";
+      errorMessage.value =
+          "Password reset email sent. Please check your inbox.";
     } on FirebaseAuthException catch (e) {
       errorMessage.value = "Password reset failed: ${e.message}";
     }
