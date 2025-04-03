@@ -27,6 +27,7 @@ import 'package:daily_dairies/screens/signupScreen.dart';
 import 'package:daily_dairies/screens/splashScreen.dart';
 import 'package:daily_dairies/screens/tagScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
+import 'package:daily_dairies/screens/profile_section.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -66,6 +67,10 @@ class AppRoutes {
           GoRoute(
             path: '/search',
             builder: (context, state) => const SearchScreen(),
+          ),
+          GoRoute(
+            path: '/profilesection',
+            builder: (context, state) => const ProfileSectionWidget(),
           ),
           GoRoute(
             path: '/add-diary',

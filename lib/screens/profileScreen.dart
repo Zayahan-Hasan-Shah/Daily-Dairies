@@ -3,7 +3,7 @@ import 'package:daily_dairies/widgets/achievment_widget.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:daily_dairies/widgets/profile_widgets/daily_Statistics.dart';
 import 'package:daily_dairies/widgets/profile_widgets/emoji_barchart.dart';
-import 'package:daily_dairies/widgets/profile_widgets/profile_section_widget.dart';
+import 'package:daily_dairies/widgets/profile_widgets/sign_in_widget.dart';
 import 'package:daily_dairies/widgets/profile_widgets/total_diaries.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("User"),
+        title: const Text("Mine"),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         actions: [
@@ -40,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ProfileSectionWidget(),
+              SignInWidget(),
               SizedBox(
                 height: 16,
               ),
