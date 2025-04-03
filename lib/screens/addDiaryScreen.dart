@@ -1,4 +1,9 @@
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/widgets/add_diary_widget/bottom_toolbar.dart';
+import 'package:daily_dairies/widgets/add_diary_widget/bullet_point_widget.dart';
+import 'package:daily_dairies/widgets/add_diary_widget/diary_content.dart';
+import 'package:daily_dairies/widgets/add_diary_widget/diary_header.dart';
+import 'package:daily_dairies/widgets/add_diary_widget/diary_title.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +14,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
+import 'package:daily_dairies/widgets/add_diary_widget/media_section.dart';
 
 class AddDiaryScreen extends StatefulWidget {
   static Route route() =>
@@ -27,6 +33,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   final TextEditingController contentController = TextEditingController();
   final TextEditingController dateController =
       TextEditingController(); // Date Controller
+  final Color descriptionTextColor = Colorpallete.backgroundColor;
   String? selectedTool;
   List<TextSpan> textSpans = [];
   List<File> selectedImages = [];
@@ -41,6 +48,11 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   List<double> audioAmplitudes = [];
   bool isPlaying = false;
   Color currentTextColor = Colors.black;
+  TextStyle currentTextStyle = const TextStyle(
+    fontSize: 16,
+    color: Colors.black,
+  );
+  bool showBulletPoints = false;
 
   Future<void> _requestPermissions() async {
     await Permission.microphone.request();
@@ -58,7 +70,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       builder: (BuildContext context, Widget? child) {
@@ -77,6 +89,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         );
       },
     );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
   }
 
   void _showEmojiPicker() {
@@ -127,20 +145,109 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 
+  void _showTextStylePicker() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: Colorpallete.backgroundColor,
+          title: const Text(
+            'Select Text Style',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildStyleTile(
+                  'Normal',
+                  const TextStyle(
+                    fontSize: 16,
+                  ),
+                  dialogContext,
+                ),
+                _buildStyleTile(
+                  'Italic',
+                  const TextStyle(
+                    fontSize: 16,
+                    fontStyle: FontStyle.italic,
+                  ),
+                  dialogContext,
+                ),
+                _buildStyleTile(
+                  'Large Text',
+                  const TextStyle(
+                    fontSize: 24,
+                  ),
+                  dialogContext,
+                ),
+                _buildStyleTile(
+                  'Small Text',
+                  const TextStyle(
+                    fontSize: 12,
+                  ),
+                  dialogContext,
+                ),
+                _buildStyleTile(
+                  'Spaced Text',
+                  const TextStyle(
+                    fontSize: 16,
+                    letterSpacing: 2.0,
+                  ),
+                  dialogContext,
+                ),
+                _buildStyleTile(
+                  'Condensed Text',
+                  const TextStyle(
+                    fontSize: 16,
+                    letterSpacing: -0.5,
+                  ),
+                  dialogContext,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStyleTile(
+      String title, TextStyle style, BuildContext dialogContext) {
+    return ListTile(
+      title: Text(
+        title,
+        style: style.copyWith(color: Colors.white),
+      ),
+      onTap: () {
+        setState(() {
+          currentTextStyle = style.copyWith(color: currentTextColor);
+          selectedTool = "Text"; // This ensures the style is maintained
+        });
+        Navigator.of(dialogContext).pop();
+      },
+    );
+  }
+
   void _onToolSelected(String tool) {
-    if (tool == "Style") {
-      _showColorPicker();
-    } else if (tool == "Image") {
-      _pickImage();
-    } else if (tool == "Video") {
-      _pickVideo();
-    } else if (tool == "Voice") {
-      _toggleRecording();
-    } else {
-      setState(() {
+    setState(() {
+      if (tool == "List") {
+        showBulletPoints = !showBulletPoints;
+        selectedTool = "List";
+      } else if (tool == "Style") {
+        _showColorPicker();
+      } else if (tool == "Text") {
+        _showTextStylePicker();
+      } else if (tool == "Image") {
+        _pickImage();
+      } else if (tool == "Video") {
+        _pickVideo();
+      } else if (tool == "Voice") {
+        _toggleRecording();
+      } else {
         selectedTool = (selectedTool == tool) ? null : tool;
-      });
-    }
+      }
+    });
   }
 
   void _onTextChanged(String value) {
@@ -150,6 +257,17 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
             text: value,
             style: _getTextStyle()), // Apply style only to new text
       ); // Clear the input field
+    });
+  }
+
+  void _onBulletPointChanged(String value) {
+    setState(() {
+      textSpans.add(
+        TextSpan(
+          text: "• $value\n",
+          style: currentTextStyle,
+        ),
+      );
     });
   }
 
@@ -165,14 +283,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _bottomBarButton(Icons.brush, "Style"),
+            _bottomBarButton(Icons.format_size, "Text"),
             _bottomBarButton(Icons.image, "Image"),
             _bottomBarButton(Icons.video_camera_back_rounded, "Video"),
-            _bottomBarButton(Icons.star, "Favorite"),
-            _bottomBarButton(Icons.emoji_emotions, "Mood"),
-            _bottomBarButton(Icons.format_size, "Text"),
             _bottomBarButton(Icons.list, "List"),
             _bottomBarButton(Icons.label, "Tags"),
             _bottomBarButton(Icons.mic, "Voice"),
@@ -184,11 +300,11 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
 
   Widget _bottomBarButton(IconData icon, String tooltip) {
     return IconButton(
-      icon: Icon(icon,
-          color: selectedTool == tooltip ? Colors.yellow[400] : Colors.white),
-      onPressed: () {
-        _onToolSelected(tooltip);
-      },
+      icon: Icon(
+        icon,
+        color: selectedTool == tooltip ? Colors.yellow[400] : Colors.white,
+      ),
+      onPressed: () => _onToolSelected(tooltip),
       tooltip: tooltip,
     );
   }
@@ -373,61 +489,21 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 color: Colorpallete.backgroundColor,
               ),
             ),
-            style: _getTextStyle(),
+            style: currentTextStyle,
           ),
         ),
         const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          children: selectedImages.asMap().entries.map((entry) {
-            int index = entry.key;
-            File image = entry.value;
-            return GestureDetector(
-              onTap: () => _showDeleteImageDialog(index),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Stack(
-                  children: [
-                    Image.file(
-                      image,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          children: seletedVideos.map((video) {
-            return GestureDetector(
-              onTap: () {
-                _playVideo(video);
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.black12,
-                    ),
-                    child: const Icon(
-                      Icons.play_circle_fill,
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+        MediaSection(
+          images: selectedImages,
+          videos: seletedVideos,
+          onDeleteImage: (index) {
+            setState(() {
+              selectedImages.removeAt(index);
+            });
+          },
+          onPlayVideo: (video) {
+            _playVideo(video);
+          },
         ),
         const SizedBox(height: 10),
         _buildAudioList(),
@@ -436,18 +512,10 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   }
 
   TextStyle _getTextStyle() {
-    switch (selectedTool) {
-      case "Style":
-        return TextStyle(color: currentTextColor);
-      case "Text":
-        return const TextStyle(fontSize: 20, fontStyle: FontStyle.italic);
-      case "Mood":
-        return const TextStyle(color: Colors.pinkAccent);
-      // case "Favorite":
-      //   return const TextStyle(decoration: TextDecoration.underline);
-      default:
-        return TextStyle(color: currentTextColor);
+    if (selectedTool == null) {
+      return currentTextStyle;
     }
+    return currentTextStyle;
   }
 
   Future<void> _pickImage() async {
@@ -643,6 +711,10 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                   onTap: () {
                     setState(() {
                       currentTextColor = colors[index];
+                      currentTextStyle = currentTextStyle.copyWith(
+                        color: colors[index],
+                      );
+                      selectedTool = "Style";
                     });
                     Navigator.of(context).pop();
                   },
@@ -690,7 +762,10 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomNavigationBar: BottomToolbar(
+        selectedTool: selectedTool,
+        onToolSelected: _onToolSelected,
+      ),
       body: Container(
         height: double.infinity,
         decoration: BoxDecoration(
@@ -699,24 +774,63 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: SingleChildScrollView(
-            // Prevents overflow when keyboard appears
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Date Picker Field
-                    dateselected(),
-                    // emjoi button
-                    emojoButton(),
-                  ],
+                DiaryHeader(
+                  selectedDate: selectedDate,
+                  selectedEmoji: selectedEmoji,
+                  onDateChanged: (date) {
+                    setState(() {
+                      selectedDate = date;
+                    });
+                  },
+                  onEmojiTap: _showEmojiPicker,
                 ),
                 const SizedBox(height: 16),
-                titleField(),
+                DiaryTitle(
+                  controller: titleController,
+                ),
                 const SizedBox(height: 2),
-                descriptionField(),
+                DiaryContent(
+                  controller: contentController,
+                  currentTextStyle: currentTextStyle,
+                  onChanged: (value) {
+                    setState(() {
+                      textSpans.add(
+                        TextSpan(
+                          text: value,
+                          style: currentTextStyle,
+                        ),
+                      );
+                    });
+                  },
+                ),
+                if (showBulletPoints) ...[
+                  const SizedBox(height: 10),
+                  BulletPointWidget(
+                    currentTextStyle: currentTextStyle,
+                    onTextChanged: _onBulletPointChanged,
+                  ),
+                ],
+                const SizedBox(height: 10),
+                // Media section
+                MediaSection(
+                  images: selectedImages,
+                  videos: seletedVideos,
+                  onDeleteImage: (index) {
+                    setState(() {
+                      selectedImages.removeAt(index);
+                    });
+                  },
+                  onPlayVideo: (video) {
+                    _playVideo(video);
+                  },
+                ),
+                const SizedBox(height: 10),
+                // Audio section
+                _buildAudioList(),
               ],
             ),
           ),
