@@ -4,106 +4,85 @@ import 'dart:io';
 import 'package:video_player/video_player.dart';
 
 class MediaSection extends StatelessWidget {
-  final List<File> images;
-  final List<File> videos;
-  final Function(int) onDeleteImage;
-  final Function(File) onPlayVideo;
+  final List<File>? images;
+  final List<File>? videos;
+  final Function(int)? onDeleteImage;
+  final Function(File)? onPlayVideo;
 
   const MediaSection({
     Key? key,
-    required this.images,
-    required this.videos,
-    required this.onDeleteImage,
-    required this.onPlayVideo,
+    this.images,
+    this.videos,
+    this.onDeleteImage,
+    this.onPlayVideo,
   }) : super(key: key);
-
-  Widget _buildImagePreview(BuildContext context, int index, File image) {
-    return GestureDetector(
-      onTap: () => _showDeleteImageDialog(context, index), // Pass context here
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.file(
-          image,
-          width: 100,
-          height: 100,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVideoPreview(File video) {
-    return GestureDetector(
-      onTap: () => onPlayVideo(video),
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black12,
-        ),
-        child: const Icon(
-          Icons.play_circle_fill,
-          color: Colors.white,
-          size: 50,
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteImageDialog(BuildContext context, int index) { // Changed parameter order
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colorpallete.bgColor,
-          title: const Text(
-            "Delete Image",
-            style: TextStyle(color: Colors.white), // Add text color
-          ),
-          content: const Text(
-            "Are you sure you want to delete this image?",
-            style: TextStyle(color: Colors.white), // Add text color
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                "Cancel",
-                style: TextStyle(color: Colors.white), // Add text color
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                onDeleteImage(index);
-                Navigator.pop(context);
-              },
-              child: const Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Wrap(
-          spacing: 8,
-          children: [
-            ...images.asMap().entries.map((entry) {
-              return _buildImagePreview(context, entry.key, entry.value); // Pass context here
-            }),
-            ...videos.map((video) {
-              return _buildVideoPreview(video);
-            }),
-          ],
-        ),
+        if (images?.isNotEmpty ?? false) ...[
+          // Image grid
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: images!.length,
+            itemBuilder: (context, index) {
+              return Stack(
+                children: [
+                  Image.file(
+                    images![index],
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => onDeleteImage?.call(index),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+        if (videos?.isNotEmpty ?? false) ...[
+          // Video thumbnails
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: videos!.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => onPlayVideo?.call(videos![index]),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      color: Colors.black,
+                      child: const Icon(
+                        Icons.play_circle_outline,
+                        color: Colors.white,
+                        size: 48,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ],
     );
   }

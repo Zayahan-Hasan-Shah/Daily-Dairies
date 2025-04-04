@@ -15,9 +15,9 @@ void main() async {
 
   // Initialize Firebase
   await Firebase.initializeApp();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
   // Will get same data from cache
   FirebaseFirestore.instance.settings = const Settings(
