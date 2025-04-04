@@ -1,9 +1,130 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:daily_dairies/screens/loginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:go_router/go_router.dart';
 
-class ProfileSectionWidget extends StatelessWidget {
+class ProfileSectionWidget extends StatefulWidget {
   const ProfileSectionWidget({super.key});
+
+  @override
+  _ProfileSectionWidgetState createState() => _ProfileSectionWidgetState();
+}
+
+class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
+  User? user = FirebaseAuth.instance.currentUser;
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    if (user == null) return;
+
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          userData = userDoc.data() as Map<String, dynamic>;
+        });
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+
+  Future<void> _editDialog(String field, String currentValue) async {
+    TextEditingController controller =
+        TextEditingController(text: currentValue);
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Edit $field"),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(hintText: "Enter your $field"),
+            maxLines: 1,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                String newValue = controller.text.trim();
+                if (newValue.isNotEmpty && user != null) {
+                  try {
+                    // Update Firestore
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user!.uid)
+                        .update({field.toLowerCase(): newValue});
+
+                    // Update FirebaseAuth only if updating the username
+                    if (field == "Username") {
+                      await user!.updateDisplayName(newValue);
+                      await user!.reload();
+                      setState(() {
+                        user = FirebaseAuth.instance.currentUser;
+                      });
+                    }
+
+                    setState(() {
+                      userData?[field.toLowerCase()] = newValue;
+                    });
+
+                    Navigator.pop(context);
+                  } catch (e) {
+                    print("Error updating $field: $e");
+                  }
+                }
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmSignOut() async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Sign Out"),
+          content: const Text("Are you sure you want to sign out?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  context.go('/login');
+                }
+              },
+              child: const Text("Sign Out"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +134,6 @@ class ProfileSectionWidget extends StatelessWidget {
         title: const Text("My Profile"),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => context.pushReplacement('/settings'),
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -35,166 +150,43 @@ class ProfileSectionWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            TextButton(onPressed: () {}, child: const Text("Tap to login")),
+
+            TextButton(
+              onPressed: () {},
+              child: Text(user == null ? "Tap to login" : "Logged in"),
+            ),
 
             const SizedBox(height: 20),
 
-            // Username
-            _buildProfileTile("Username", "No Username"),
-            _buildProfileTile("Bio", "No Bio"),
-            _buildProfileTile("Account", "No Account"),
+            // Editable Username & Bio
+            _buildProfileTile("Username", user?.displayName ?? "No Username",
+                editable: true),
+            _buildProfileTile(
+                "Bio", userData?['bio'] ?? "Each day provides its own gifts.",
+                editable: true),
+            _buildProfileTile("Account", user?.email ?? "No Account",
+                isSignOut: true),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileTile(String title, String value) {
+  Widget _buildProfileTile(String title, String value,
+      {bool editable = false, bool isSignOut = false}) {
     return ListTile(
       title: Text(title),
       subtitle: Text(value),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {},
+      trailing: isSignOut
+          ? const Icon(Icons.logout,
+              color: Colors.red) // Show logout icon for email
+          : editable
+              ? const Icon(Icons.edit,
+                  size: 18) // Show edit icon for username & bio
+              : const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: isSignOut
+          ? _confirmSignOut
+          : (editable ? () => _editDialog(title, value) : null),
     );
   }
 }
-
-
-
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-
-// class ProfileController extends GetxController {
-//   var isLoggedIn = false.obs;
-//   var username = "".obs;
-//   var bio = "".obs;
-//   var email = "".obs;
-//   var profileImage = "".obs;
-
-//   void login() {
-//     // Mock login logic
-//     isLoggedIn.value = true;
-//     username.value = "Hassam Arshad";
-//     bio.value = "Each day provides its own gifts.";
-//     email.value = "animeboi2174@gmail.com";
-//     profileImage.value =
-//         "https://your-image-url.com/profile.jpg"; // Replace with actual image URL
-//   }
-
-//   void logout() {
-//     isLoggedIn.value = false;
-//     username.value = "";
-//     bio.value = "";
-//     email.value = "";
-//     profileImage.value = "";
-//   }
-
-//   void updateBio(String newBio) {
-//     bio.value = newBio;
-//   }
-
-//   void updateUsername(String newUsername) {
-//     username.value = newUsername;
-//   }
-// }
-
-// class ProfileScreen extends StatelessWidget {
-//   final ProfileController controller = Get.put(ProfileController());
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text("My Profile")),
-//       body: Obx(() {
-//         return Padding(
-//           padding: const EdgeInsets.all(16.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.center,
-//             children: [
-//               GestureDetector(
-//                 onTap: () =>
-//                     controller.isLoggedIn.value ? null : controller.login(),
-//                 child: CircleAvatar(
-//                   radius: 50,
-//                   backgroundImage: controller.isLoggedIn.value &&
-//                           controller.profileImage.isNotEmpty
-//                       ? NetworkImage(controller.profileImage.value)
-//                       : null,
-//                   child: controller.isLoggedIn.value
-//                       ? null
-//                       : Icon(Icons.add, size: 40),
-//                 ),
-//               ),
-//               SizedBox(height: 10),
-//               TextButton(
-//                 onPressed: () {},
-//                 child: Text(controller.isLoggedIn.value
-//                     ? "Edit photo"
-//                     : "Tap to login"),
-//               ),
-//               SizedBox(height: 20),
-//               _buildEditableField("Username", controller.username, (newValue) {
-//                 controller.updateUsername(newValue);
-//               }),
-//               _buildEditableField("Bio", controller.bio, (newValue) {
-//                 controller.updateBio(newValue);
-//               }),
-//               _buildAccountSection(),
-//             ],
-//           ),
-//         );
-//       }),
-//     );
-//   }
-
-//   Widget _buildEditableField(
-//       String label, RxString value, Function(String) onUpdate) {
-//     return ListTile(
-//       title: Text(label),
-//       subtitle: Obx(() => Text(value.isNotEmpty ? value.value : "No $label")),
-//       trailing: Icon(Icons.arrow_forward_ios, size: 16),
-//       onTap: () {
-//         Get.defaultDialog(
-//           title: label,
-//           content: TextField(
-//             controller: TextEditingController(text: value.value),
-//             onSubmitted: (newValue) {
-//               onUpdate(newValue);
-//               Get.back();
-//             },
-//           ),
-//           confirm: TextButton(
-//             onPressed: () {
-//               Get.back();
-//             },
-//             child: Text("Save"),
-//           ),
-//           cancel: TextButton(
-//             onPressed: () {
-//               Get.back();
-//             },
-//             child: Text("Cancel"),
-//           ),
-//         );
-//       },
-//     );
-//   }
-
-//   Widget _buildAccountSection() {
-//     return ListTile(
-//       title: Text("Account"),
-//       subtitle: Obx(() => Text(
-//           controller.isLoggedIn.value ? controller.email.value : "No Account")),
-//       trailing: controller.isLoggedIn.value
-//           ? PopupMenuButton<String>(
-//               onSelected: (value) {
-//                 if (value == "sign_out") controller.logout();
-//               },
-//               itemBuilder: (context) => [
-//                 PopupMenuItem(value: "sign_out", child: Text("Sign out")),
-//               ],
-//             )
-//           : null,
-//     );
-//   }
-// }
