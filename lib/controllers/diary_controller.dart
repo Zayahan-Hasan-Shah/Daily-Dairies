@@ -3,17 +3,17 @@
 
 // class DiaryController extends GetxController {
 //   final entries = <DiaryEntry>[].obs;
-  
+
 //   void addEntry(DiaryEntry entry) {
 //     entries.add(entry);
 //     update();
 //   }
-  
+
 //   void deleteEntry(int index) {
 //     entries.removeAt(index);
 //     update();
 //   }
-  
+
 //   void updateEntry(int index, DiaryEntry entry) {
 //     entries[index] = entry;
 //     update();
@@ -28,12 +28,14 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class DiaryController extends GetxController {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
   final entries = <DiaryEntry>[].obs;
-  var isLoading = false.obs;
-  var errorMessage = ''.obs;
+
+  String? get userId => _auth.currentUser?.uid;
 
   @override
   void onInit() {
@@ -41,73 +43,83 @@ class DiaryController extends GetxController {
     fetchEntries();
   }
 
-  Future<String> _saveFileLocally(File file, String directory, String fileName) async {
+  bool _validateEntry(DiaryEntry entry) {
+    if (entry.title.isEmpty) {
+      errorMessage.value = 'Title cannot be empty';
+      return false;
+    }
+    if (entry.content.isEmpty) {
+      errorMessage.value = 'Content cannot be empty';
+      return false;
+    }
+    return true;
+  }
+
+  Future<String> _saveFileLocally(
+      File file, String directory, String fileName) async {
     final appDir = await getApplicationDocumentsDirectory();
-    final userDir = Directory('${appDir.path}/${_auth.currentUser?.uid}/$directory');
+    final userDir =
+        Directory('${appDir.path}/${_auth.currentUser?.uid}/$directory');
     if (!await userDir.exists()) {
       await userDir.create(recursive: true);
     }
-    
+
     final savedFile = await file.copy('${userDir.path}/$fileName');
     return savedFile.path;
   }
 
-  Future<void> addEntry(DiaryEntry entry, {
-    List<File>? images,
-    List<File>? videos,
-    List<File>? audioFiles,
-  }) async {
+  Future<void> addEntry(DiaryEntry entry) async {
     try {
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
+
+      print('Adding entry to Firestore...');
+      print('Entry data: ${entry.toMap()}');
+      print('Using collection: diaries');
+      print('Document ID: ${entry.id}');
+
+      await _firestore.collection('diaries').doc(entry.id).set(entry.toMap());
+
+      print('Entry added successfully');
+      await fetchEntries();
+    } catch (e, stackTrace) {
+      print('Error in addEntry: $e');
+      print('Stack trace: $stackTrace');
+      errorMessage.value = e.toString();
+      throw e;
+    }
+  }
+
+  Future<void> fetchEntries() async {
+    try {
+      print('Fetching entries...');
+      print('Current userId: ${userId}');
+
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
+
       isLoading.value = true;
-      final userId = _auth.currentUser?.uid;
-      if (userId == null) return;
 
-      // Save media files locally
-      List<String> imagePaths = [];
-      List<String> videoPaths = [];
-      List<String> audioPaths = [];
-
-      if (images != null) {
-        for (var image in images) {
-          final fileName = '${DateTime.now().millisecondsSinceEpoch}_${imagePaths.length}.jpg';
-          final path = await _saveFileLocally(image, 'images', fileName);
-          imagePaths.add(path);
-        }
-      }
-
-      if (videos != null) {
-        for (var video in videos) {
-          final fileName = '${DateTime.now().millisecondsSinceEpoch}_${videoPaths.length}.mp4';
-          final path = await _saveFileLocally(video, 'videos', fileName);
-          videoPaths.add(path);
-        }
-      }
-
-      if (audioFiles != null) {
-        for (var audio in audioFiles) {
-          final fileName = '${DateTime.now().millisecondsSinceEpoch}_${audioPaths.length}.m4a';
-          final path = await _saveFileLocally(audio, 'audio', fileName);
-          audioPaths.add(path);
-        }
-      }
-
-      // Create entry with local file paths
-      final entryMap = entry.toMap();
-      if (imagePaths.isNotEmpty) entryMap['images'] = imagePaths;
-      if (videoPaths.isNotEmpty) entryMap['videos'] = videoPaths;
-      if (audioPaths.isNotEmpty) entryMap['audioRecordings'] = audioPaths;
-
-      final docRef = await _firestore
-          .collection('users')
-          .doc(userId)
+      final snapshot = await _firestore
           .collection('diaries')
-          .add(entryMap);
+          .where('userId', isEqualTo: userId)
+          .get();
 
-      // final newEntry = DiaryEntry.fromMap({...entryMap, 'id': docRef.id});
-      // entries.add(newEntry);
-      
-    } catch (e) {
-      errorMessage.value = 'Failed to add entry: $e';
+      print('Number of documents found: ${snapshot.docs.length}');
+
+      entries.value =
+          snapshot.docs.map((doc) => DiaryEntry.fromMap(doc.data())).toList();
+
+      // Sort locally
+      entries.value.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      print('Entries loaded: ${entries.length}');
+    } catch (e, stackTrace) {
+      print('Error fetching entries: $e');
+      print('Stack trace: $stackTrace');
+      errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
     }
@@ -115,81 +127,36 @@ class DiaryController extends GetxController {
 
   Future<void> deleteEntry(String entryId) async {
     try {
-      isLoading.value = true;
-      final userId = _auth.currentUser?.uid;
-      if (userId == null) return;
-
-      // Delete local media files
-      final entry = entries.firstWhere((e) => e.id == entryId);
-      
-      // Delete images
-      if (entry.images != null) {
-        for (var path in entry.images!) {
-          final file = File(path);
-          if (await file.exists()) {
-            await file.delete();
-          }
-        }
+      if (userId == null) {
+        throw Exception('User not logged in');
       }
 
-      // Delete videos
-      if (entry.videos != null) {
-        for (var path in entry.videos!) {
-          final file = File(path);
-          if (await file.exists()) {
-            await file.delete();
-          }
-        }
-      }
+      await _firestore.collection('diaries').doc(entryId).delete();
 
-      // Delete audio recordings
-      if (entry.audioRecordings != null) {
-        for (var path in entry.audioRecordings!) {
-          final file = File(path);
-          if (await file.exists()) {
-            await file.delete();
-          }
-        }
-      }
-
-      // Delete entry document
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('diaries')
-          .doc(entryId)
-          .delete();
-
-      entries.removeWhere((e) => e.id == entryId);
-      
+      await fetchEntries();
     } catch (e) {
-      errorMessage.value = 'Failed to delete entry: $e';
-    } finally {
-      isLoading.value = false;
+      print('Error deleting entry: $e');
+      errorMessage.value = e.toString();
+      throw e;
     }
   }
 
-  Future<void> fetchEntries() async {
+  Future<void> updateEntry(DiaryEntry entry) async {
     try {
-      isLoading.value = true;
-      final userId = _auth.currentUser?.uid;
-      if (userId == null) return;
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
 
-      final snapshot = await _firestore
-          .collection('users')
-          .doc(userId)
+      await _firestore
           .collection('diaries')
-          .orderBy('date', descending: true)
-          .get();
+          .doc(entry.id)
+          .update(entry.toMap());
 
-      // entries.value = snapshot.docs
-      //     .map((doc) => DiaryEntry.fromMap({...doc.data(), 'id': doc.id}))
-      //     .toList();
-
+      await fetchEntries();
     } catch (e) {
-      errorMessage.value = 'Failed to fetch entries: $e';
-    } finally {
-      isLoading.value = false;
+      print('Error updating entry: $e');
+      errorMessage.value = e.toString();
+      throw e;
     }
   }
 }

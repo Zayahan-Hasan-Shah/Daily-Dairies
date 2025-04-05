@@ -1,10 +1,13 @@
+import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/models/diary_entry.dart';
 import 'package:daily_dairies/widgets/add_diary_widget/bottom_toolbar.dart';
 import 'package:daily_dairies/widgets/add_diary_widget/bullet_point_widget.dart';
 import 'package:daily_dairies/widgets/add_diary_widget/diary_content.dart';
 import 'package:daily_dairies/widgets/add_diary_widget/diary_header.dart';
 import 'package:daily_dairies/widgets/add_diary_widget/diary_title.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -20,15 +23,15 @@ class AddDiaryScreen extends StatefulWidget {
   static Route route() =>
       MaterialPageRoute(builder: (_) => const AddDiaryScreen());
 
-  const AddDiaryScreen({super.key});
+  const AddDiaryScreen({Key? key}) : super(key: key);
 
   @override
-  _AddDiaryScreenState createState() => _AddDiaryScreenState();
+  State<AddDiaryScreen> createState() => _AddDiaryScreenState();
 }
 
 class _AddDiaryScreenState extends State<AddDiaryScreen> {
-  String selectedEmoji = '😑';
-  DateTime selectedDate = DateTime.now();
+  final DiaryController _diaryController = Get.find<DiaryController>();
+  final List<TextEditingController> _bulletPoints = [];
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController dateController =
@@ -47,16 +50,23 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   String recordDuration = '00:00';
   List<double> audioAmplitudes = [];
   bool isPlaying = false;
-  Color currentTextColor = Colors.black;
-  TextStyle currentTextStyle = const TextStyle(
-    fontSize: 16,
-    color: Colors.black,
-  );
+  Color? currentTextColor;
+  TextStyle? currentTextStyle;
   bool showBulletPoints = false;
+  late DateTime selectedDate;
+  late String selectedEmoji;
+  List<String> currentBulletPoints = [];
 
-  Future<void> _requestPermissions() async {
-    await Permission.microphone.request();
-    await Permission.storage.request();
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = DateTime.now();
+    selectedEmoji = '😊';
+    currentTextColor = Colors.black;
+    currentTextStyle = const TextStyle(
+      fontSize: 16,
+      color: Colors.black,
+    );
   }
 
   @override
@@ -64,7 +74,93 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     titleController.dispose();
     contentController.dispose();
     dateController.dispose();
+    for (var controller in _bulletPoints) {
+      controller.dispose();
+    }
     super.dispose();
+  }
+
+  Future<void> _saveDiaryEntry() async {
+    // Create a loading overlay controller
+    final loadingOverlay = OverlayEntry(
+      builder: (context) => Container(
+        color: Colors.black.withOpacity(0.5),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+
+    try {
+      if (_diaryController.userId == null) {
+        throw Exception('User not logged in');
+      }
+
+      // Validate inputs
+      if (titleController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a title')),
+        );
+        return;
+      }
+
+      // Show loading overlay
+      Overlay.of(context).insert(loadingOverlay);
+
+      final String entryId = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Create the diary entry with bullet points
+      final entry = DiaryEntry(
+        id: entryId,
+        userId: _diaryController.userId!,
+        title: titleController.text.trim(),
+        content: contentController.text.trim(),
+        date: selectedDate,
+        mood: selectedEmoji,
+        textColor: currentTextColor ?? Colors.black,
+        textStyle: currentTextStyle ??
+            const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+            ),
+        images: selectedImages.map((file) => file.path).toList(),
+        videos: seletedVideos.map((file) => file.path).toList(),
+        audioRecordings: recordedAudio.map((file) => file.path).toList(),
+        bulletPoints: currentBulletPoints,
+      );
+
+      print(
+          'Saving diary entry with bullet points: ${currentBulletPoints}'); // Debug print
+      await _diaryController.addEntry(entry);
+
+      // Remove loading overlay
+      loadingOverlay.remove();
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Diary entry saved successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Navigate back
+      Navigator.of(context).pop();
+    } catch (e, stackTrace) {
+      print('Error saving diary: $e');
+      print('Stack trace: $stackTrace');
+
+      // Remove loading overlay
+      loadingOverlay.remove();
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to save diary entry: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -513,9 +609,9 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
 
   TextStyle _getTextStyle() {
     if (selectedTool == null) {
-      return currentTextStyle;
+      return currentTextStyle!;
     }
-    return currentTextStyle;
+    return currentTextStyle!;
   }
 
   Future<void> _pickImage() async {
@@ -711,7 +807,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                   onTap: () {
                     setState(() {
                       currentTextColor = colors[index];
-                      currentTextStyle = currentTextStyle.copyWith(
+                      currentTextStyle = currentTextStyle!.copyWith(
                         color: colors[index],
                       );
                       selectedTool = "Style";
@@ -737,6 +833,24 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 
+  void _addBulletPoint() {
+    setState(() {
+      _bulletPoints.add(TextEditingController());
+    });
+  }
+
+  void _removeBulletPoint(int index) {
+    setState(() {
+      _bulletPoints[index].dispose();
+      _bulletPoints.removeAt(index);
+    });
+  }
+
+  Future<void> _requestPermissions() async {
+    await Permission.microphone.request();
+    await Permission.storage.request();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -753,9 +867,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                   backgroundColor: Colors.lightBlue.withOpacity(0.6),
                   foregroundColor: Colors.white,
                 ),
-                onPressed: () {
-                  // Handle save entry logic
-                },
+                onPressed: _saveDiaryEntry,
                 child: const Text("Save Entry"),
               ),
             ),
@@ -795,7 +907,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 const SizedBox(height: 2),
                 DiaryContent(
                   controller: contentController,
-                  currentTextStyle: currentTextStyle,
+                  currentTextStyle: currentTextStyle!,
                   onChanged: (value) {
                     setState(() {
                       textSpans.add(
@@ -812,6 +924,11 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                   BulletPointWidget(
                     currentTextStyle: currentTextStyle,
                     onTextChanged: _onBulletPointChanged,
+                    onBulletPointsChanged: (bulletPoints) {
+                      setState(() {
+                        currentBulletPoints = bulletPoints;
+                      });
+                    },
                   ),
                 ],
                 const SizedBox(height: 10),

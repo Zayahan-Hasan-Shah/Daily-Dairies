@@ -1,38 +1,35 @@
 import 'package:daily_dairies/core/colorPallete.dart';
-import 'package:daily_dairies/dummyData/dummData.dart';
+import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 
-class CalendarScreen extends StatefulWidget {
+class CalendarScreen extends GetView<DiaryController> {
   static Route route() => MaterialPageRoute(builder: (_) => CalendarScreen());
-  @override
-  _CalendarScreenState createState() => _CalendarScreenState();
-}
 
-class _CalendarScreenState extends State<CalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
+  final Rx<DateTime> _selectedDay = DateTime.now().obs;
+  final Rx<DateTime> _focusedDay = DateTime.now().obs;
+  final Rx<CalendarFormat> _calendarFormat = CalendarFormat.month.obs;
+
+  CalendarScreen({super.key});
 
   // Method to filter diaries based on selected date
-  List<Map<String, dynamic>> _getDiariesForSelectedDate() {
-    String formattedSelectedDate =
-        DateFormat('dd-MM-yyyy').format(_selectedDay);
-    return dummyData
-        .where((entry) => entry['date'] == formattedSelectedDate)
+  List<dynamic> _getDiariesForSelectedDate() {
+    final selectedDate = DateFormat('yyyy-MM-dd').format(_selectedDay.value);
+    return controller.entries
+        .where((entry) =>
+            DateFormat('yyyy-MM-dd').format(entry.date) == selectedDate)
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> selectedDiaries = _getDiariesForSelectedDate();
-
     return Scaffold(
-      backgroundColor: Colorpallete.bgColor, // Match your background color
+      backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: const Text("Calendar"),
         foregroundColor: Colorpallete.bottomNavigationColor,
@@ -45,7 +42,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
           backgroundColor: Colorpallete.bottomNavigationColor.withOpacity(0.4),
           elevation: 0,
           onPressed: () {
-            Navigator.push(context, AddDiaryScreen.route());
+            Navigator.push(context, AddDiaryScreen.route()).then((_) {
+              controller.fetchEntries();
+            });
           },
           child: RippleAnimation(
             color: Colorpallete.backgroundColor,
@@ -68,169 +67,180 @@ class _CalendarScreenState extends State<CalendarScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TableCalendar(
-              firstDay: DateTime(2000),
-              lastDay: DateTime(2300),
-              focusedDay: _focusedDay,
-              calendarFormat: _calendarFormat,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              },
-              calendarBuilders: CalendarBuilders(
-                defaultBuilder: (context, day, focusedDay) {
-                  String formattedDay = DateFormat('dd-MM-yyyy').format(day);
+            Obx(() => TableCalendar(
+                  firstDay: DateTime(2000),
+                  lastDay: DateTime(2300),
+                  focusedDay: _focusedDay.value,
+                  calendarFormat: _calendarFormat.value,
+                  selectedDayPredicate: (day) =>
+                      isSameDay(_selectedDay.value, day),
+                  onDaySelected: (selectedDay, focusedDay) {
+                    _selectedDay.value = selectedDay;
+                    _focusedDay.value = focusedDay;
+                  },
+                  calendarBuilders: CalendarBuilders(
+                    defaultBuilder: (context, day, focusedDay) {
+                      final formattedDay = DateFormat('yyyy-MM-dd').format(day);
 
-                  // Find the most recent diary for the given day
-                  var diariesForDay = dummyData
-                      .where((entry) => entry['date'] == formattedDay)
-                      .toList();
+                      // Find diaries for the given day
+                      final diariesForDay = controller.entries
+                          .where((entry) =>
+                              DateFormat('yyyy-MM-dd').format(entry.date) ==
+                              formattedDay)
+                          .toList();
 
-                  if (diariesForDay.isNotEmpty) {
-                    // Get the most recent diary
-                    var recentDiary = diariesForDay.last;
+                      if (diariesForDay.isNotEmpty) {
+                        return Center(
+                          child: Text(
+                            diariesForDay.last.mood,
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                        );
+                      }
 
-                    return Center(
-                      child: Text(
-                        recentDiary['emoji'], // Show emoji instead of the date
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    );
-                  }
-
-                  // If no diary exists, show the default day number
-                  return Center(
-                    child: Text(
-                      '${day.day}',
-                      style: TextStyle(
-                        color: Colorpallete.backgroundColor,
-                        fontSize: 16,
-                      ),
+                      return Center(
+                        child: Text(
+                          '${day.day}',
+                          style: TextStyle(
+                            color: Colorpallete.backgroundColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                    titleTextStyle: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'Poppins',
+                      color: Colorpallete.backgroundColor,
                     ),
-                  );
-                },
-              ),
-              headerStyle: HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                titleTextStyle: TextStyle(
-                  fontSize: 20,
-                  fontFamily: 'Poppins',
-                  color: Colorpallete.backgroundColor,
-                ),
-              ),
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: TextStyle(color: Colorpallete.backgroundColor),
-                weekendStyle: const TextStyle(color: Colors.red),
-              ),
-              calendarStyle: CalendarStyle(
-                outsideTextStyle:
-                    TextStyle(color: Colorpallete.backgroundColor),
-                selectedDecoration: BoxDecoration(
-                  color: Colorpallete.backgroundColor,
-                  shape: BoxShape.circle,
-                ),
-                todayDecoration: BoxDecoration(
-                  color: Colorpallete.backgroundColor.withOpacity(0.7),
-                  shape: BoxShape.circle,
-                ),
-                defaultTextStyle: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  color: Colorpallete.backgroundColor,
-                ),
-                weekendTextStyle: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                  color: Colorpallete.backgroundColor,
-                ),
-              ),
-            ),
+                  ),
+                  daysOfWeekStyle: DaysOfWeekStyle(
+                    weekdayStyle:
+                        TextStyle(color: Colorpallete.backgroundColor),
+                    weekendStyle: const TextStyle(color: Colors.red),
+                  ),
+                  calendarStyle: CalendarStyle(
+                    outsideTextStyle:
+                        TextStyle(color: Colorpallete.backgroundColor),
+                    selectedDecoration: BoxDecoration(
+                      color: Colorpallete.backgroundColor,
+                      shape: BoxShape.circle,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      color: Colorpallete.backgroundColor.withOpacity(0.7),
+                      shape: BoxShape.circle,
+                    ),
+                    defaultTextStyle: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      color: Colorpallete.backgroundColor,
+                    ),
+                    weekendTextStyle: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      color: Colorpallete.backgroundColor,
+                    ),
+                  ),
+                )),
 
-            SizedBox(height: 20),
-            Text(
-              "${DateFormat('EEEE, yyyy-MM-dd').format(_selectedDay.toLocal())} ${DateFormat('dd-MM-yyyy').format(_selectedDay.toLocal())}",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontStyle: FontStyle.italic,
-                color: Colorpallete.backgroundColor,
-                fontSize: 16,
-              ),
-            ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            Obx(() => Text(
+                  DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay.value),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontStyle: FontStyle.italic,
+                    color: Colorpallete.backgroundColor,
+                    fontSize: 16,
+                  ),
+                )),
+            const SizedBox(height: 20),
 
             // Displaying filtered diaries
             Expanded(
-              child: selectedDiaries.isEmpty
-                  ? Center(
-                      child: Text(
-                        "",
-                        style: TextStyle(
-                          color: Colorpallete.backgroundColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final selectedDiaries = _getDiariesForSelectedDate();
+
+                if (selectedDiaries.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No entries for this date",
+                      style: TextStyle(
+                        color: Colorpallete.backgroundColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: selectedDiaries.length,
-                      itemBuilder: (context, index) {
-                        var diary = selectedDiaries[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              DiaryDetailScreen.route(
-                                dummyData[index]["title"],
-                                dummyData[index]["description"],
-                                dummyData[index]["emoji"],
-                                DateFormat("dd-MM-yyyy")
-                                    .parse(dummyData[index]["date"]),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colorpallete.drawericonColor,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            margin: const EdgeInsets.only(bottom: 10),
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: selectedDiaries.length,
+                  itemBuilder: (context, index) {
+                    final diary = selectedDiaries[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          DiaryDetailScreen.route(
+                            diary.title,
+                            diary.content,
+                            diary.mood,
+                            diary.date,
+                          ),
+                        ).then((_) {
+                          controller.fetchEntries();
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colorpallete.drawericonColor,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      diary['date']!,
-                                      style: TextStyle(
-                                        color: Colorpallete.textColor,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                    Text(diary['emoji']),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
                                 Text(
-                                  diary['title'],
+                                  DateFormat('dd-MM-yyyy').format(diary.date),
                                   style: TextStyle(
-                                    fontSize: 18,
                                     color: Colorpallete.textColor,
+                                    fontSize: 22,
                                   ),
                                 ),
-                                const SizedBox(height: 20),
+                                Text(
+                                  diary.mood,
+                                  style: const TextStyle(fontSize: 24),
+                                ),
                               ],
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                            const SizedBox(height: 6),
+                            Text(
+                              diary.title,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colorpallete.textColor,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
           ],
         ),
