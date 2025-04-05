@@ -229,11 +229,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
       ),
       drawer: const AppDrawer(),
@@ -277,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Center(
                     child: Text(
                       'Error: ${_diaryController.errorMessage.value}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.red,
                         fontSize: 16,
                       ),
@@ -310,68 +312,79 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
 
-                return ListView.builder(
-                  itemCount: _diaryController.entries.length,
-                  itemBuilder: (context, index) {
-                    final entry = _diaryController.entries[index];
-                    final formattedDate =
-                        DateFormat('dd-MM-yyyy').format(entry.date);
+                return RefreshIndicator(
+                  onRefresh: () => _diaryController.fetchEntries(),
+                  child: ListView.builder(
+                    itemCount: _diaryController.entries.length,
+                    itemBuilder: (context, index) {
+                      final entry = _diaryController.entries[index];
+                      final formattedDate =
+                          DateFormat('dd-MM-yyyy').format(entry.date);
 
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          DiaryDetailScreen.route(
-                            entry.title,
-                            entry.content,
-                            entry.mood,
-                            entry.date,
-                          ),
-                        ).then((_) {
-                          // Refresh entries when returning from detail screen
-                          _diaryController.fetchEntries();
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colorpallete.drawericonColor,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  formattedDate,
-                                  style: TextStyle(
-                                    color: Colorpallete.textColor,
-                                    fontSize: 22,
-                                  ),
-                                ),
-                                Text(
-                                  entry.mood,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            DiaryDetailScreen.route(
                               entry.title,
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colorpallete.textColor,
-                              ),
+                              entry.content,
+                              entry.mood,
+                              entry.date,
                             ),
-                            const SizedBox(height: 20),
-                          ],
+                          ).then((_) {
+                            // Refresh entries when returning from detail screen
+                            _diaryController.fetchEntries();
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colorpallete.drawericonColor,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    formattedDate,
+                                    style: TextStyle(
+                                      color: Colorpallete.textColor,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                  Text(
+                                    entry.mood,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                entry.title,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colorpallete.textColor,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               }),
             ),
@@ -390,17 +403,20 @@ class _HomeScreenState extends State<HomeScreen> {
             _diaryController.fetchEntries();
           });
         },
-        child: RippleAnimation(
-          color: Colorpallete.backgroundColor,
-          minRadius: 10,
-          maxRadius: 16,
-          delay: const Duration(milliseconds: 320),
-          repeat: true,
-          ripplesCount: 4,
-          duration: const Duration(milliseconds: 2160),
-          child: Icon(
-            Icons.add,
+        child: Semantics(
+          label: 'Add Diary Entry',
+          child: RippleAnimation(
             color: Colorpallete.backgroundColor,
+            minRadius: 10,
+            maxRadius: 16,
+            delay: const Duration(milliseconds: 320),
+            repeat: true,
+            ripplesCount: 4,
+            duration: const Duration(milliseconds: 2160),
+            child: Icon(
+              Icons.add,
+              color: Colorpallete.backgroundColor,
+            ),
           ),
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/achievment_widget.dart';
-import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:daily_dairies/widgets/profile_widgets/daily_Statistics.dart';
 import 'package:daily_dairies/widgets/profile_widgets/emoji_barchart.dart';
 import 'package:daily_dairies/widgets/profile_widgets/sign_in_widget.dart';

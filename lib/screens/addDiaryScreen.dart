@@ -220,7 +220,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
               '😢',
               '😭',
               '😰',
-              '😔'
+              '😔',
             ].map((emoji) {
               return GestureDetector(
                 onTap: () {
@@ -752,6 +752,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   void _showColorPicker() {
     final List<Color> colors = [
       Colors.black,
+      Colors.white,
       Colors.red,
       Colors.pink,
       Colors.purple,
@@ -779,7 +780,6 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       Colors.blueAccent,
       Colors.lightBlueAccent,
       Colors.cyanAccent,
-      Colors.tealAccent,
       Colors.greenAccent,
     ];
 
