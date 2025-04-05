@@ -114,7 +114,12 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/achievements',
-            builder: (context, state) => const Achievmentscreen(),
+            builder: (context, state) {
+              final achievements = state.extra as List<Map<String, String>>?;
+              return AchievementsScreen(
+                achievements: achievements ?? [], // Fallback in case of null
+              );
+            },
           ),
           GoRoute(
             path: '/faqs',

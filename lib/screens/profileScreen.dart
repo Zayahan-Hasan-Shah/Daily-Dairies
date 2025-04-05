@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(
                 height: 16,
               ),
-              Achievments(),
+              Achievements(),
               SizedBox(
                 height: 16,
               ),
