@@ -1,3 +1,4 @@
+import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/achievment_widget.dart';
 import 'package:daily_dairies/widgets/profile_widgets/daily_Statistics.dart';
@@ -5,6 +6,7 @@ import 'package:daily_dairies/widgets/profile_widgets/emoji_barchart.dart';
 import 'package:daily_dairies/widgets/profile_widgets/sign_in_widget.dart';
 import 'package:daily_dairies/widgets/profile_widgets/total_diaries.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -17,6 +19,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final DiaryController _diaryController = Get.find<DiaryController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _diaryController.fetchEntries();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,29 +44,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SignInWidget(),
-              SizedBox(
+              const SignInWidget(),
+              const SizedBox(
                 height: 16,
               ),
-              TotalDiaries(),
-              SizedBox(
+              const TotalDiaries(),
+              const SizedBox(
                 height: 16,
               ),
-              EmojiBarChart(),
-              SizedBox(
+              const EmojiBarChart(),
+              const SizedBox(
                 height: 16,
               ),
-              Achievements(),
-              SizedBox(
+              const Achievements(),
+              const SizedBox(
                 height: 16,
               ),
-              DailyStatistics(),
-              SizedBox(
+              DailyStatistics(entries: _diaryController.entries.toList()),
+              const SizedBox(
                 height: 16,
               ),
             ],

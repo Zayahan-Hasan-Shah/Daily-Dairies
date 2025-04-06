@@ -277,4 +277,18 @@ class DiaryController extends GetxController {
       throw e;
     }
   }
+
+  Map<String, int> get tagCounts {
+    final Map<String, int> counts = {};
+    for (var entry in entries) {
+      for (var tag in entry.tags) {
+        counts[tag] = (counts[tag] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }
+
+  List<DiaryEntry> getEntriesByTag(String tag) {
+    return entries.where((entry) => entry.tags.contains(tag)).toList();
+  }
 }

@@ -18,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:daily_dairies/widgets/add_diary_widget/media_section.dart';
+import 'package:flutter_tags/flutter_tags.dart';
 
 class AddDiaryScreen extends StatefulWidget {
   static Route route() =>
@@ -56,6 +57,9 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   late DateTime selectedDate;
   late String selectedEmoji;
   List<String> currentBulletPoints = [];
+  List<String> tags = [];
+  bool showTags = false;
+  // List<String> selectedTags = [];
 
   @override
   void initState() {
@@ -117,6 +121,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         content: contentController.text.trim(),
         date: selectedDate,
         mood: selectedEmoji,
+        tags: tags,
         textColor: currentTextColor ?? Colors.black,
         textStyle: currentTextStyle ??
             const TextStyle(
@@ -179,7 +184,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
               surface: Colorpallete.backgroundColor, // Dark background
               onSurface: Colors.white, // Text color
             ),
-            dialogBackgroundColor: const Color(0xFF121212), // Background color
+            dialogTheme: const DialogThemeData(
+                backgroundColor: Color(0xFF121212)), // Background color
           ),
           child: child!,
         );
@@ -325,6 +331,52 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     );
   }
 
+  Widget _buildTagInputArea() {
+    TextEditingController tagController = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ...tags.map((tag) {
+              return InputChip(
+                label: Text('# $tag'),
+                onDeleted: () {
+                  setState(() {
+                    tags.remove(tag);
+                  });
+                },
+              );
+            }),
+
+            // Tag input field as a chip
+            SizedBox(
+              width: 100,
+              child: TextField(
+                controller: tagController,
+                decoration: const InputDecoration(
+                  hintText: '#',
+                  border: InputBorder.none,
+                ),
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    setState(() {
+                      tags.add(value.trim());
+                      tagController.clear();
+                    });
+                  }
+                },
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
   void _onToolSelected(String tool) {
     setState(() {
       if (tool == "List") {
@@ -340,6 +392,10 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         _pickVideo();
       } else if (tool == "Voice") {
         _toggleRecording();
+      } else if (tool == "Tags") {
+        showTags = !showTags;
+        selectedTool = "Tags";
+        _buildTagInputArea();
       } else {
         selectedTool = (selectedTool == tool) ? null : tool;
       }
@@ -386,7 +442,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
             _bottomBarButton(Icons.image, "Image"),
             _bottomBarButton(Icons.video_camera_back_rounded, "Video"),
             _bottomBarButton(Icons.list, "List"),
-            _bottomBarButton(Icons.label, "Tags"),
+            _bottomBarButton(Icons.new_label_rounded, "Tags"),
             _bottomBarButton(Icons.mic, "Voice"),
           ],
         ),
@@ -945,6 +1001,11 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                     _playVideo(video);
                   },
                 ),
+
+                if (showTags) ...[
+                  const SizedBox(height: 10),
+                  _buildTagInputArea(),
+                ],
                 const SizedBox(height: 10),
                 // Audio section
                 _buildAudioList(),

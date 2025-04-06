@@ -98,6 +98,7 @@ class DiaryEntry {
   final String mood; // For emoji selection
   final Color textColor; // For text color styling
   final TextStyle textStyle; // For text styling (italic, size, etc.)
+  final List<String> tags;
   final List<String> images;
   final List<String> videos;
   final List<String> audioRecordings;
@@ -113,6 +114,7 @@ class DiaryEntry {
     required this.mood,
     required this.textColor,
     required this.textStyle,
+    this.tags = const [],
     this.images = const [],
     this.videos = const [],
     this.audioRecordings = const [],
@@ -140,6 +142,7 @@ class DiaryEntry {
             (map['textStyle']?['letterSpacing'] as num?)?.toDouble() ?? 0.0,
         color: Color(map['textStyle']?['color'] ?? Colors.black.value),
       ),
+      tags: List<String>.from(map['tags'] ?? []),
       images: List<String>.from(map['images'] ?? []),
       videos: List<String>.from(map['videos'] ?? []),
       audioRecordings: List<String>.from(map['audioRecordings'] ?? []),
@@ -166,6 +169,7 @@ class DiaryEntry {
         'letterSpacing': textStyle.letterSpacing,
         'color': textStyle.color?.value ?? Colors.black.value,
       },
+      'tags': tags,
       'images': images,
       'videos': videos,
       'audioRecordings': audioRecordings,
