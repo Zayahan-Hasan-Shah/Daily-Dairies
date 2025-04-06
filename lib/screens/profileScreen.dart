@@ -8,6 +8,8 @@ import 'package:daily_dairies/widgets/profile_widgets/total_diaries.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:daily_dairies/controllers/diary_controller.dart';
+import 'package:get/get.dart';
 
 class ProfileScreen extends StatefulWidget {
   static Route route() =>
@@ -25,6 +27,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _diaryController.fetchEntries();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure DiaryController is initialized
+    try {
+      Get.find<DiaryController>();
+    } catch (e) {
+      Get.put(DiaryController());
+    }
   }
 
   @override

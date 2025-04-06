@@ -199,21 +199,26 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     }
   }
 
-  void _showEmojiPicker() {
-    showDialog(
+  Future<void> _showEmojiPicker() async {
+    final List<String> emojis = [
+      '😊',
+      '😢',
+      '😡',
+      '😴',
+      '🤔',
+      '😎',
+      '🥳',
+      '😍'
+    ];
+
+    final String? selectedEmoji = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          alignment: Alignment.center,
-          backgroundColor: Colorpallete.backgroundColor, // Match your theme
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          title: const Text(
-            "How's your day?",
-            style: TextStyle(color: Colors.white),
-          ),
+          backgroundColor: Colorpallete.backgroundColor,
+          title:
+              const Text('Select Mood', style: TextStyle(color: Colors.white)),
           content: Wrap(
-            alignment: WrapAlignment.center,
             spacing: 10,
             runSpacing: 10,
             children: [
@@ -229,15 +234,10 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
               '😔',
             ].map((emoji) {
               return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedEmoji = emoji;
-                  });
-                  Navigator.pop(context);
-                },
+                onTap: () => Navigator.pop(context, emoji),
                 child: Text(
                   emoji,
-                  style: const TextStyle(fontSize: 30),
+                  style: const TextStyle(fontSize: 32),
                 ),
               );
             }).toList(),
@@ -245,6 +245,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         );
       },
     );
+
+    if (selectedEmoji != null) {
+      setState(() {
+        this.selectedEmoji = selectedEmoji;
+      });
+    }
   }
 
   void _showTextStylePicker() {
@@ -412,15 +418,16 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     });
   }
 
-  void _onBulletPointChanged(String value) {
-    setState(() {
-      textSpans.add(
-        TextSpan(
-          text: "• $value\n",
-          style: currentTextStyle,
-        ),
-      );
-    });
+  void _onBulletPointChanged(String text, int index) {
+    if (index < currentBulletPoints.length) {
+      setState(() {
+        currentBulletPoints[index] = text;
+      });
+    } else {
+      setState(() {
+        currentBulletPoints.add(text);
+      });
+    }
   }
 
   Widget _buildBottomBar() {
@@ -978,11 +985,13 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 if (showBulletPoints) ...[
                   const SizedBox(height: 10),
                   BulletPointWidget(
-                    currentTextStyle: currentTextStyle,
-                    onTextChanged: _onBulletPointChanged,
-                    onBulletPointsChanged: (bulletPoints) {
+                    currentTextStyle: currentTextStyle ??
+                        const TextStyle(fontSize: 16, color: Colors.black),
+                    onTextChanged: (text) {
                       setState(() {
-                        currentBulletPoints = bulletPoints;
+                        if (!currentBulletPoints.contains(text)) {
+                          currentBulletPoints.add(text);
+                        }
                       });
                     },
                   ),
