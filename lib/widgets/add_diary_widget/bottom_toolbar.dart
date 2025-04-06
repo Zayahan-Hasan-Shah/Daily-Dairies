@@ -5,10 +5,10 @@ class BottomToolbar extends StatelessWidget {
   final Function(String) onToolSelected;
 
   const BottomToolbar({
-    Key? key,
+    super.key,
     this.selectedTool,
     required this.onToolSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

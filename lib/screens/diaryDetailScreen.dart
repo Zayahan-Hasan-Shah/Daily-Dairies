@@ -531,7 +531,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
             'Pick a color',
             style: TextStyle(color: Colors.white),
           ),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             child: GridView.builder(
               shrinkWrap: true,
@@ -609,7 +609,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           '${dir.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
       await audioRecorder.start(
-        RecordConfig(),
+        const RecordConfig(),
         path: filePath,
       );
       setState(() {

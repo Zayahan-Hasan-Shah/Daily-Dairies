@@ -5,10 +5,10 @@ class DiaryEditToolbar extends StatelessWidget {
   final Function(String) onToolSelected;
 
   const DiaryEditToolbar({
-    Key? key,
+    super.key,
     this.selectedTool,
     required this.onToolSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

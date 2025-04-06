@@ -10,13 +10,13 @@ class DiaryHeader extends StatelessWidget {
   final Function(String)? onEmojiChanged;
 
   const DiaryHeader({
-    Key? key,
+    super.key,
     required this.date,
     required this.emoji,
     this.isEditing = false,
     this.onDateChanged,
     this.onEmojiChanged,
-  }) : super(key: key);
+  });
 
   void _showEmojiPicker(BuildContext context) {
     showDialog(

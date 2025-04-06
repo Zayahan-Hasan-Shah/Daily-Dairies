@@ -186,7 +186,6 @@ import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/calendarScreen.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
 import 'package:daily_dairies/screens/profileScreen.dart';
-import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

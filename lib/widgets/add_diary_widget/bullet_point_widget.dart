@@ -6,10 +6,10 @@ class BulletPointWidget extends StatefulWidget {
   final Function(String) onTextChanged;
 
   const BulletPointWidget({
-    Key? key,
+    super.key,
     required this.currentTextStyle,
     required this.onTextChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<BulletPointWidget> createState() => _BulletPointWidgetState();
@@ -72,7 +72,7 @@ class _BulletPointWidgetState extends State<BulletPointWidget> {
             int idx = entry.key;
             TextEditingController controller = entry.value;
             return _buildBulletPoint(idx, controller);
-          }).toList(),
+          }),
           _buildAddButton(),
         ],
       ),

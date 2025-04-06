@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
 
     // Trigger fade-in effect
-    Future.delayed(Duration(milliseconds: 400), () {
+    Future.delayed(const Duration(milliseconds: 400), () {
       setState(() {
         _opacity = 1.0;
       });

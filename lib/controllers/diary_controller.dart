@@ -136,7 +136,7 @@ class DiaryController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       print('Error adding entry: $e');
-      throw e;
+      rethrow;
     } finally {
       isLoading.value = false;
     }
@@ -164,7 +164,7 @@ class DiaryController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       print('Error updating entry: $e');
-      throw e;
+      rethrow;
     } finally {
       isLoading.value = false;
     }
@@ -185,7 +185,7 @@ class DiaryController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       print('Error deleting entry: $e');
-      throw e;
+      rethrow;
     } finally {
       isLoading.value = false;
     }

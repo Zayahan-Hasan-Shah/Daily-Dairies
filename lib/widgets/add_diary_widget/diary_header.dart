@@ -9,12 +9,12 @@ class DiaryHeader extends StatelessWidget {
   final VoidCallback onEmojiTap;
 
   const DiaryHeader({
-    Key? key,
+    super.key,
     required this.selectedDate,
     required this.selectedEmoji,
     required this.onDateChanged,
     required this.onEmojiTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

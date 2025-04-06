@@ -29,7 +29,6 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/achievment_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class AchievementsScreen extends StatelessWidget {
   const AchievementsScreen({super.key, required this.achievements});

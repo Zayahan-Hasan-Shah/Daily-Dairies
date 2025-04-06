@@ -11,14 +11,14 @@ class AudioRecordingSection extends StatelessWidget {
   final Function(int)? onDeleteAudio;
 
   const AudioRecordingSection({
-    Key? key,
+    super.key,
     required this.isRecording,
     required this.recordDuration,
     required this.recordings,
     this.isPlaying = false,
     this.onPlayAudio,
     this.onDeleteAudio,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class AudioRecordingSection extends StatelessWidget {
         if (isRecording) _buildRecordingIndicator(),
         ...recordings.asMap().entries.map((entry) {
           return _buildAudioItem(entry.key, entry.value);
-        }).toList(),
+        }),
       ],
     );
   }

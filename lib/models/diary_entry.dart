@@ -31,7 +31,7 @@ class DiaryEntry {
     this.audioRecordings = const [],
     this.bulletPoints = const [],
     DateTime? createdAt,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   // Add fromMap factory constructor
   factory DiaryEntry.fromMap(Map<String, dynamic> map) {

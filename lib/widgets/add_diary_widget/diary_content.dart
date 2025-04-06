@@ -7,11 +7,11 @@ class DiaryContent extends StatelessWidget {
   final Function(String) onChanged;
 
   const DiaryContent({
-    Key? key,
+    super.key,
     required this.controller,
     required this.currentTextStyle,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
