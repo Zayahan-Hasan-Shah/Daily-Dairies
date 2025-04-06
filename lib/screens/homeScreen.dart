@@ -203,16 +203,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final DiaryController _diaryController = Get.find<DiaryController>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    _diaryController.fetchEntries();
+    // Delay the fetch to avoid build phase conflicts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _diaryController.refreshEntries();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         actions: [
@@ -232,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            Scaffold.of(context).openDrawer();
+            _scaffoldKey.currentState?.openDrawer();
           },
         ),
       ),
@@ -268,112 +273,129 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: Obx(() {
-                if (_diaryController.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+              child: GetBuilder<DiaryController>(
+                builder: (controller) {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                if (_diaryController.errorMessage.value.isNotEmpty) {
-                  return Center(
-                    child: Text(
-                      'Error: ${_diaryController.errorMessage.value}',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
-                      ),
-                    ),
-                  );
-                }
-
-                if (_diaryController.entries.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'No diaries found',
-                          style: TextStyle(
-                            color: Colorpallete.textColor,
-                            fontSize: 16,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _diaryController.fetchEntries(),
-                          child: const Text('Refresh'),
-                        ),
-                        Text(
-                          'User ID: ${_diaryController.userId ?? "No user ID"}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  itemCount: _diaryController.entries.length,
-                  itemBuilder: (context, index) {
-                    final entry = _diaryController.entries[index];
-                    final formattedDate =
-                        DateFormat('dd-MM-yyyy').format(entry.date);
-
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          DiaryDetailScreen.route(
-                            entry.title,
-                            entry.content,
-                            entry.mood,
-                            entry.date,
-                          ),
-                        ).then((_) {
-                          // Refresh entries when returning from detail screen
-                          _diaryController.fetchEntries();
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colorpallete.drawericonColor,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  formattedDate,
-                                  style: TextStyle(
-                                    color: Colorpallete.textColor,
-                                    fontSize: 22,
-                                  ),
-                                ),
-                                Text(
-                                  entry.mood,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              entry.title,
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colorpallete.textColor,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                          ],
+                  if (controller.errorMessage.value.isNotEmpty) {
+                    return Center(
+                      child: Text(
+                        'Error: ${controller.errorMessage.value}',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 16,
                         ),
                       ),
                     );
-                  },
-                );
-              }),
+                  }
+
+                  if (controller.entries.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'No diaries found',
+                            style: TextStyle(
+                              color: Colorpallete.textColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Use post frame callback for manual refresh
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                controller.refreshEntries();
+                              });
+                            },
+                            child: const Text('Refresh'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: controller.entries.length,
+                    itemBuilder: (context, index) {
+                      final entry = controller.entries[index];
+                      final formattedDate =
+                          DateFormat('dd-MM-yyyy').format(entry.date);
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            DiaryDetailScreen.route(
+                              id: entry.id,
+                              title: entry.title,
+                              content: entry.content,
+                              mood: entry.mood,
+                              date: entry.date,
+                              images: entry.images ?? [],
+                              videos: entry.videos ?? [],
+                              audioRecordings: entry.audioRecordings ?? [],
+                              bulletPoints: entry.bulletPoints ?? [],
+                              textColor: entry.textColor ?? Colors.black,
+                              textStyle: entry.textStyle ??
+                                  const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                            ),
+                          ).then((_) {
+                            // Use post frame callback for refresh after navigation
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              controller.refreshEntries();
+                            });
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colorpallete.drawericonColor,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    formattedDate,
+                                    style: TextStyle(
+                                      color: Colorpallete.textColor,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                  Text(
+                                    entry.mood,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                entry.title,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colorpallete.textColor,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -386,8 +408,10 @@ class _HomeScreenState extends State<HomeScreen> {
             context,
             AddDiaryScreen.route(),
           ).then((_) {
-            // Refresh entries when returning from add screen
-            _diaryController.fetchEntries();
+            // Use post frame callback for refresh after navigation
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _diaryController.refreshEntries();
+            });
           });
         },
         child: RippleAnimation(

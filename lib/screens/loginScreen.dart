@@ -294,6 +294,7 @@
 
 // #########################Actual Ends##################################
 
+import 'package:daily_dairies/controllers/biometric_controller.dart';
 import 'package:daily_dairies/controllers/login_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/models/login_model.dart';
@@ -303,6 +304,7 @@ import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
+  final BiometricServices lockServices = Get.find<BiometricServices>();
 
   LoginScreen({super.key});
 
@@ -417,22 +419,28 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget biometricLogin(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-        ),
-        onPressed: () async {
-          await loginController.authenticateWithBiometrics(context);
-        },
-        child: const Text("Login with Fingerprint"),
-      ),
+    final BiometricServices lockServices = Get.find<BiometricServices>();
+
+    return Obx(
+      () => lockServices.isBiometricSet
+          ? Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                ),
+                onPressed: () async {
+                  await loginController.authenticateWithBiometrics(context);
+                },
+                child: const Text("Login with Fingerprint"),
+              ),
+            )
+          : const SizedBox(), // Hide the button if biometric is not enabled
     );
   }
 }

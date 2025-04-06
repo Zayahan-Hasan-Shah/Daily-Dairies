@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/models/diary_entry.dart';
 import 'package:daily_dairies/widgets/diary_detail_widgets/audio_recording_section.dart';
 import 'package:daily_dairies/widgets/diary_detail_widgets/diary_edit_toolbar.dart';
 import 'package:daily_dairies/widgets/diary_detail_widgets/diary_header.dart';
@@ -11,28 +12,63 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 import 'package:video_player/video_player.dart';
+import 'package:get/get.dart';
+import 'package:daily_dairies/controllers/diary_controller.dart';
 
 class DiaryDetailScreen extends StatefulWidget {
+  final String id;
   final String title;
   final String content;
   final String mood;
   final DateTime date;
+  final List<String> images;
+  final List<String> videos;
+  final List<String> audioRecordings;
+  final List<String> bulletPoints;
+  final Color textColor;
+  final TextStyle textStyle;
 
   const DiaryDetailScreen({
     super.key,
+    required this.id,
     required this.title,
     required this.content,
     required this.mood,
     required this.date,
+    required this.images,
+    required this.videos,
+    required this.audioRecordings,
+    required this.bulletPoints,
+    required this.textColor,
+    required this.textStyle,
   });
 
-  static Route route(String title, String content, String mood, DateTime date) {
+  static MaterialPageRoute route({
+    required String id,
+    required String title,
+    required String content,
+    required String mood,
+    required DateTime date,
+    required List<String> images,
+    required List<String> videos,
+    required List<String> audioRecordings,
+    required List<String> bulletPoints,
+    required Color textColor,
+    required TextStyle textStyle,
+  }) {
     return MaterialPageRoute(
-      builder: (context) => DiaryDetailScreen(
+      builder: (_) => DiaryDetailScreen(
+        id: id,
         title: title,
         content: content,
         mood: mood,
         date: date,
+        images: images,
+        videos: videos,
+        audioRecordings: audioRecordings,
+        bulletPoints: bulletPoints,
+        textColor: textColor,
+        textStyle: textStyle,
       ),
     );
   }
@@ -42,6 +78,8 @@ class DiaryDetailScreen extends StatefulWidget {
 }
 
 class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
+  final DiaryController _diaryController = Get.find<DiaryController>();
+
   // Core diary data
   late final TextEditingController titleController;
   late final TextEditingController contentController;
@@ -113,17 +151,51 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colorpallete.backgroundColor,
+            color: widget.textColor,
           ),
         ),
         const SizedBox(height: 16),
         Text(
           widget.content,
-          style: TextStyle(
-            fontSize: 18,
-            color: Colorpallete.backgroundColor,
-          ),
+          style: widget.textStyle,
         ),
+        if (widget.bulletPoints.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          ...widget.bulletPoints.map((point) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('•  ', style: widget.textStyle),
+                    Expanded(
+                      child: Text(
+                        point,
+                        style: widget.textStyle,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+        const SizedBox(height: 16),
+        if (widget.images.isNotEmpty || widget.videos.isNotEmpty)
+          MediaSection(
+            images: widget.images.map((path) => File(path)).toList(),
+            videos: widget.videos.map((path) => File(path)).toList(),
+            isEditing: false,
+            onPlayVideo: _playVideo,
+          ),
+        if (widget.audioRecordings.isNotEmpty)
+          AudioRecordingSection(
+            recordings:
+                widget.audioRecordings.map((path) => File(path)).toList(),
+            isRecording: false,
+            recordDuration: '',
+            isPlaying: false,
+            onPlayAudio: (audio) {
+              // Implement audio playback
+            },
+          ),
       ],
     );
   }
@@ -137,7 +209,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colorpallete.backgroundColor,
+            color: currentTextColor,
           ),
           decoration: InputDecoration(
             border: OutlineInputBorder(
@@ -154,7 +226,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           maxLines: null,
           style: currentTextStyle.copyWith(
             color: currentTextColor,
-          ), // Use combined style
+          ),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderSide: BorderSide.none,
@@ -163,6 +235,48 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
             hintText: "Write your diary entry here...",
             hintStyle: TextStyle(color: Colorpallete.backgroundColor),
           ),
+        ),
+        if (widget.bulletPoints.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          ...widget.bulletPoints.map((point) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('•  ', style: currentTextStyle),
+                    Expanded(
+                      child: Text(
+                        point,
+                        style: currentTextStyle,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+        const SizedBox(height: 16),
+        MediaSection(
+          images: images,
+          videos: videos,
+          isEditing: true,
+          onDeleteImage: (index) {
+            setState(() => images.removeAt(index));
+          },
+          onPlayVideo: _playVideo,
+        ),
+        const SizedBox(height: 10),
+        AudioRecordingSection(
+          isRecording: isRecording,
+          recordDuration:
+              '${recordingDuration ~/ 60}:${(recordingDuration % 60).toString().padLeft(2, '0')}',
+          recordings: audioRecordings,
+          isPlaying: false,
+          onPlayAudio: (audio) {
+            // Implement audio playback
+          },
+          onDeleteAudio: (index) {
+            setState(() => audioRecordings.removeAt(index));
+          },
         ),
       ],
     );
@@ -602,17 +716,78 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
 
   // Helper Methods
   void _toggleEditMode() {
-    setState(() {
-      isEditing = !isEditing;
-      if (!isEditing) {
-        // Save changes here
-        _saveChanges();
-      }
-    });
+    if (isEditing) {
+      // If we're currently editing, save changes
+      _saveChanges();
+    } else {
+      // Enter edit mode
+      setState(() {
+        isEditing = true;
+      });
+    }
   }
 
-  void _saveChanges() {
-    // Implement save logic
+  void _saveChanges() async {
+    // Create a loading overlay
+    final loadingOverlay = OverlayEntry(
+      builder: (context) => Container(
+        color: Colors.black.withOpacity(0.5),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+
+    try {
+      // Show loading overlay
+      Overlay.of(context).insert(loadingOverlay);
+
+      // Create updated diary entry
+      final updatedEntry = DiaryEntry(
+        id: widget.id,
+        userId: _diaryController.userId!,
+        title: titleController.text.trim(),
+        content: contentController.text.trim(),
+        date: selectedDate,
+        mood: selectedEmoji,
+        textColor: currentTextColor,
+        textStyle: currentTextStyle,
+        images: images.map((file) => file.path).toList(),
+        videos: videos.map((file) => file.path).toList(),
+        audioRecordings: audioRecordings.map((file) => file.path).toList(),
+        bulletPoints: widget.bulletPoints,
+      );
+
+      // Update the entry in Firestore
+      await _diaryController.updateEntry(updatedEntry);
+
+      // Remove loading overlay
+      loadingOverlay.remove();
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Diary entry updated successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Exit edit mode
+      setState(() {
+        isEditing = false;
+      });
+    } catch (e) {
+      // Remove loading overlay
+      loadingOverlay.remove();
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update diary entry: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

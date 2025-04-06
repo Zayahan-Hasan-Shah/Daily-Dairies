@@ -43,7 +43,7 @@ class CalendarScreen extends GetView<DiaryController> {
           elevation: 0,
           onPressed: () {
             Navigator.push(context, AddDiaryScreen.route()).then((_) {
-              controller.fetchEntries();
+              controller.refreshEntries();
             });
           },
           child: RippleAnimation(
@@ -190,13 +190,23 @@ class CalendarScreen extends GetView<DiaryController> {
                         Navigator.push(
                           context,
                           DiaryDetailScreen.route(
-                            diary.title,
-                            diary.content,
-                            diary.mood,
-                            diary.date,
+                            title: diary.title,
+                            content: diary.content,
+                            mood: diary.mood,
+                            date: diary.date,
+                            images: diary.images ?? [],
+                            videos: diary.videos ?? [],
+                            audioRecordings: diary.audioRecordings ?? [],
+                            bulletPoints: diary.bulletPoints ?? [],
+                            textColor: diary.textColor ?? Colors.black,
+                            textStyle: diary.textStyle ??
+                                const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ), id: '',
                           ),
                         ).then((_) {
-                          controller.fetchEntries();
+                          controller.refreshEntries();
                         });
                       },
                       child: Container(

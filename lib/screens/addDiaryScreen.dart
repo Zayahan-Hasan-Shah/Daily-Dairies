@@ -193,45 +193,34 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     }
   }
 
-  void _showEmojiPicker() {
-    showDialog(
+  Future<void> _showEmojiPicker() async {
+    final List<String> emojis = [
+      '😊',
+      '😢',
+      '😡',
+      '😴',
+      '🤔',
+      '😎',
+      '🥳',
+      '😍'
+    ];
+
+    final String? selectedEmoji = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          alignment: Alignment.center,
-          backgroundColor: Colorpallete.backgroundColor, // Match your theme
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          title: const Text(
-            "How's your day?",
-            style: TextStyle(color: Colors.white),
-          ),
+          backgroundColor: Colorpallete.backgroundColor,
+          title:
+              const Text('Select Mood', style: TextStyle(color: Colors.white)),
           content: Wrap(
-            alignment: WrapAlignment.center,
             spacing: 10,
             runSpacing: 10,
-            children: [
-              '😑',
-              '😊',
-              '😃',
-              '😍',
-              '😁',
-              '😡',
-              '😢',
-              '😭',
-              '😰',
-              '😔'
-            ].map((emoji) {
+            children: emojis.map((emoji) {
               return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedEmoji = emoji;
-                  });
-                  Navigator.pop(context);
-                },
+                onTap: () => Navigator.pop(context, emoji),
                 child: Text(
                   emoji,
-                  style: const TextStyle(fontSize: 30),
+                  style: const TextStyle(fontSize: 32),
                 ),
               );
             }).toList(),
@@ -239,6 +228,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         );
       },
     );
+
+    if (selectedEmoji != null) {
+      setState(() {
+        this.selectedEmoji = selectedEmoji;
+      });
+    }
   }
 
   void _showTextStylePicker() {
@@ -327,21 +322,33 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
 
   void _onToolSelected(String tool) {
     setState(() {
-      if (tool == "List") {
-        showBulletPoints = !showBulletPoints;
-        selectedTool = "List";
-      } else if (tool == "Style") {
-        _showColorPicker();
-      } else if (tool == "Text") {
-        _showTextStylePicker();
-      } else if (tool == "Image") {
-        _pickImage();
-      } else if (tool == "Video") {
-        _pickVideo();
-      } else if (tool == "Voice") {
-        _toggleRecording();
+      if (selectedTool == tool) {
+        selectedTool = null;
       } else {
-        selectedTool = (selectedTool == tool) ? null : tool;
+        selectedTool = tool;
+      }
+
+      switch (tool) {
+        case "Style":
+          _showColorPicker();
+          break;
+        case "Text":
+          _showTextStylePicker();
+          break;
+        case "Image":
+          _pickImage();
+          break;
+        case "Video":
+          _pickVideo();
+          break;
+        case "List":
+          setState(() {
+            showBulletPoints = !showBulletPoints;
+          });
+          break;
+        case "Voice":
+          _toggleRecording();
+          break;
       }
     });
   }
@@ -356,15 +363,16 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     });
   }
 
-  void _onBulletPointChanged(String value) {
-    setState(() {
-      textSpans.add(
-        TextSpan(
-          text: "• $value\n",
-          style: currentTextStyle,
-        ),
-      );
-    });
+  void _onBulletPointChanged(String text, int index) {
+    if (index < currentBulletPoints.length) {
+      setState(() {
+        currentBulletPoints[index] = text;
+      });
+    } else {
+      setState(() {
+        currentBulletPoints.add(text);
+      });
+    }
   }
 
   Widget _buildBottomBar() {
@@ -922,11 +930,13 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 if (showBulletPoints) ...[
                   const SizedBox(height: 10),
                   BulletPointWidget(
-                    currentTextStyle: currentTextStyle,
-                    onTextChanged: _onBulletPointChanged,
-                    onBulletPointsChanged: (bulletPoints) {
+                    currentTextStyle: currentTextStyle ??
+                        const TextStyle(fontSize: 16, color: Colors.black),
+                    onTextChanged: (text) {
                       setState(() {
-                        currentBulletPoints = bulletPoints;
+                        if (!currentBulletPoints.contains(text)) {
+                          currentBulletPoints.add(text);
+                        }
                       });
                     },
                   ),

@@ -6,6 +6,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:daily_dairies/controllers/diary_controller.dart';
 
 class TotalDiaries extends StatefulWidget {
   const TotalDiaries({super.key});
@@ -15,47 +17,56 @@ class TotalDiaries extends StatefulWidget {
 }
 
 class _TotalDiariesState extends State<TotalDiaries> {
-  int diaryCount = 0;
+  final DiaryController _diaryController = Get.find<DiaryController>();
+  final RxInt diaryCount = 0.obs;
 
   @override
   void initState() {
     super.initState();
-    _fetchDiaryCount();
+    // Delay the fetch to avoid build phase conflicts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchDiaryCount();
+    });
   }
 
   Future<void> _fetchDiaryCount() async {
     try {
-      // Fetch diary count from Firestore
-      // Assuming you have a "diaries" collection in Firebase
-      var snapshot =
-          await FirebaseFirestore.instance.collection('diaries').get();
-      setState(() {
-        diaryCount = snapshot.docs.length; // Get total document count
-      });
+      final userId = _diaryController.userId;
+
+      if (userId == null) {
+        diaryCount.value = 0;
+        return;
+      }
+
+      var snapshot = await FirebaseFirestore.instance
+          .collection('diaries')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      diaryCount.value = snapshot.docs.length;
     } catch (e) {
       print("Error fetching diary count: $e");
+      diaryCount.value = 0;
     }
   }
 
   // Share image functionality
   Future<void> _shareImage() async {
     try {
-      // Load image from assets
       final ByteData data =
           await rootBundle.load('assets/images/profile_screen_background.png');
       final List<int> bytes = data.buffer.asUint8List();
 
-      // Get the temporary directory
       final directory = await getTemporaryDirectory();
       final file = File('${directory.path}/profile_screen_background.png');
 
-      // Write the image bytes to a temporary file
       await file.writeAsBytes(bytes);
 
-      // Share the file using the share_plus package
-      await Share.shareXFiles([XFile(file.path)],
-          text:
-              "I'm using My Diary to capture all my thoughts and memories. Now, I'm sharing it with you.");
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text:
+            "I've written ${diaryCount.value} diaries using My Diary app! Join me in capturing memories.",
+      );
     } catch (e) {
       print("Error sharing image: $e");
     }
@@ -87,27 +98,35 @@ class _TotalDiariesState extends State<TotalDiaries> {
                 style: TextStyle(fontSize: 18, color: Colorpallete.bgColor),
               ),
               IconButton(
-                onPressed: _shareImage, // Share image when button is pressed
+                onPressed: _shareImage,
                 icon: Icon(Icons.share, color: Colorpallete.bgColor),
               ),
             ],
           ),
-          Text(
-            '$diaryCount', // Display the dynamic diary count
-            style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colorpallete.backgroundColor),
-          ),
+          Obx(() => Text(
+                _diaryController.userId == null ? '0' : '${diaryCount.value}',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colorpallete.backgroundColor,
+                ),
+              )),
           Text(
             'A Diary Means Yes Indeed',
             style: TextStyle(
-                fontStyle: FontStyle.italic,
-                fontSize: 20,
-                color: Colorpallete.bgColor),
+              fontStyle: FontStyle.italic,
+              fontSize: 20,
+              color: Colorpallete.bgColor,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    diaryCount.close();
+    super.dispose();
   }
 }
