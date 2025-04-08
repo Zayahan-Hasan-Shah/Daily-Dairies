@@ -14,9 +14,9 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late final List<DiaryEntry> _allEntries; // Change to List<DiaryEntry>
+  late final List<DiaryEntry> _allEntries;
   List<String> recentSearch = [];
-  List<DiaryEntry> _filteredEntries = []; // Change to List<DiaryEntry>
+  List<DiaryEntry> _filteredEntries = [];
 
   @override
   void initState() {
@@ -28,8 +28,8 @@ class _SearchScreenState extends State<SearchScreen> {
   void _filterEntries(String query) {
     setState(() {
       _filteredEntries = _allEntries
-          .where((entry) => entry.title.toLowerCase().contains(
-              query.toLowerCase())) // Filter by title (or other criteria)
+          .where((entry) =>
+              entry.title.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
 
@@ -114,16 +114,16 @@ class _SearchScreenState extends State<SearchScreen> {
             ],
             Expanded(
               child: ListView.builder(
-                itemCount: _filteredEntries.length = 5,
+                itemCount: _filteredEntries.length,
                 itemBuilder: (context, index) {
-                  final entry = _filteredEntries[index]; // Get the DiaryEntry
+                  final entry = _filteredEntries[index];
                   return ListTile(
                     title: Text(
                       entry.title,
                       style: TextStyle(color: Colorpallete.backgroundColor),
                     ),
                     subtitle: Text(
-                      "Date: ${entry.date.toLocal()}", // Display the actual date
+                      "Date: ${entry.date.toLocal()}",
                       style: TextStyle(color: Colorpallete.backgroundColor),
                     ),
                     onTap: () {

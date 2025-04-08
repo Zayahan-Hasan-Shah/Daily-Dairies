@@ -70,7 +70,7 @@ class AppRoutes {
             path: '/search',
             builder: (context, state) {
               final List<DiaryEntry> entries =
-                  (state.extra as List<DiaryEntry>) ?? [];
+                  (state.extra as List<DiaryEntry>?) ?? [];
               return SearchScreen(entries: entries);
             },
           ),

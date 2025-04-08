@@ -224,8 +224,6 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              // final List<DiaryEntry> titles =
-              //     _diaryController.entries.map((e) => e.title).toList();
               context.go('/search', extra: _diaryController.entries);
             },
             icon: const Icon(Icons.search_rounded),
