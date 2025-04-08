@@ -219,6 +219,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
           title:
               const Text('Select Mood', style: TextStyle(color: Colors.white)),
           content: Wrap(
+            alignment: WrapAlignment.center,
             spacing: 10,
             runSpacing: 10,
             children: [
