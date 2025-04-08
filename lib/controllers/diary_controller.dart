@@ -40,6 +40,28 @@ class DiaryController extends GetxController {
   final Rxn<String> _userId = Rxn<String>();
   String? get userId => _userId.value;
 
+  List<String> moodEmojis = [
+    '😑',
+    '😊',
+    '😃',
+    '😍',
+    '😁',
+    '😡',
+    '😢',
+    '😭',
+    '😰',
+    '😔',
+  ];
+  int emojiIndex(String? emoji) {
+    return moodEmojis.indexOf(emoji ?? '');
+  }
+
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   fetchEntries();
+  // }
+
   @override
   void onInit() {
     super.onInit();
@@ -61,6 +83,75 @@ class DiaryController extends GetxController {
         errorMessage.value = 'Authentication error: ${e.toString()}';
       }
     });
+    // Observe changes in entries and update mood stats
+    ever(entries, (_) => updateMoodStats());
+  }
+
+  // Map<String, List<int>> get moodStats {
+  //   final now = DateTime.now();
+
+  //   List<int> countEmojisForDays(int days) {
+  //     final List<int> counts = List.filled(moodEmojis.length, 0);
+  //     final cutoff = now.subtract(Duration(days: days));
+
+  //     for (var entry in entries) {
+  //       if (entry.createdAt.isAfter(cutoff)) {
+  //         final index = emojiIndex(entry.mood);
+  //         if (index != -1) counts[index]++;
+  //       }
+  //     }
+
+  //     return counts;
+  //   }
+
+  //   return {
+  //     "Last 7 days": countEmojisForDays(7),
+  //     "Last 30 days": countEmojisForDays(30),
+  //     "Last 90 days": countEmojisForDays(90),
+  //     "All": countEmojisForDays(3650), // approx 10 years = all
+  //   };
+  // }
+  RxMap<String, List<int>> moodStats = <String, List<int>>{}.obs;
+
+  void updateMoodStats() {
+    final now = DateTime.now();
+
+    // Helper function to count mood emojis for a given time range
+    List<int> countEmojisForDays(int days) {
+      final List<int> counts = List.filled(moodEmojis.length, 0);
+      final cutoff = now.subtract(Duration(days: days));
+
+      // Debugging: Show entries being processed
+      print("Counting emojis for the last $days days...");
+
+      for (var entry in entries) {
+        print("Checking entry: ${entry.title}, Created At: ${entry.createdAt}");
+        if (entry.createdAt.isAfter(cutoff)) {
+          final index = emojiIndex(entry.mood);
+          if (index != -1) {
+            counts[index]++;
+            print(
+                "Found mood: ${entry.mood} at index $index. Updated counts: $counts");
+          } else {
+            print("⚠️ Mood '${entry.mood}' not found in moodEmojis list!");
+          }
+        }
+      }
+
+      return counts;
+    }
+
+    moodStats.value = {
+      "Last 7 days": countEmojisForDays(7),
+      "Last 30 days": countEmojisForDays(30),
+      "Last 90 days": countEmojisForDays(90),
+      "All": countEmojisForDays(3650), // approx 10 years = all
+    };
+
+    // Debugging: Print the updated stats
+    print("Updated mood stats: ${moodStats.value}");
+
+    update(); // Notify the widget to rebuild
   }
 
   bool _validateEntry(DiaryEntry entry) {
@@ -170,6 +261,33 @@ class DiaryController extends GetxController {
     }
   }
 
+  // Future<void> fetchEntries() async {
+  //   try {
+  //     if (userId == null) {
+  //       throw Exception('User not logged in');
+  //     }
+
+  //     isLoading.value = true;
+
+  //     final snapshot = await _firestore
+  //         .collection('diaries')
+  //         .where('userId', isEqualTo: userId)
+  //         .get();
+
+  //     entries.value =
+  //         snapshot.docs.map((doc) => DiaryEntry.fromMap(doc.data())).toList();
+
+  //     entries.value.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+  //     // Recalculate mood stats when entries are fetched
+  //     updateMoodStats();
+  //   } catch (e) {
+  //     errorMessage.value = e.toString();
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+
   Future<void> deleteEntry(String entryId) async {
     try {
       if (_userId.value == null) {
@@ -189,5 +307,19 @@ class DiaryController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Map<String, int> get tagCounts {
+    final Map<String, int> counts = {};
+    for (var entry in entries) {
+      for (var tag in entry.tags) {
+        counts[tag] = (counts[tag] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }
+
+  List<DiaryEntry> getEntriesByTag(String tag) {
+    return entries.where((entry) => entry.tags.contains(tag)).toList();
   }
 }

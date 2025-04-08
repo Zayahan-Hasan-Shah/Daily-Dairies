@@ -5,6 +5,7 @@ import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/backupscreen.dart';
 import 'package:daily_dairies/screens/calendarScreen.dart';
 import 'package:daily_dairies/screens/diarylock.dart';
+import 'package:daily_dairies/screens/entries_by_tag_screen.dart';
 import 'package:daily_dairies/screens/exportdataScreen.dart';
 import 'package:daily_dairies/screens/faqScreen.dart';
 import 'package:daily_dairies/screens/faqsQnA/backupFailed.dart';
@@ -79,6 +80,13 @@ class AppRoutes {
           GoRoute(
             path: '/tagmanagement',
             builder: (context, state) => const Tagscreen(),
+          ),
+          GoRoute(
+            path: '/tagged/:tag',
+            builder: (context, state) {
+              final tag = state.pathParameters['tag']!;
+              return EntriesByTagScreen(tag: tag);
+            },
           ),
           GoRoute(
             path: '/diarylock',
