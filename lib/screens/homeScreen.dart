@@ -182,6 +182,7 @@
 
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/controllers/diary_controller.dart';
+import 'package:daily_dairies/models/diary_entry.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/calendarScreen.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
@@ -223,7 +224,9 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              context.go('/search');
+              // final List<DiaryEntry> titles =
+              //     _diaryController.entries.map((e) => e.title).toList();
+              context.go('/search', extra: _diaryController.entries);
             },
             icon: const Icon(Icons.search_rounded),
           ),

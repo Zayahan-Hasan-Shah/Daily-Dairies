@@ -1,9 +1,12 @@
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/models/diary_entry.dart';
+import 'package:daily_dairies/screens/diaryDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final List<DiaryEntry> entries;
+  const SearchScreen({super.key, required this.entries});
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -11,27 +14,33 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _allEntries = [
-    "Morning Reflection",
-    "Workout Log",
-    "Project Ideas",
-    "Weekend Plans",
-    "Book Summary"
-  ];
-  List<String> _filteredEntries = [];
+  late final List<DiaryEntry> _allEntries; // Change to List<DiaryEntry>
+  List<String> recentSearch = [];
+  List<DiaryEntry> _filteredEntries = []; // Change to List<DiaryEntry>
 
   @override
   void initState() {
     super.initState();
+    _allEntries = widget.entries;
     _filteredEntries = List.from(_allEntries); // Initialize with all entries
   }
 
   void _filterEntries(String query) {
     setState(() {
       _filteredEntries = _allEntries
-          .where((entry) => entry.toLowerCase().contains(query.toLowerCase()))
+          .where((entry) => entry.title.toLowerCase().contains(
+              query.toLowerCase())) // Filter by title (or other criteria)
           .toList();
     });
+
+    if (query.trim().isNotEmpty && !recentSearch.contains(query)) {
+      setState(() {
+        recentSearch.insert(0, query);
+        if (recentSearch.length > 5) {
+          recentSearch = recentSearch.sublist(0, 5);
+        }
+      });
+    }
   }
 
   @override
@@ -46,62 +55,102 @@ class _SearchScreenState extends State<SearchScreen> {
           onPressed: () => context.go('/'),
         ),
       ),
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _searchController,
-                onChanged: _filterEntries,
-                decoration: InputDecoration(
-                  hintText: "Search entries...",
-                  hintStyle: TextStyle(color: Colorpallete.backgroundColor),
-                  prefixIcon:
-                      Icon(Icons.search, color: Colorpallete.backgroundColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12), // Rounded corners
-                    borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor,
-                        width: 2), // Border color and width
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor,
-                        width: 1.5), // Default border
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor,
-                        width: 2), // Focused border color
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _searchController,
+              onChanged: _filterEntries,
+              decoration: InputDecoration(
+                hintText: "Search entries...",
+                hintStyle: TextStyle(color: Colorpallete.backgroundColor),
+                prefixIcon:
+                    Icon(Icons.search, color: Colorpallete.backgroundColor),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: Colorpallete.backgroundColor, width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                      color: Colorpallete.backgroundColor, width: 1.5),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: Colorpallete.backgroundColor, width: 2),
+                ),
+              ),
+              style: TextStyle(color: Colorpallete.backgroundColor),
+            ),
+            if (recentSearch.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Recent Searches",
+                  style: TextStyle(
+                    color: Colorpallete.backgroundColor,
+                    fontSize: 16,
                   ),
                 ),
-                style: TextStyle(color: Colorpallete.backgroundColor),
               ),
-              Container(
-                child: Expanded(
-                  child: ListView.builder(
-                    itemCount: _filteredEntries.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(
-                          _filteredEntries[index],
-                          style: TextStyle(color: Colorpallete.backgroundColor),
+              Wrap(
+                spacing: 8,
+                children: recentSearch.map((search) {
+                  return ActionChip(
+                    label: Text(search),
+                    onPressed: () {
+                      _searchController.text = search;
+                      _filterEntries(search);
+                    },
+                    backgroundColor: Colors.grey[300],
+                  );
+                }).toList(),
+              ),
+              const Divider(),
+            ],
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredEntries.length = 5,
+                itemBuilder: (context, index) {
+                  final entry = _filteredEntries[index]; // Get the DiaryEntry
+                  return ListTile(
+                    title: Text(
+                      entry.title,
+                      style: TextStyle(color: Colorpallete.backgroundColor),
+                    ),
+                    subtitle: Text(
+                      "Date: ${entry.date.toLocal()}", // Display the actual date
+                      style: TextStyle(color: Colorpallete.backgroundColor),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DiaryDetailScreen(
+                            id: entry.id,
+                            title: entry.title,
+                            content: entry.content,
+                            mood: entry.mood,
+                            date: entry.date,
+                            images: entry.images,
+                            videos: entry.videos,
+                            audioRecordings: entry.audioRecordings,
+                            bulletPoints: entry.bulletPoints,
+                            textColor: entry.textColor,
+                            textStyle: entry.textStyle,
+                          ),
                         ),
-                        subtitle: Text(
-                          "Date: 2025-02-10",
-                          style: TextStyle(color: Colorpallete.backgroundColor),
-                        ),
-                        onTap: () {},
                       );
                     },
-                  ),
-                ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
