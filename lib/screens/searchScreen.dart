@@ -1,6 +1,243 @@
+// import 'package:daily_dairies/controllers/diary_controller.dart';
+// import 'package:daily_dairies/core/colorPallete.dart';
+// import 'package:daily_dairies/screens/diaryDetailScreen.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:go_router/go_router.dart';
+// import 'package:intl/intl.dart';
+
+// class SearchScreen extends StatefulWidget {
+//   const SearchScreen({super.key});
+
+//   @override
+//   _SearchScreenState createState() => _SearchScreenState();
+// }
+
+// class _SearchScreenState extends State<SearchScreen> {
+//   final TextEditingController _searchController = TextEditingController();
+//   final DiaryController _diaryController = Get.find<DiaryController>();
+//   final List<String> _allEntries = [
+//     "Morning Reflection",
+//     "Workout Log",
+//     "Project Ideas",
+//     "Weekend Plans",
+//     "Book Summary"
+//   ];
+//   List<String> _filteredEntries = [];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Initialize with all entries from the controller
+//     _filteredEntries =
+//         _diaryController.entries.map((entry) => entry.title).toList();
+//   }
+
+//   void _filterEntries(String query) {
+//     setState(() {
+//       // Filter entries from the controller based on the query
+//       _filteredEntries = _diaryController.entries
+//           .where((entry) =>
+//               entry.title.toLowerCase().contains(query.toLowerCase()))
+//           .map((entry) => entry.title)
+//           .toList();
+//     });
+//   }
+
+//   @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//     backgroundColor: Colorpallete.bgColor,
+//     appBar: AppBar(
+//       backgroundColor: Colorpallete.backgroundColor,
+//       iconTheme: IconThemeData(color: Colorpallete.textColor),
+//       leading: IconButton(
+//         icon: const Icon(Icons.arrow_back),
+//         onPressed: () => context.go('/'),
+//       ),
+//     ),
+//     body: Padding(
+//       padding: const EdgeInsets.all(8.0),
+//       child: SingleChildScrollView(
+//         scrollDirection: Axis.vertical,
+//         child: Column(
+//           children: [
+//             TextField(
+//               controller: _searchController,
+//               onChanged: _filterEntries,
+//               decoration: InputDecoration(
+//                 hintText: "Search entries...",
+//                 hintStyle: TextStyle(color: Colorpallete.backgroundColor),
+//                 prefixIcon: Icon(Icons.search, color: Colorpallete.backgroundColor),
+//                 border: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(12),
+//                   borderSide: BorderSide(
+//                       color: Colorpallete.backgroundColor, width: 2),
+//                 ),
+//                 enabledBorder: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(12),
+//                   borderSide: BorderSide(
+//                       color: Colorpallete.backgroundColor, width: 1.5),
+//                 ),
+//                 focusedBorder: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(12),
+//                   borderSide: BorderSide(
+//                       color: Colorpallete.backgroundColor, width: 2),
+//                 ),
+//               ),
+//               style: TextStyle(color: Colorpallete.backgroundColor),
+//             ),
+//             const SizedBox(height: 16),
+//             Container(
+//               child: GetBuilder<DiaryController>(
+//                 builder: (controller) {
+//                   if (controller.isLoading.value) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   }
+
+//                   if (_diaryController.errorMessage.value.isNotEmpty) {
+//                     return Center(
+//                       child: Text(
+//                         'Error: ${_diaryController.errorMessage.value}',
+//                         style: const TextStyle(
+//                           color: Colors.red,
+//                           fontSize: 16,
+//                         ),
+//                       ),
+//                     );
+//                   }
+
+//                   if (_filteredEntries.isEmpty) {
+//                     return Center(
+//                       child: Column(
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: [
+//                           Text(
+//                             'No diaries found',
+//                             style: TextStyle(
+//                               color: Colorpallete.textColor,
+//                               fontSize: 16,
+//                             ),
+//                           ),
+//                           ElevatedButton(
+//                             onPressed: () {
+//                               WidgetsBinding.instance.addPostFrameCallback((_) {
+//                                 controller.refreshEntries();
+//                               });
+//                             },
+//                             child: const Text('Refresh'),
+//                           ),
+//                         ],
+//                       ),
+//                     );
+//                   }
+
+//                   return RefreshIndicator(
+//                     onRefresh: () => _diaryController.refreshEntries(),
+//                     child: ListView.builder(
+//                       shrinkWrap: true,
+//                       physics: const NeverScrollableScrollPhysics(),
+//                       itemCount: _filteredEntries.length,
+//                       itemBuilder: (context, index) {
+//                         final entry = _diaryController.entries.firstWhere(
+//                           (entry) => entry.title == _filteredEntries[index],
+//                           orElse: () => null, // Return null if no entry is found
+//                         );
+
+//                         if (entry == null) {
+//                           return const SizedBox.shrink(); // Return an empty widget if no entry is found
+//                         }
+
+//                         final formattedDate =
+//                             DateFormat('dd-MM-yyyy').format(entry.date);
+
+//                         return GestureDetector(
+//                           onTap: () {
+//                             Navigator.push(
+//                               context,
+//                               DiaryDetailScreen.route(
+//                                 id: entry.id,
+//                                 title: entry.title,
+//                                 content: entry.content,
+//                                 mood: entry.mood,
+//                                 tags: entry.tags,
+//                                 date: entry.date,
+//                                 images: entry.images ?? [],
+//                                 videos: entry.videos ?? [],
+//                                 audioRecordings: entry.audioRecordings ?? [],
+//                                 bulletPoints: entry.bulletPoints ?? [],
+//                                 textColor: entry.textColor ?? Colors.black,
+//                                 textStyle: entry.textStyle ?? const TextStyle(
+//                                   fontSize: 16,
+//                                   color: Colors.black,
+//                                 ),
+//                               ),
+//                             ).then((_) {
+//                               WidgetsBinding.instance.addPostFrameCallback((_) {
+//                                 controller.refreshEntries();
+//                               });
+//                             });
+//                           },
+//                           child: Container(
+//                             decoration: BoxDecoration(
+//                               color: Colorpallete.drawericonColor,
+//                               borderRadius: BorderRadius.circular(16),
+//                             ),
+//                             margin: const EdgeInsets.only(bottom: 10),
+//                             padding: const EdgeInsets.all(10),
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Row(
+//                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                   children: [
+//                                     Text(
+//                                       formattedDate,
+//                                       style: TextStyle(
+//                                         color: Colorpallete.textColor,
+//                                         fontSize: 22,
+//                                       ),
+//                                     ),
+//                                     Text(
+//                                       entry.mood,
+//                                       style: const TextStyle(fontSize: 18),
+//                                     ),
+//                                   ],
+//                                 ),
+//                                 const SizedBox(height: 6),
+//                                 Text(
+//                                   entry.title,
+//                                   style: TextStyle(
+//                                     fontSize: 18,
+//                                     color: Colorpallete.textColor,
+//                                   ),
+//                                 ),
+//                                 const SizedBox(height: 20),
+//                               ],
+//                             ),
+//                           ),
+//                         );
+//                       },
+//                     ),
+//                   );
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     ),
+//   );
+// }
+// }
+
+import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:daily_dairies/screens/diaryDetailScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -11,25 +248,24 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _allEntries = [
-    "Morning Reflection",
-    "Workout Log",
-    "Project Ideas",
-    "Weekend Plans",
-    "Book Summary"
-  ];
+  final DiaryController _diaryController = Get.find<DiaryController>();
   List<String> _filteredEntries = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredEntries = List.from(_allEntries); // Initialize with all entries
+    // Initialize with all entries from the controller
+    _filteredEntries =
+        _diaryController.entries.map((entry) => entry.title).toList();
   }
 
   void _filterEntries(String query) {
     setState(() {
-      _filteredEntries = _allEntries
-          .where((entry) => entry.toLowerCase().contains(query.toLowerCase()))
+      // Filter entries from the controller based on the query
+      _filteredEntries = _diaryController.entries
+          .where((entry) =>
+              entry.title.toLowerCase().contains(query.toLowerCase()))
+          .map((entry) => entry.title)
           .toList();
     });
   }
@@ -46,9 +282,10 @@ class _SearchScreenState extends State<SearchScreen> {
           onPressed: () => context.go('/'),
         ),
       ),
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Column(
             children: [
               TextField(
@@ -60,44 +297,164 @@ class _SearchScreenState extends State<SearchScreen> {
                   prefixIcon:
                       Icon(Icons.search, color: Colorpallete.backgroundColor),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor,
-                        width: 2), // Border color and width
+                        color: Colorpallete.backgroundColor, width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor,
-                        width: 1.5), // Default border
+                        color: Colorpallete.backgroundColor, width: 1.5),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                        color: Colorpallete.backgroundColor,
-                        width: 2), // Focused border color
+                        color: Colorpallete.backgroundColor, width: 2),
                   ),
                 ),
                 style: TextStyle(color: Colorpallete.backgroundColor),
               ),
+              const SizedBox(height: 16),
               Container(
-                child: Expanded(
-                  child: ListView.builder(
-                    itemCount: _filteredEntries.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(
-                          _filteredEntries[index],
-                          style: TextStyle(color: Colorpallete.backgroundColor),
+                child: GetBuilder<DiaryController>(
+                  builder: (controller) {
+                    if (controller.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (_diaryController.errorMessage.value.isNotEmpty) {
+                      return Center(
+                        child: Text(
+                          'Error: ${_diaryController.errorMessage.value}',
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
                         ),
-                        subtitle: Text(
-                          "Date: 2025-02-10",
-                          style: TextStyle(color: Colorpallete.backgroundColor),
-                        ),
-                        onTap: () {},
                       );
-                    },
-                  ),
+                    }
+
+                    if (_filteredEntries.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'No diaries found',
+                              style: TextStyle(
+                                color: Colorpallete.textColor,
+                                fontSize: 16,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  controller.refreshEntries();
+                                });
+                              },
+                              child: const Text('Refresh'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: () => _diaryController.refreshEntries(),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _filteredEntries.length,
+                        itemBuilder: (context, index) {
+                          // Safe way to get the entry without crashing
+                          var entry;
+                          try {
+                            entry = _diaryController.entries.firstWhere(
+                              (e) => e.title == _filteredEntries[index],
+                            );
+                          } catch (e) {
+                            entry = null;
+                          }
+
+                          if (entry == null) return const SizedBox.shrink();
+
+                          final formattedDate =
+                              DateFormat('dd-MM-yyyy').format(entry.date);
+
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                DiaryDetailScreen.route(
+                                  id: entry.id,
+                                  title: entry.title,
+                                  content: entry.content,
+                                  mood: entry.mood,
+                                  tags: entry.tags,
+                                  date: entry.date,
+                                  images: entry.images ?? [],
+                                  videos: entry.videos ?? [],
+                                  audioRecordings: entry.audioRecordings ?? [],
+                                  bulletPoints: entry.bulletPoints ?? [],
+                                  textColor: entry.textColor ?? Colors.black,
+                                  textStyle: entry.textStyle ??
+                                      const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
+                                ),
+                              ).then((_) {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  controller.refreshEntries();
+                                });
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colorpallete.drawericonColor,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        formattedDate,
+                                        style: TextStyle(
+                                          color: Colorpallete.textColor,
+                                          fontSize: 22,
+                                        ),
+                                      ),
+                                      Text(
+                                        entry.mood,
+                                        style: const TextStyle(fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    entry.title,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colorpallete.textColor,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

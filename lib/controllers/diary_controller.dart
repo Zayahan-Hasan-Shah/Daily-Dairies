@@ -56,12 +56,6 @@ class DiaryController extends GetxController {
     return moodEmojis.indexOf(emoji ?? '');
   }
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   fetchEntries();
-  // }
-
   @override
   void onInit() {
     super.onInit();
@@ -87,30 +81,6 @@ class DiaryController extends GetxController {
     ever(entries, (_) => updateMoodStats());
   }
 
-  // Map<String, List<int>> get moodStats {
-  //   final now = DateTime.now();
-
-  //   List<int> countEmojisForDays(int days) {
-  //     final List<int> counts = List.filled(moodEmojis.length, 0);
-  //     final cutoff = now.subtract(Duration(days: days));
-
-  //     for (var entry in entries) {
-  //       if (entry.createdAt.isAfter(cutoff)) {
-  //         final index = emojiIndex(entry.mood);
-  //         if (index != -1) counts[index]++;
-  //       }
-  //     }
-
-  //     return counts;
-  //   }
-
-  //   return {
-  //     "Last 7 days": countEmojisForDays(7),
-  //     "Last 30 days": countEmojisForDays(30),
-  //     "Last 90 days": countEmojisForDays(90),
-  //     "All": countEmojisForDays(3650), // approx 10 years = all
-  //   };
-  // }
   RxMap<String, List<int>> moodStats = <String, List<int>>{}.obs;
 
   void updateMoodStats() {
@@ -260,33 +230,6 @@ class DiaryController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  // Future<void> fetchEntries() async {
-  //   try {
-  //     if (userId == null) {
-  //       throw Exception('User not logged in');
-  //     }
-
-  //     isLoading.value = true;
-
-  //     final snapshot = await _firestore
-  //         .collection('diaries')
-  //         .where('userId', isEqualTo: userId)
-  //         .get();
-
-  //     entries.value =
-  //         snapshot.docs.map((doc) => DiaryEntry.fromMap(doc.data())).toList();
-
-  //     entries.value.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-  //     // Recalculate mood stats when entries are fetched
-  //     updateMoodStats();
-  //   } catch (e) {
-  //     errorMessage.value = e.toString();
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
 
   Future<void> deleteEntry(String entryId) async {
     try {

@@ -10,19 +10,21 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(BiometricServices());
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  // Initialize Firebase first
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Initialize other services after Firebase
+  Get.put(BiometricServices());
 
   // Will get same data from cache
   FirebaseFirestore.instance.settings = const Settings(
@@ -30,6 +32,7 @@ void main() async {
   );
 
   await FirebaseApi().initNotifications();
+
   // Initialize EasyLocalization
   await EasyLocalization.ensureInitialized();
 
@@ -84,7 +87,7 @@ class MyApp extends StatelessWidget {
   //   );
   // }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Daily Diary',
