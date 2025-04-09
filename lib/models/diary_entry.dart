@@ -95,10 +95,10 @@ class DiaryEntry {
   final String title;
   final String content;
   final DateTime date;
-  final String mood; // For emoji selection
-  final Color textColor; // For text color styling
-  final TextStyle textStyle; // For text styling (italic, size, etc.)
+  final String mood;
   final List<String> tags;
+  final Color textColor;
+  final TextStyle textStyle;
   final List<String> images;
   final List<String> videos;
   final List<String> audioRecordings;
@@ -112,13 +112,13 @@ class DiaryEntry {
     required this.content,
     required this.date,
     required this.mood,
+    required this.tags,
     required this.textColor,
     required this.textStyle,
-    this.tags = const [],
-    this.images = const [],
-    this.videos = const [],
-    this.audioRecordings = const [],
-    this.bulletPoints = const [],
+    required this.images,
+    required this.videos,
+    required this.audioRecordings,
+    required this.bulletPoints,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -162,12 +162,13 @@ class DiaryEntry {
       'content': content,
       'date': date.toUtc(),
       'mood': mood,
+      'tags': tags,
       'textColor': textColor.value,
       'textStyle': {
         'fontSize': textStyle.fontSize,
-        'fontStyle': textStyle.fontStyle?.index ?? FontStyle.normal.index,
+        'fontWeight': textStyle.fontWeight?.index,
+        'fontStyle': textStyle.fontStyle?.index,
         'letterSpacing': textStyle.letterSpacing,
-        'color': textStyle.color?.value ?? Colors.black.value,
       },
       'tags': tags,
       'images': images,
@@ -177,4 +178,33 @@ class DiaryEntry {
       'createdAt': createdAt.toUtc(),
     };
   }
+
+  // factory DiaryEntry.fromMap(Map<String, dynamic> map) {
+  //   return DiaryEntry(
+  //     id: map['id'] ?? '',
+  //     userId: map['userId'] ?? '',
+  //     title: map['title'] ?? '',
+  //     content: map['content'] ?? '',
+  //     date: DateTime.parse(map['date']),
+  //     mood: map['mood'] ?? '😊',
+  //     tags: List<String>.from(map['tags'] ?? []),
+  //     textColor: Color(map['textColor'] ?? Colors.black.value),
+  //     textStyle: TextStyle(
+  //       fontSize: map['textStyle']?['fontSize'] ?? 16,
+  //       fontWeight: map['textStyle']?['fontWeight'] != null
+  //           ? FontWeight.values[map['textStyle']['fontWeight']]
+  //           : FontWeight.normal,
+  //       fontStyle: map['textStyle']?['fontStyle'] != null
+  //           ? FontStyle.values[map['textStyle']['fontStyle']]
+  //           : FontStyle.normal,
+  //       letterSpacing: map['textStyle']?['letterSpacing'] ?? 0,
+  //     ),
+  //     images: List<String>.from(map['images'] ?? []),
+  //     videos: List<String>.from(map['videos'] ?? []),
+  //     audioRecordings: List<String>.from(map['audioRecordings'] ?? []),
+  //     bulletPoints: List<String>.from(map['bulletPoints'] ?? []),
+  //     createdAt:
+  //         DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
+  //   );
+  // }
 }

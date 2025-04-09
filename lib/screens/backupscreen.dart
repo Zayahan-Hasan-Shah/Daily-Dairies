@@ -331,7 +331,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
   Widget _buildRadioTile(String value) {
     return Obx(
       () => RadioListTile<String>(
-        title: Text(value, style: TextStyle(color: Colors.white)),
+        title: Text(value, style: const TextStyle(color: Colors.white)),
         value: value,
         groupValue: controller.selectedReminderInterval.value,
         onChanged: (val) {
@@ -351,14 +351,14 @@ class BackupAndRestoreScreen extends StatelessWidget {
         // backgroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => (context).go('/'),
         ),
         title:
-            Text('Backup and Restore', style: TextStyle(color: Colors.white)),
+            const Text('Backup and Restore', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.question_answer_outlined, color: Colors.white),
+            icon: const Icon(Icons.question_answer_outlined, color: Colors.white),
             onPressed: () => context.go('/faqs'),
           ),
         ],
@@ -370,7 +370,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
             ListTile(
               leading: CircleAvatar(
                 backgroundColor: Colorpallete.bgColor,
-                child: Text('G', style: TextStyle(color: Colors.white)),
+                child: const Text('G', style: TextStyle(color: Colors.white)),
               ),
               title: Text('Backup to Google Drive',
                   style: TextStyle(color: Colorpallete.textColor)),
@@ -410,8 +410,8 @@ class BackupAndRestoreScreen extends StatelessWidget {
 
   Widget _buildDisabledTile(String title, String subtitle) {
     return ListTile(
-      title: Text(title, style: TextStyle(color: Colors.white)),
-      subtitle: Text(subtitle, style: TextStyle(color: Colors.white)),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
+      subtitle: Text(subtitle, style: const TextStyle(color: Colors.white)),
       enabled: false,
     );
   }
@@ -459,7 +459,7 @@ class BackupAndRestoreScreen extends StatelessWidget {
                       _buildCloudTile('OneDrive'),
                     ],
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
           ),
         ],
       ),

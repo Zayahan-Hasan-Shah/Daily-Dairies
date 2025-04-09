@@ -6,7 +6,7 @@ import '../core/colorPallete.dart';
 class ExportScreen extends StatelessWidget {
   final ExportController controller = Get.put(ExportController());
 
-  ExportScreen({Key? key}) : super(key: key);
+  ExportScreen({super.key});
 
   void _showFileSelectionDialog(BuildContext context) {
     showDialog(
@@ -52,7 +52,7 @@ class ExportScreen extends StatelessWidget {
   Widget _buildFileSelectionRadioTile(String value) {
     return Obx(
       () => RadioListTile<String>(
-        title: Text(value, style: TextStyle(color: Colors.white)),
+        title: Text(value, style: const TextStyle(color: Colors.white)),
         value: value,
         groupValue: controller.selectedExportDuration.value,
         onChanged: (val) {
@@ -82,7 +82,7 @@ class ExportScreen extends StatelessWidget {
                   style: TextStyle(color: Colorpallete.textColor)),
               trailing: Obx(() => Text(
                     controller.selectedExportDuration.value,
-                    style: TextStyle(color: Colors.white70),
+                    style: const TextStyle(color: Colors.white70),
                   )),
               onTap: () => _showFileSelectionDialog(context),
             ),
@@ -123,11 +123,11 @@ class ExportScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {},
-            child: const Text("EXPORT"),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colorpallete.backgroundColor,
               foregroundColor: Colors.white,
             ),
+            child: const Text("EXPORT"),
           ),
         ],
       ),

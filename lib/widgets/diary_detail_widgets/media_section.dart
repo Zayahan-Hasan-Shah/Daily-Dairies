@@ -10,13 +10,13 @@ class MediaSection extends StatelessWidget {
   final bool isEditing;
 
   const MediaSection({
-    Key? key,
+    super.key,
     required this.images,
     required this.videos,
     this.onDeleteImage,
     this.onPlayVideo,
     this.isEditing = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

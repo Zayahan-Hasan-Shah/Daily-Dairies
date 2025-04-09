@@ -195,7 +195,7 @@ class DiaryController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       print('Error adding entry: $e');
-      throw e;
+      rethrow;
     } finally {
       isLoading.value = false;
     }
@@ -223,38 +223,11 @@ class DiaryController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       print('Error updating entry: $e');
-      throw e;
+      rethrow;
     } finally {
       isLoading.value = false;
     }
   }
-
-  // Future<void> fetchEntries() async {
-  //   try {
-  //     if (userId == null) {
-  //       throw Exception('User not logged in');
-  //     }
-
-  //     isLoading.value = true;
-
-  //     final snapshot = await _firestore
-  //         .collection('diaries')
-  //         .where('userId', isEqualTo: userId)
-  //         .get();
-
-  //     entries.value =
-  //         snapshot.docs.map((doc) => DiaryEntry.fromMap(doc.data())).toList();
-
-  //     entries.value.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-  //     // Recalculate mood stats when entries are fetched
-  //     updateMoodStats();
-  //   } catch (e) {
-  //     errorMessage.value = e.toString();
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
 
   Future<void> deleteEntry(String entryId) async {
     try {
@@ -271,7 +244,7 @@ class DiaryController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       print('Error deleting entry: $e');
-      throw e;
+      rethrow;
     } finally {
       isLoading.value = false;
     }

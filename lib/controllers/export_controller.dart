@@ -10,10 +10,10 @@ class ExportController extends GetxController {
 
     switch (selectedExportDuration.value) {
       case 'Last 7 Days':
-        startDate = now.subtract(Duration(days: 7));
+        startDate = now.subtract(const Duration(days: 7));
         break;
       case 'Last 30 Days':
-        startDate = now.subtract(Duration(days: 30));
+        startDate = now.subtract(const Duration(days: 30));
         break;
       case 'All Files':
       default:

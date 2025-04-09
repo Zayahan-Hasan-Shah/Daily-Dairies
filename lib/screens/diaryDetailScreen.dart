@@ -27,6 +27,7 @@ class DiaryDetailScreen extends StatefulWidget {
   final List<String> bulletPoints;
   final Color textColor;
   final TextStyle textStyle;
+  final List<String> tags;
 
   const DiaryDetailScreen({
     super.key,
@@ -41,6 +42,7 @@ class DiaryDetailScreen extends StatefulWidget {
     required this.bulletPoints,
     required this.textColor,
     required this.textStyle,
+    required this.tags,
   });
 
   static MaterialPageRoute route({
@@ -55,6 +57,7 @@ class DiaryDetailScreen extends StatefulWidget {
     required List<String> bulletPoints,
     required Color textColor,
     required TextStyle textStyle,
+    required List<String> tags,
   }) {
     return MaterialPageRoute(
       builder: (_) => DiaryDetailScreen(
@@ -69,6 +72,7 @@ class DiaryDetailScreen extends StatefulWidget {
         bulletPoints: bulletPoints,
         textColor: textColor,
         textStyle: textStyle,
+        tags: tags,
       ),
     );
   }
@@ -177,6 +181,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                 ),
               )),
         ],
+        if (widget.tags.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: widget.tags
+                .map((tag) => Chip(
+                      label: Text(tag),
+                      backgroundColor: Colors.blue.withOpacity(0.2),
+                    ))
+                .toList(),
+          ),
+        ],
         const SizedBox(height: 16),
         if (widget.images.isNotEmpty || widget.videos.isNotEmpty)
           MediaSection(
@@ -253,6 +270,25 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                   ],
                 ),
               )),
+        ],
+        if (widget.tags.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: widget.tags
+                .map((tag) => Chip(
+                      label: Text(tag),
+                      backgroundColor: Colors.blue.withOpacity(0.2),
+                      deleteIcon: const Icon(Icons.close, size: 18),
+                      onDeleted: () {
+                        setState(() {
+                          widget.tags.remove(tag);
+                        });
+                      },
+                    ))
+                .toList(),
+          ),
         ],
         const SizedBox(height: 16),
         MediaSection(
@@ -756,6 +792,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         videos: videos.map((file) => file.path).toList(),
         audioRecordings: audioRecordings.map((file) => file.path).toList(),
         bulletPoints: widget.bulletPoints,
+        tags: widget.tags,
       );
 
       // Update the entry in Firestore

@@ -10,12 +10,12 @@ class MediaSection extends StatelessWidget {
   final Function(File) onPlayVideo;
 
   const MediaSection({
-    Key? key,
+    super.key,
     required this.images,
     required this.videos,
     required this.onDeleteImage,
     required this.onPlayVideo,
-  }) : super(key: key);
+  });
 
   Widget _buildImagePreview(BuildContext context, int index, File image) {
     return GestureDetector(
