@@ -1,8 +1,13 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:daily_dairies/core/colorPallete.dart';
+// import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:go_router/go_router.dart';
+// import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProfileSectionWidget extends StatefulWidget {
   const ProfileSectionWidget({super.key});
@@ -14,16 +19,17 @@ class ProfileSectionWidget extends StatefulWidget {
 class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
   User? user = FirebaseAuth.instance.currentUser;
   Map<String, dynamic>? userData;
+  File? _profileImage;
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+    _loadImageFromStorage();
   }
 
   Future<void> _fetchUserData() async {
     if (user == null) return;
-
     try {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -38,6 +44,125 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
     } catch (e) {
       print("Error fetching user data: $e");
     }
+  }
+
+  Future<void> _loadImageFromStorage() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final imagePath = File('${dir.path}/profile_image.png');
+    if (await imagePath.exists()) {
+      setState(() {
+        _profileImage = imagePath;
+      });
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      final File imageFile = File(pickedFile.path);
+      final directory = await getApplicationDocumentsDirectory();
+      final savedImage =
+          await imageFile.copy('${directory.path}/profile_image.png');
+
+      setState(() {
+        _profileImage = savedImage;
+      });
+    }
+  }
+
+  // Future<void> _pickImage(ImageSource source) async {
+  //   final picker = ImagePicker();
+  //   final pickedFile = await picker.pickImage(source: source);
+
+  //   if (pickedFile != null) {
+  //     // Crop the image
+  //     final croppedFile = await ImageCropper().cropImage(
+  //       sourcePath: pickedFile.path,
+  //       compressFormat: ImageCompressFormat.png,
+  //       uiSettings: [
+  //         AndroidUiSettings(
+  //           toolbarTitle: 'Crop Image',
+  //           toolbarColor: Colors.deepOrange,
+  //           toolbarWidgetColor: Colors.white,
+  //           lockAspectRatio: false,
+  //         ),
+  //         IOSUiSettings(
+  //           title: 'Crop Image',
+  //         ),
+  //       ],
+  //     );
+
+  //     if (croppedFile != null) {
+  //       // Compress the image
+  //       final compressedImage = await FlutterImageCompress.compressAndGetFile(
+  //         croppedFile.path,
+  //         '${(await getTemporaryDirectory()).path}/profile_compressed.png',
+  //         quality: 80, // Adjust compression quality (0 - 100)
+  //       );
+
+  //       if (compressedImage != null) {
+  //         final directory = await getApplicationDocumentsDirectory();
+  //         final savedImage =
+  //             await compressedImage.copy('${directory.path}/profile_image.png');
+
+  //         setState(() {
+  //           _profileImage = savedImage;
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
+  Future<void> _removeImage() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final imagePath = File('${dir.path}/profile_image.png');
+    if (await imagePath.exists()) {
+      await imagePath.delete();
+    }
+    setState(() {
+      _profileImage = null;
+    });
+  }
+
+  Future<void> _showImageOptions() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('Pick from Gallery'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              if (_profileImage != null)
+                ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: const Text('Remove Photo'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _removeImage();
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _editDialog(String field, String currentValue) async {
@@ -64,13 +189,11 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
                 String newValue = controller.text.trim();
                 if (newValue.isNotEmpty && user != null) {
                   try {
-                    // Update Firestore
                     await FirebaseFirestore.instance
                         .collection('users')
                         .doc(user!.uid)
                         .update({field.toLowerCase(): newValue});
 
-                    // Update FirebaseAuth only if updating the username
                     if (field == "Username") {
                       await user!.updateDisplayName(newValue);
                       await user!.reload();
@@ -125,6 +248,22 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
     );
   }
 
+  Widget _buildProfileTile(String title, String value,
+      {bool editable = false, bool isSignOut = false}) {
+    return ListTile(
+      title: Text(title),
+      subtitle: Text(value),
+      trailing: isSignOut
+          ? const Icon(Icons.logout, color: Colors.red)
+          : editable
+              ? const Icon(Icons.edit, size: 18)
+              : const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: isSignOut
+          ? () => _confirmSignOut()
+          : (editable ? () => _editDialog(title, value) : null),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,25 +278,24 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profile Picture
             GestureDetector(
-              onTap: () {},
+              onTap: () => _showImageOptions(),
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: Colors.grey.shade300,
-                child: const Icon(Icons.person, size: 50, color: Colors.white),
+                backgroundImage:
+                    _profileImage != null ? FileImage(_profileImage!) : null,
+                child: _profileImage == null
+                    ? const Icon(Icons.person, size: 50, color: Colors.white)
+                    : null,
               ),
             ),
             const SizedBox(height: 10),
-
             TextButton(
               onPressed: () {},
               child: Text(user == null ? "Tap to login" : "Logged in"),
             ),
-
             const SizedBox(height: 20),
-
-            // Editable Username & Bio
             _buildProfileTile("Username", user?.displayName ?? "No Username",
                 editable: true),
             _buildProfileTile(
@@ -168,24 +306,6 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildProfileTile(String title, String value,
-      {bool editable = false, bool isSignOut = false}) {
-    return ListTile(
-      title: Text(title),
-      subtitle: Text(value),
-      trailing: isSignOut
-          ? const Icon(Icons.logout,
-              color: Colors.red) // Show logout icon for email
-          : editable
-              ? const Icon(Icons.edit,
-                  size: 18) // Show edit icon for username & bio
-              : const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: isSignOut
-          ? _confirmSignOut
-          : (editable ? () => _editDialog(title, value) : null),
     );
   }
 }

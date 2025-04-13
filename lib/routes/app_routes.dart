@@ -1,3 +1,4 @@
+import 'package:daily_dairies/models/diary_entry.dart';
 import 'package:daily_dairies/screens/SetPatternScreen.dart';
 import 'package:daily_dairies/screens/SetPinScreen.dart';
 import 'package:daily_dairies/screens/achievmentScreen.dart';
@@ -67,7 +68,11 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/search',
-            builder: (context, state) => const SearchScreen(),
+            builder: (context, state) {
+              final List<DiaryEntry> entries =
+                  (state.extra as List<DiaryEntry>?) ?? [];
+              return SearchScreen(entries: entries);
+            },
           ),
           GoRoute(
             path: '/profilesection',

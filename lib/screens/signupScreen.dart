@@ -50,6 +50,12 @@ class SignupScreen extends StatelessWidget {
               labelText: "Confirm Password",
               obscureText: true,
             ),
+            const SizedBox(height: 10),
+            _buildTextField(
+              controller: signupController.bioController,
+              labelText: "Enter Bio",
+              // obscureText: true,
+            ),
             const SizedBox(height: 20),
             signupButton(signupController, context),
             const SizedBox(height: 20),
@@ -119,47 +125,49 @@ class SignupScreen extends StatelessWidget {
   // }
 
   Widget signupButton(SignupController signupController, BuildContext context) {
-  return Obx(() => signupController.isLoading.value
-      ? const CircularProgressIndicator()
-      : Column(
-          children: [
-            if (signupController.errorMessage.value.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(
-                  signupController.errorMessage.value,
-                  style: const TextStyle(color: Colors.red),
+    return Obx(() => signupController.isLoading.value
+        ? const CircularProgressIndicator()
+        : Column(
+            children: [
+              if (signupController.errorMessage.value.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    signupController.errorMessage.value,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
-              ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
-              ),
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colorpallete.backgroundColor,
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
                 ),
-                onPressed: () async {
-                  final model = SignupModel(
-                    fullName: signupController.fullNameController.text.trim(),
-                    email: signupController.emailController.text.trim(),
-                    password: signupController.passwordController.text,
-                    confirmPassword: signupController.confirmPasswordController.text,
-                  );
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colorpallete.backgroundColor,
+                  ),
+                  onPressed: () async {
+                    final model = SignupModel(
+                        fullName:
+                            signupController.fullNameController.text.trim(),
+                        email: signupController.emailController.text.trim(),
+                        password: signupController.passwordController.text,
+                        confirmPassword:
+                            signupController.confirmPasswordController.text,
+                        bio: signupController.bioController.text);
 
-                  final success = await signupController.signup(model);
-                  if (success) {
-                    context.go('/login'); // Navigate to home on success
-                  }
-                },
-                child: const Text("Sign Up", style: TextStyle(fontSize: 24)),
+                    final success = await signupController.signup(model);
+                    if (success) {
+                      context.go('/login'); // Navigate to home on success
+                    }
+                  },
+                  child: const Text("Sign Up", style: TextStyle(fontSize: 24)),
+                ),
               ),
-            ),
-          ],
-        ));
-}
+            ],
+          ));
+  }
 }

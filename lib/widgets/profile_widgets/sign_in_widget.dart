@@ -68,7 +68,7 @@ class SignInWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.push('/profilesection'); // Navigate to Profile Screen
+        context.push('/profilesection'); 
       },
       child: Row(
         children: [

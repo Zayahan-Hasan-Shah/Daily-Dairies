@@ -103,17 +103,15 @@
 //   }
 // }
 
+// ==========================================================================================
+
+// Above code is simple
 
 // ==========================================================================================
 
-// Above code is simple 
-
 // ==========================================================================================
 
-
-// ==========================================================================================
-
-// Below commented code is with snackbar, not working properly 
+// Below commented code is with snackbar, not working properly
 
 // ==========================================================================================
 
@@ -232,7 +230,7 @@
 //     if (!RegExp(r'(?=.*[@\$!%*?&])').hasMatch(password)) {
 //       return 'Password must contain at least one special character (e.g., @\$!%*?&).';
 //     }
-//     return null; 
+//     return null;
 //   }
 
 //   String hashPassword(String password) {
@@ -373,7 +371,6 @@
 //   }
 // }
 
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -383,21 +380,24 @@ import '../models/signup_model.dart';
 class SignupController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  final TextEditingController bioController = TextEditingController();
 
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
   Future<bool> signup(SignupModel model) async {
     // Input validation
-    if (model.fullName.isEmpty || 
-        model.email.isEmpty || 
-        model.password.isEmpty || 
-        model.confirmPassword.isEmpty) {
+    if (model.fullName.isEmpty ||
+        model.email.isEmpty ||
+        model.password.isEmpty ||
+        model.confirmPassword.isEmpty ||
+        model.bio.isEmpty) {
       errorMessage.value = "All fields are required";
       return false;
     }
@@ -416,7 +416,8 @@ class SignupController extends GetxController {
       isLoading.value = true;
 
       // Create user with email and password
-      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      final UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: model.email,
         password: model.password,
       );
@@ -426,6 +427,7 @@ class SignupController extends GetxController {
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
           'fullName': model.fullName,
           'email': model.email,
+          'bio': model.bio,
           'createdAt': FieldValue.serverTimestamp(),
           'lastLogin': FieldValue.serverTimestamp(),
           // Add any additional user data fields you want to store
@@ -433,14 +435,13 @@ class SignupController extends GetxController {
 
         // Update user profile
         await userCredential.user!.updateDisplayName(model.fullName);
-        
+
         isLoading.value = false;
         return true;
       }
 
       isLoading.value = false;
       return false;
-
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
       switch (e.code) {
@@ -462,7 +463,7 @@ class SignupController extends GetxController {
       return false;
     } catch (e) {
       isLoading.value = false;
-      errorMessage.value = "An unexpected error occurred";
+      errorMessage.value = "Unexpected error: ${e.toString()}";
       return false;
     }
   }
@@ -473,6 +474,7 @@ class SignupController extends GetxController {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    bioController.dispose();
     super.onClose();
   }
 }

@@ -24,8 +24,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:daily_dairies/models/diary_entry.dart';
 import 'package:get/get.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 class DiaryController extends GetxController {
   final _firestore = FirebaseFirestore.instance;

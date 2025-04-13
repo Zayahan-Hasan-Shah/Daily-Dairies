@@ -240,7 +240,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final List<DiaryEntry> entries;
+  const SearchScreen({super.key, required this.entries});
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -268,6 +269,15 @@ class _SearchScreenState extends State<SearchScreen> {
           .map((entry) => entry.title)
           .toList();
     });
+
+    if (query.trim().isNotEmpty && !recentSearch.contains(query)) {
+      setState(() {
+        recentSearch.insert(0, query);
+        if (recentSearch.length > 5) {
+          recentSearch = recentSearch.sublist(0, 5);
+        }
+      });
+    }
   }
 
   @override
