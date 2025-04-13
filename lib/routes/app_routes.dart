@@ -69,9 +69,7 @@ class AppRoutes {
           GoRoute(
             path: '/search',
             builder: (context, state) {
-              final List<DiaryEntry> entries =
-                  (state.extra as List<DiaryEntry>?) ?? [];
-              return SearchScreen(entries: entries);
+              return SearchScreen();
             },
           ),
           GoRoute(
@@ -80,7 +78,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/add-diary',
-            builder: (context, state) => const AddDiaryScreen(),
+            builder: (context, state) =>  AddDiaryScreen(),
           ),
           GoRoute(
             path: '/tagmanagement',

@@ -98,6 +98,7 @@ class DiaryEntry {
   final String mood;
   final List<String> tags;
   final Color textColor;
+  final Color bulletPointColor;
   final TextStyle textStyle;
   final List<String> images;
   final List<String> videos;
@@ -114,6 +115,7 @@ class DiaryEntry {
     required this.mood,
     required this.tags,
     required this.textColor,
+    required this.bulletPointColor,
     required this.textStyle,
     required this.images,
     required this.videos,
@@ -135,12 +137,13 @@ class DiaryEntry {
           : dateFormatter.parse(map['date']),
       mood: map['mood'] ?? '😊',
       textColor: Color(map['textColor'] ?? Colors.black.value),
+      bulletPointColor: Color(map['bulletPointColor'] ?? Colors.black.value),
       textStyle: TextStyle(
         fontSize: (map['textStyle']?['fontSize'] as num?)?.toDouble() ?? 16.0,
         fontStyle: FontStyle.values[map['textStyle']?['fontStyle'] ?? 0],
         letterSpacing:
             (map['textStyle']?['letterSpacing'] as num?)?.toDouble() ?? 0.0,
-        color: Color(map['textStyle']?['color'] ?? Colors.black.value),
+        color: Color(map['textStyle']?['textColor'] ?? Colors.black.value),
       ),
       tags: List<String>.from(map['tags'] ?? []),
       images: List<String>.from(map['images'] ?? []),
@@ -164,13 +167,15 @@ class DiaryEntry {
       'mood': mood,
       'tags': tags,
       'textColor': textColor.value,
+      'bulletPointColor': bulletPointColor.value,
       'textStyle': {
         'fontSize': textStyle.fontSize,
         'fontWeight': textStyle.fontWeight?.index,
         'fontStyle': textStyle.fontStyle?.index,
         'letterSpacing': textStyle.letterSpacing,
+        'color': textStyle.color?.value ?? Colors.black.value,
       },
-      'tags': tags,
+      // 'tags': tags,
       'images': images,
       'videos': videos,
       'audioRecordings': audioRecordings,

@@ -261,7 +261,6 @@
 //   }
 // }
 
-
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
@@ -463,12 +462,15 @@ class CalendarScreen extends GetView<DiaryController> {
                             videos: diary.videos ?? [],
                             audioRecordings: diary.audioRecordings ?? [],
                             bulletPoints: diary.bulletPoints ?? [],
-                            textColor: diary.textColor ?? Colors.black,
+                            textColor: diary.textColor,
+                            currentTextColor: diary.currentTextColor,
+                            bulletPointColor: diary.bulletPointColor,
                             textStyle: diary.textStyle ??
-                                const TextStyle(
+                                TextStyle(
                                   fontSize: 16,
-                                  color: Colors.black,
-                                ), id: '',
+                                  color: diary.textColor,
+                                ),
+                            id: '',
                           ),
                         ).then((_) {
                           controller.refreshEntries();

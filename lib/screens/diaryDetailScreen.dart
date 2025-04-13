@@ -7,6 +7,7 @@ import 'package:daily_dairies/widgets/diary_detail_widgets/diary_edit_toolbar.da
 import 'package:daily_dairies/widgets/diary_detail_widgets/diary_header.dart';
 import 'package:daily_dairies/widgets/diary_detail_widgets/media_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,6 +29,8 @@ class DiaryDetailScreen extends StatefulWidget {
   final Color textColor;
   final TextStyle textStyle;
   final List<String> tags;
+  final Color currentTextColor;
+  final Color bulletPointColor;
 
   const DiaryDetailScreen({
     super.key,
@@ -43,6 +46,8 @@ class DiaryDetailScreen extends StatefulWidget {
     required this.textColor,
     required this.textStyle,
     required this.tags,
+    required this.bulletPointColor,
+    required this.currentTextColor,
   });
 
   static MaterialPageRoute route({
@@ -58,6 +63,8 @@ class DiaryDetailScreen extends StatefulWidget {
     required Color textColor,
     required TextStyle textStyle,
     required List<String> tags,
+    required Color bulletPointColor, // Add this line
+    required Color currentTextColor, // Add this line
   }) {
     return MaterialPageRoute(
       builder: (_) => DiaryDetailScreen(
@@ -73,6 +80,10 @@ class DiaryDetailScreen extends StatefulWidget {
         textColor: textColor,
         textStyle: textStyle,
         tags: tags,
+        // bulletPointColor: bulletPointColor, // Add this line
+        // currentTextColor: currentTextColor, // Add this line
+        bulletPointColor: textColor,
+        currentTextColor: textColor,
       ),
     );
   }
@@ -90,10 +101,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
   late DateTime selectedDate;
   late String selectedEmoji;
   bool isEditing = false;
-  TextStyle currentTextStyle = const TextStyle(
-    fontSize: 16,
-    color: Colors.black,
-  );
+  late TextStyle currentTextStyle;
+  Color currentTextColor = Colors.black; // For content color
+  Color bulletPointColor = Colors.black;
+
+  // Bullet points data - using a simplified approach
+  final List<String> bulletPoints = []; // Fixed list of bullet points
+  late TextEditingController
+      bulletPointController; // Single controller for adding new bullet points
 
   // Media related variables
   List<File> images = [];
@@ -108,23 +123,70 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
 
   // UI state
   String? selectedTool;
-  Color currentTextColor = Colors.black;
+
+  final FocusNode bulletPointFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with existing data
     titleController = TextEditingController(text: widget.title);
     contentController = TextEditingController(text: widget.content);
     selectedDate = widget.date;
     selectedEmoji = widget.mood;
+    // currentTextColor = widget.textColor;
+    currentTextStyle = TextStyle(
+      fontSize: widget.textStyle.fontSize,
+      color: widget.textColor,
+      fontWeight: widget.textStyle.fontWeight,
+      letterSpacing: widget.textStyle.letterSpacing,
+    );
+    ;
+
+    // Initialize bullet points directly from widget
+    bulletPoints.clear();
+    bulletPoints
+        .addAll(widget.bulletPoints.where((point) => point.trim().isNotEmpty));
+
+    // Initialize single bullet point controller
+    bulletPointController = TextEditingController();
+
+    _initializeMediaFiles();
+    bulletPointFocusNode
+        .requestFocus(); // Request focus on the bullet point input
+  }
+
+  void _initializeMediaFiles() {
+    try {
+      for (String path in widget.images) {
+        final file = File(path);
+        if (file.existsSync()) {
+          images.add(file);
+        }
+      }
+      for (String path in widget.videos) {
+        final file = File(path);
+        if (file.existsSync()) {
+          videos.add(file);
+        }
+      }
+      for (String path in widget.audioRecordings) {
+        final file = File(path);
+        if (file.existsSync()) {
+          audioRecordings.add(file);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error initializing media files: $e');
+    }
   }
 
   @override
   void dispose() {
     titleController.dispose();
     contentController.dispose();
+    bulletPointController.dispose();
     recordingTimer?.cancel();
+    bulletPointFocusNode.dispose(); // Dispose of the focus node
     super.dispose();
   }
 
@@ -161,7 +223,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         const SizedBox(height: 16),
         Text(
           widget.content,
-          style: widget.textStyle,
+          style: TextStyle(
+            fontSize: widget.textStyle.fontSize,
+            color: widget.textStyle.color,
+          ),
         ),
         if (widget.bulletPoints.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -253,24 +318,86 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
             hintStyle: TextStyle(color: Colorpallete.backgroundColor),
           ),
         ),
-        if (widget.bulletPoints.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          ...widget.bulletPoints.map((point) => Padding(
+        const SizedBox(height: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Bullet Points',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: currentTextColor,
+                  ),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.add),
+                  label: const Text("Add"),
+                  onPressed: _addBulletPoint,
+                ),
+              ],
+            ),
+            // Display existing bullet points as read-only items with delete buttons
+            ...bulletPoints.asMap().entries.map((entry) {
+              final index = entry.key;
+              final point = entry.value;
+              return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('•  ', style: currentTextStyle),
                     Expanded(
-                      child: Text(
-                        point,
-                        style: currentTextStyle,
+                      child: TextField(
+                        controller: bulletPointController,
+                        style:
+                            currentTextStyle.copyWith(color: currentTextColor),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          hintText:
+                              "Type and press Enter to add a bullet point",
+                          hintStyle:
+                              TextStyle(color: Colorpallete.backgroundColor),
+                        ),
+                        onSubmitted: (_) => _addBulletPoint(),
                       ),
                     ),
                   ],
                 ),
-              )),
-        ],
+              );
+            }).toList(),
+            // Single bullet point input field
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                children: [
+                  Text('•  ', style: currentTextStyle),
+                  Expanded(
+                    child: TextField(
+                      controller: bulletPointController,
+                      style: currentTextStyle.copyWith(color: currentTextColor),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        hintText: "Type and press Enter to add a bullet point",
+                        hintStyle:
+                            TextStyle(color: Colorpallete.backgroundColor),
+                      ),
+                      onSubmitted: (_) => _addBulletPoint(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         if (widget.tags.isNotEmpty) ...[
           const SizedBox(height: 16),
           Wrap(
@@ -532,8 +659,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  // Add these methods to your _DiaryDetailScreenState class
-
   void _showColorPicker() {
     final List<Color> colors = [
       Colors.black,
@@ -715,56 +840,25 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  // UI Building Methods
-  Widget _buildViewMode() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 16),
-            _buildContent(),
-            // Add media display widgets here if needed
-          ],
-        ),
-      ),
-    );
+  void _addBulletPoint() {
+    final text = bulletPointController.text.trim();
+    if (text.isEmpty) return; // Prevent adding empty bullet points
+
+    setState(() {
+      bulletPoints.add(text); // Add the bullet point to the list
+      bulletPointController.clear(); // Clear the input field
+    });
+
+    print('Bullet points after adding: $bulletPoints'); // Debug output
   }
 
-  Widget _buildEditMode() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildEditHeader(),
-            const SizedBox(height: 16),
-            _buildEditContent(),
-            _buildMediaSection(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Helper Methods
-  void _toggleEditMode() {
-    if (isEditing) {
-      // If we're currently editing, save changes
-      _saveChanges();
-    } else {
-      // Enter edit mode
-      setState(() {
-        isEditing = true;
-      });
-    }
+  void _removeBulletPoint(int index) {
+    setState(() {
+      bulletPoints.removeAt(index);
+    });
   }
 
   void _saveChanges() async {
-    // Create a loading overlay
     final loadingOverlay = OverlayEntry(
       builder: (context) => Container(
         color: Colors.black.withOpacity(0.5),
@@ -775,8 +869,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
 
     try {
-      // Show loading overlay
       Overlay.of(context).insert(loadingOverlay);
+
+      print('Saving bullet points: $bulletPoints');
 
       // Create updated diary entry
       final updatedEntry = DiaryEntry(
@@ -786,22 +881,22 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         content: contentController.text.trim(),
         date: selectedDate,
         mood: selectedEmoji,
-        textColor: currentTextColor,
         textStyle: currentTextStyle,
         images: images.map((file) => file.path).toList(),
         videos: videos.map((file) => file.path).toList(),
         audioRecordings: audioRecordings.map((file) => file.path).toList(),
-        bulletPoints: widget.bulletPoints,
+        bulletPoints:
+            List.from(bulletPoints), // Use a copy of the bullet points
         tags: widget.tags,
+        textColor: currentTextColor ?? Colors.black,
+        bulletPointColor: bulletPointColor ?? Colors.black,
       );
 
       // Update the entry in Firestore
       await _diaryController.updateEntry(updatedEntry);
 
-      // Remove loading overlay
       loadingOverlay.remove();
 
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Diary entry updated successfully'),
@@ -809,15 +904,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         ),
       );
 
-      // Exit edit mode
       setState(() {
         isEditing = false;
       });
     } catch (e) {
-      // Remove loading overlay
       loadingOverlay.remove();
-
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update diary entry: ${e.toString()}'),
@@ -854,5 +945,51 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         child: isEditing ? _buildEditMode() : _buildViewMode(),
       ),
     );
+  }
+
+  Widget _buildViewMode() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 16),
+            _buildContent(),
+            // Add media display widgets here if needed
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditMode() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildEditHeader(),
+            const SizedBox(height: 16),
+            _buildEditContent(),
+            _buildMediaSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _toggleEditMode() {
+    if (isEditing) {
+      // If we're currently editing, save changes
+      _saveChanges();
+    } else {
+      // Enter edit mode
+      setState(() {
+        isEditing = true;
+      });
+    }
   }
 }

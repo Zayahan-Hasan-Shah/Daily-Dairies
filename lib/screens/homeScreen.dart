@@ -464,8 +464,6 @@
 //   }
 // }
 
-
-
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/models/diary_entry.dart';
@@ -491,6 +489,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final DiaryController _diaryController = Get.find<DiaryController>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Color currentTextColor = Colors.black; // For content color
+  Color bulletPointColor = Colors.black;
 
   @override
   void initState() {
@@ -606,87 +606,89 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
 
-                return RefreshIndicator(
-                  onRefresh: () => _diaryController.refreshEntries(),
-                  child: ListView.builder(
-                    itemCount: _diaryController.entries.length,
-                    itemBuilder: (context, index) {
-                      final entry = _diaryController.entries[index];
-                      final formattedDate =
-                          DateFormat('dd-MM-yyyy').format(entry.date);
-
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            DiaryDetailScreen.route(
-                              id: entry.id,
-                              title: entry.title,
-                              content: entry.content,
-                              mood: entry.mood,
-                              tags: entry.tags,
-                              date: entry.date,
-                              images: entry.images ?? [],
-                              videos: entry.videos ?? [],
-                              audioRecordings: entry.audioRecordings ?? [],
-                              bulletPoints: entry.bulletPoints ?? [],
-                              textColor: entry.textColor ?? Colors.black,
-                              textStyle: entry.textStyle ??
-                                  const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                            ),
-                          ).then((_) {
-                            // Use post frame callback for refresh after navigation
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              controller.refreshEntries();
+                  return RefreshIndicator(
+                    onRefresh: () => _diaryController.refreshEntries(),
+                    child: ListView.builder(
+                      itemCount: _diaryController.entries.length,
+                      itemBuilder: (context, index) {
+                        final entry = _diaryController.entries[index];
+                        final formattedDate =
+                            DateFormat('dd-MM-yyyy').format(entry.date);
+                        print(entry);
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              DiaryDetailScreen.route(
+                                textColor: entry.textColor,
+                                date: entry.date,
+                                id: entry.id,
+                                title: entry.title,
+                                content: entry.content,
+                                mood: entry.mood,
+                                tags: entry.tags,
+                                // currentTextColor: entry.textColor,
+                                // bulletPointColor: entry.bulletPointColor,
+                                currentTextColor: entry.textColor,
+                                bulletPointColor:
+                                    entry.bulletPointColor ?? entry.textColor,
+                                images: entry.images ?? [],
+                                videos: entry.videos ?? [],
+                                audioRecordings: entry.audioRecordings ?? [],
+                                bulletPoints: entry.bulletPoints ?? [],
+                                textStyle: TextStyle(
+                                    fontSize: 16, color: entry.textColor),
+                              ),
+                            ).then((_) {
+                              // Use post frame callback for refresh after navigation
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                controller.refreshEntries();
+                              });
                             });
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colorpallete.drawericonColor,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    formattedDate,
-                                    style: TextStyle(
-                                      color: Colorpallete.textColor,
-                                      fontSize: 22,
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colorpallete.drawericonColor,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      formattedDate,
+                                      style: TextStyle(
+                                        color: Colorpallete.textColor,
+                                        fontSize: 22,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    entry.mood,
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                entry.title,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colorpallete.textColor,
+                                    Text(
+                                      entry.mood,
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                            ],
+                                const SizedBox(height: 6),
+                                Text(
+                                  entry.title,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colorpallete.textColor,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                );
+                        );
+                      },
+                    ),
+                  );
                 },
               ),
             ),

@@ -12,7 +12,8 @@ class Tagscreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DiaryController controller = Get.find<DiaryController>();
-
+    Color currentTextColor = Colors.black; // For content color
+    Color bulletPointColor = Colors.black;
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       drawer: AppDrawer(),
@@ -61,12 +62,14 @@ class Tagscreen extends StatelessWidget {
                       content: entry.content,
                       mood: entry.mood,
                       tags: entry.tags,
+                      textColor: entry.textColor ?? Colors.black,
+                      currentTextColor: entry.textColor,
+                      bulletPointColor: entry.textColor,
                       date: entry.date,
                       images: entry.images ?? [],
                       videos: entry.videos ?? [],
                       audioRecordings: entry.audioRecordings ?? [],
                       bulletPoints: entry.bulletPoints ?? [],
-                      textColor: entry.textColor ?? Colors.black,
                       textStyle: entry.textStyle ??
                           const TextStyle(
                             fontSize: 16,
