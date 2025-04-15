@@ -4,7 +4,6 @@ import 'package:daily_dairies/screens/diaryDetailScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 
 class Tagscreen extends StatelessWidget {
   const Tagscreen({super.key});
@@ -17,7 +16,7 @@ class Tagscreen extends StatelessWidget {
       backgroundColor: Colorpallete.bgColor,
       drawer: AppDrawer(),
       appBar: AppBar(
-        title: const Text("Tag Management"),
+        title: Text("tag_management".tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         leading: Builder(
@@ -31,7 +30,7 @@ class Tagscreen extends StatelessWidget {
         final tagMap = controller.tagCounts;
 
         if (tagMap.isEmpty) {
-          return const Center(child: Text('No tags in your diaries.'));
+          return Center(child: Text('no_tags_in_diaries'.tr));
         }
 
         return ListView.builder(
@@ -101,7 +100,7 @@ class Tagscreen extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        '$count ${count == 1 ? 'entry' : 'entries'}',
+                        '$count ${count == 1 ? 'entry'.tr : 'entries'.tr}',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colorpallete.bgColor,

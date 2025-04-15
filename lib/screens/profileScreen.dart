@@ -8,7 +8,6 @@ import 'package:daily_dairies/widgets/profile_widgets/total_diaries.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:daily_dairies/controllers/diary_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   static Route route() =>
@@ -34,23 +33,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Ensure DiaryController is initialized
-  //   try {
-  //     Get.find<DiaryController>();
-  //   } catch (e) {
-  //     Get.put(DiaryController());
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Mine"),
+        title: Text("major_stats".tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         actions: [

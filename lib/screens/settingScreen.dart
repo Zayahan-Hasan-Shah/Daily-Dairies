@@ -1,8 +1,8 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class Settingscreen extends StatelessWidget {
   const Settingscreen({super.key});
@@ -13,7 +13,7 @@ class Settingscreen extends StatelessWidget {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: Text(
-          "settings".tr(), // Localized text
+          "settings".tr, // Localized text
           style:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -34,20 +34,19 @@ class Settingscreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle("general".tr()), // General Section
-            _buildSettingItem("mood_style".tr(), Icons.emoji_emotions_outlined,
+            _buildSectionTitle("general".tr), // General Section
+            _buildSettingItem("mood_style".tr, Icons.emoji_emotions_outlined,
                 '/moodstylemanagment', context),
             _buildSettingItem(
-                "tag".tr(), Icons.tag_outlined, '/tagmanagement', context),
-            _buildSettingItem("diary_lock".tr(), Icons.lock_outline_sharp,
+                "tag".tr, Icons.tag_outlined, '/tagmanagement', context),
+            _buildSettingItem("diary_lock".tr, Icons.lock_outline_sharp,
                 '/diarylock', context),
-            _buildSettingItem("backup_restore".tr(), Icons.backup_outlined,
-                '/backup', context),
+            _buildSettingItem(
+                "backup_restore".tr, Icons.backup_outlined, '/backup', context),
             const SizedBox(height: 20),
-            _buildSectionTitle("about".tr()), // About Section
-            _buildSettingItem("language".tr(), Icons.language_outlined,
+            _buildSectionTitle("about".tr), // About Section
+            _buildSettingItem("language".tr, Icons.language_outlined,
                 '/lanaguagemanagement', context),
-                
           ],
         ),
       ),

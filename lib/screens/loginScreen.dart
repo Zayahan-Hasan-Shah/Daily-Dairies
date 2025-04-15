@@ -301,6 +301,7 @@ import 'package:daily_dairies/models/login_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_storage/get_storage.dart';
 
 class LoginScreen extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
@@ -312,49 +313,110 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colorpallete.backgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Login",
-                style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colorpallete.textColor)),
-            const SizedBox(height: 20),
-            // email input
-            _buildTextField(
-                controller: loginController.emailController,
-                labelText: 'Email'),
-            const SizedBox(height: 10),
-            // password controller
-            _buildTextField(
-                controller: loginController.passwordController,
-                labelText: 'Password',
-                obscureText: true),
-            const SizedBox(height: 10),
-            // Login Button
-            loginButton(loginController, context),
-            const SizedBox(height: 10),
-            const Divider(),
-            const SizedBox(height: 10),
-            // Biometric Authentication Button
-            biometricLogin(context),
-            // Sign Up Button
-            TextButton(
-              onPressed: () {
-                context.go('/signup');
-              },
-              child: Text("Don't have an account? Sign Up",
-                  style: TextStyle(color: Colorpallete.textColor)),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("login".tr,
+                        style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colorpallete.textColor)),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: loginController.emailController,
+                      labelText: 'email'.tr,
+                    ),
+                    const SizedBox(height: 10),
+                    _buildTextField(
+                      controller: loginController.passwordController,
+                      labelText: 'password'.tr,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 10),
+                    loginButton(loginController, context),
+                    const SizedBox(height: 10),
+                    const Divider(),
+                    const SizedBox(height: 10),
+                    biometricLogin(context),
+                    TextButton(
+                      onPressed: () => context.go('/signup'),
+                      child: Text("dont_have_account".tr,
+                          style: TextStyle(color: Colorpallete.textColor)),
+                    ),
+                    const SizedBox(height: 10),
+                    _errorMessage(),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 10),
-            // Error message
-            _errorMessage(),
-          ],
-        ),
+          ),
+          // Language Icon Top-Right
+          Positioned(
+            top: 40,
+            right: 16,
+            child: IconButton(
+              icon: const Icon(Icons.language, color: Colors.white),
+              onPressed: () => _showLanguageSelector(context),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  void _showLanguageSelector(BuildContext context) {
+    final box = GetStorage();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colorpallete.backgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title:
+                    Text("english".tr, style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Get.updateLocale(const Locale('en', 'US'));
+                  box.write('language_code', 'en');
+                  box.write('country_code', 'US');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text("urdu".tr, style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Get.updateLocale(const Locale('ur', 'PK'));
+                  box.write('language_code', 'ur');
+                  box.write('country_code', 'PK');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text("arabic".tr, style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Get.updateLocale(const Locale('ar', 'SA'));
+                  box.write('language_code', 'ar');
+                  box.write('country_code', 'SA');
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -412,7 +474,7 @@ class LoginScreen extends StatelessWidget {
                 },
           child: loginController.isLoading.value
               ? const CircularProgressIndicator(color: Colors.white)
-              : const Text("Login", style: TextStyle(fontSize: 24)),
+              : Text("login".tr, style: const TextStyle(fontSize: 24)),
         ),
       ),
     );
@@ -437,10 +499,10 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () async {
                   await loginController.authenticateWithBiometrics(context);
                 },
-                child: const Text("Login with Fingerprint"),
+                child: Text("login_with_fingerprint".tr),
               ),
             )
-          : const SizedBox(), // Hide the button if biometric is not enabled
+          : const SizedBox(),
     );
   }
 }

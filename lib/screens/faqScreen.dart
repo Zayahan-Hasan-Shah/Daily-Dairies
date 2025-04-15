@@ -1,7 +1,8 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/widgets/faq_widgets/get_started.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:get/get.dart';
+// import 'package:easy_localization/easy_localization.dart';
 
 class FAQScreen extends StatelessWidget {
   const FAQScreen({super.key});
@@ -12,7 +13,7 @@ class FAQScreen extends StatelessWidget {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title:
-            Text("faq_title".tr(), style: const TextStyle(color: Colors.white)),
+            Text("faq_title".tr, style: const TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white), // Blue arrow
         backgroundColor: Colorpallete.backgroundColor,
         leading: IconButton(
@@ -28,20 +29,20 @@ class FAQScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              sectionTitle("get_started".tr()),
-              faqItem("start_diary".tr(), '/getstarteddiary'),
-              faqItem("diary_ideas".tr(), '/getdiaryideas'),
-              sectionTitle("lock_privacy".tr()),
-              faqItem("set_diary_lock".tr(), '/setdiarylock'),
-              faqItem("forget_password".tr(), '/forgetpassword'),
-              faqItem("data_privacy".tr(), '/dataprivacy'),
-              sectionTitle("backup_restore".tr()),
-              faqItem("backup_failed".tr(), '/backupfailed'),
-              faqItem("get_backedup_data".tr(), '/getyourbackedupdata'),
-              sectionTitle("manage_entries".tr()),
-              faqItem("tag_management".tr(), '/tagmanagment'),
-              sectionTitle("other".tr()),
-              faqItem("other_questions".tr(), '/otherquestions'),
+              sectionTitle("get_started".tr),
+              faqItem("start_diary".tr, '/getstarteddiary'),
+              faqItem("diary_ideas".tr, '/getdiaryideas'),
+              sectionTitle("lock_privacy".tr),
+              faqItem("set_diary_lock".tr, '/setdiarylock'),
+              faqItem("forget_password".tr, '/forgetpassword'),
+              faqItem("data_privacy".tr, '/dataprivacy'),
+              sectionTitle("backup_restore".tr),
+              faqItem("backup_failed".tr, '/backupfailed'),
+              faqItem("get_backedup_data".tr, '/getyourbackedupdata'),
+              sectionTitle("manage_entries".tr),
+              faqItem("tag_management".tr, '/tagmanagment'),
+              sectionTitle("other".tr),
+              faqItem("other_questions".tr, '/otherquestions'),
             ],
           ),
         ),
@@ -79,5 +80,3 @@ class FAQScreen extends StatelessWidget {
     );
   }
 }
-
-
