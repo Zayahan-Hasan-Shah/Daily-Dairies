@@ -107,18 +107,12 @@ import 'package:daily_dairies/models/diary_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
-
-// Dummy DiaryEntry class (replace with your real model)
-class DiaryEntery {
-  final DateTime createdAt;
-
-  DiaryEntery({required this.createdAt});
-}
+import 'package:get/get.dart';
 
 class DailyStatistics extends StatefulWidget {
   final List<DiaryEntry> entries;
 
-  DailyStatistics({super.key, required this.entries});
+  const DailyStatistics({super.key, required this.entries});
 
   @override
   State<DailyStatistics> createState() => _DailyStatisticsState();
@@ -167,7 +161,15 @@ class _DailyStatisticsState extends State<DailyStatistics> {
   @override
   Widget build(BuildContext context) {
     final diaryEntries = _getEntriesCountPerDay();
-    final days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    final days = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday'
+    ];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -181,9 +183,11 @@ class _DailyStatisticsState extends State<DailyStatistics> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Diary Statistics',
-                style: TextStyle(fontSize: 18, color: Colorpallete.bgColor),
+              Expanded(
+                child: Text(
+                  'diary_statistics'.tr,
+                  style: TextStyle(fontSize: 18, color: Colorpallete.bgColor),
+                ),
               ),
               Row(
                 children: [
@@ -236,7 +240,7 @@ class _DailyStatisticsState extends State<DailyStatistics> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    days[index],
+                    days[index].tr,
                     style: TextStyle(color: Colorpallete.bgColor, fontSize: 14),
                   ),
                 ],

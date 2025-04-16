@@ -1,5 +1,6 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BackupFailedScreen extends StatelessWidget {
   const BackupFailedScreen({super.key});
@@ -15,35 +16,28 @@ class BackupFailedScreen extends StatelessWidget {
             child: Icon(Icons.warning_rounded),
           )
         ],
-        title: const Text("FAQs"),
+        title: Text("faqs".tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            SizedBox(
-              height: 6,
-            ),
+            const SizedBox(height: 6),
             Text(
+              "faq_question_1".tr,
               maxLines: 4,
-              'How to start my own diary if I don\'t know what to write about',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(
-              height: 6,
-            ),
-            SizedBox(
-              height: 6,
-            ),
+            const SizedBox(height: 6),
             Text(
+              "faq_answer_1".tr,
               maxLines: 4,
-              '-Diaries can help you to record your unique experience and stories, you can write about your thoughts, places you want to go, stories you\'ve watched, or express your negative emotions.',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
               ),
             ),

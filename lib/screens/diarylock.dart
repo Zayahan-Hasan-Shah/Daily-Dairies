@@ -172,7 +172,7 @@ class _DiarylockScreenState extends State<DiarylockScreen> {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Set Diary Lock"),
+        title: Text("set_diary_lock".tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
@@ -202,8 +202,8 @@ class _DiarylockScreenState extends State<DiarylockScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            "Diary Lock",
+          Text(
+            "diary_lock".tr,
             style: TextStyle(fontSize: 18, color: Colors.white),
           ),
           Switch(
@@ -233,8 +233,8 @@ class _DiarylockScreenState extends State<DiarylockScreen> {
           MainAxisSize.min, // Add this to prevent unnecessary expansion
       children: [
         ListTile(
-          title: const Text(
-            "Set Pattern Lock",
+          title: Text(
+            "set_pattern_lock".tr,
             style: TextStyle(color: Colors.white),
           ),
           trailing: const Icon(Icons.chevron_right, color: Colors.blue),
@@ -244,8 +244,7 @@ class _DiarylockScreenState extends State<DiarylockScreen> {
           ),
         ),
         ListTile(
-          title:
-              const Text("Set Pin Lock", style: TextStyle(color: Colors.white)),
+          title: Text("set_pin_lock".tr, style: TextStyle(color: Colors.white)),
           trailing: const Icon(Icons.chevron_right, color: Colors.blue),
           onTap: () => Navigator.push(
             context,
@@ -253,8 +252,8 @@ class _DiarylockScreenState extends State<DiarylockScreen> {
           ),
         ),
         Obx(() => ListTile(
-              title: const Text(
-                "Enable Biometric For Login",
+              title: Text(
+                "enable_biometric".tr,
                 style: TextStyle(color: Colors.white),
               ),
               trailing: Switch(

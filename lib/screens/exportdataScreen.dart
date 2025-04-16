@@ -329,9 +329,9 @@ class ExportScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colorpallete.backgroundColor,
-          title: const Text(
-            'Select Export Duration',
-            style: TextStyle(
+          title: Text(
+            'Select Export Duration'.tr,
+            style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontStyle: FontStyle.italic,
                 fontSize: 18,
@@ -343,9 +343,9 @@ class ExportScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildFileSelectionRadioTile('All Files'),
-                _buildFileSelectionRadioTile('Last 7 Days'),
-                _buildFileSelectionRadioTile('Last 30 Days'),
+                _buildFileSelectionRadioTile('All Files'.tr),
+                _buildFileSelectionRadioTile('Last 7 Days'.tr),
+                _buildFileSelectionRadioTile('Last 30 Days'.tr),
               ],
             ),
           ),
@@ -355,8 +355,8 @@ class ExportScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child:
-                  const Text('Select', style: TextStyle(color: Colors.white)),
+              child: Text('Select'.tr,
+                  style: const TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -383,7 +383,7 @@ class ExportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Export Data'),
+        title: Text('Export Data'.tr),
         backgroundColor: Colorpallete.bgColor,
       ),
       backgroundColor: Colorpallete.backgroundColor,
@@ -393,7 +393,7 @@ class ExportScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text('Select Export Duration',
+              title: Text('Select Export Duration'.tr,
                   style: TextStyle(color: Colorpallete.textColor)),
               trailing: Obx(() => Text(
                     controller.selectedExportDuration.value,
@@ -403,9 +403,9 @@ class ExportScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             _exportOption(
-                "Export to .TXT", "Only text will be exported", false),
+                'Export to .TXT'.tr, 'Only text will be exported'.tr, false),
             const SizedBox(height: 15),
-            _exportOption("Export to .PDF", "Include pictures", true),
+            _exportOption('Export to .PDF'.tr, 'Include pictures'.tr, true),
           ],
         ),
       ),
@@ -449,7 +449,7 @@ class ExportScreen extends StatelessWidget {
               backgroundColor: Colorpallete.backgroundColor,
               foregroundColor: Colors.white,
             ),
-            child: const Text("EXPORT"),
+            child: Text('EXPORT'.tr),
           ),
         ],
       ),

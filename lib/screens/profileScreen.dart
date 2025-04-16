@@ -34,23 +34,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Ensure DiaryController is initialized
-  //   try {
-  //     Get.find<DiaryController>();
-  //   } catch (e) {
-  //     Get.put(DiaryController());
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Mine"),
+        title: Text("major_stats".tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         actions: [

@@ -1,6 +1,6 @@
 import 'package:daily_dairies/core/colorPallete.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,25 +26,25 @@ class AppDrawer extends StatelessWidget {
               _buildDrawerItem(
                 context,
                 icon: Icons.home_outlined,
-                text: 'home'.tr(),
+                text: 'home'.tr,
                 route: '/',
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.workspace_premium,
-                text: 'upgrade_pro'.tr(),
+                text: 'upgrade_pro'.tr,
                 color: Colors.amber,
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.tag,
-                text: 'tags'.tr(),
+                text: 'tags'.tr,
                 route: '/tagmanagement',
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.lock,
-                text: 'diary_lock'.tr(),
+                text: 'diary_lock'.tr,
                 onTap: () {
                   context.go('/diarylock');
                 },
@@ -52,25 +52,25 @@ class AppDrawer extends StatelessWidget {
               _buildDrawerItem(
                 context,
                 icon: Icons.backup,
-                text: 'backup_restore'.tr(),
+                text: 'backup_restore'.tr,
                 route: '/backup',
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.import_export,
-                text: 'export_diary'.tr(),
+                text: 'export_diary'.tr,
                 route: '/exportdata',
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.question_answer_outlined,
-                text: 'faqs'.tr(),
+                text: 'faqs'.tr,
                 route: '/faqs',
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.facebook,
-                text: 'follow_us'.tr(),
+                text: 'follow_us'.tr,
                 onTap: () async {
                   final Uri url =
                       Uri.parse('https://www.facebook.com/TwitterInc/');
@@ -84,7 +84,7 @@ class AppDrawer extends StatelessWidget {
               _buildDrawerItem(
                 context,
                 icon: Icons.apps,
-                text: 'more_apps'.tr(),
+                text: 'more_apps'.tr,
                 onTap: () async {
                   final Uri url =
                       Uri.parse('https://play.google.com/store/apps?hl=en');
@@ -98,13 +98,13 @@ class AppDrawer extends StatelessWidget {
               _buildDrawerItem(
                 context,
                 icon: Icons.settings_accessibility_rounded,
-                text: 'settings'.tr(),
+                text: 'settings'.tr,
                 route: '/settings',
               ),
               _buildDrawerItem(
                 context,
                 icon: Icons.logout_outlined,
-                text: 'logout'.tr(),
+                text: 'logout'.tr,
                 route: '/login',
               ),
             ],
@@ -142,7 +142,7 @@ class AppDrawer extends StatelessWidget {
   void _showError(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('error_opening_page'.tr()),
+        content: Text('error_opening_page'.tr),
       ),
     );
   }

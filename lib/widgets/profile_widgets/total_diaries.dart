@@ -23,7 +23,6 @@ class _TotalDiariesState extends State<TotalDiaries> {
   @override
   void initState() {
     super.initState();
-    // Delay the fetch to avoid build phase conflicts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchDiaryCount();
     });
@@ -50,7 +49,6 @@ class _TotalDiariesState extends State<TotalDiaries> {
     }
   }
 
-  // Share image functionality
   Future<void> _shareImage() async {
     try {
       final ByteData data =
@@ -64,8 +62,8 @@ class _TotalDiariesState extends State<TotalDiaries> {
 
       await Share.shareXFiles(
         [XFile(file.path)],
-        text:
-            "I've written ${diaryCount.value} diaries using My Diary app! Join me in capturing memories.",
+        text: "i_have_written_diaries"
+            .trParams({'count': diaryCount.value.toString()}),
       );
     } catch (e) {
       print("Error sharing image: $e");
@@ -94,7 +92,7 @@ class _TotalDiariesState extends State<TotalDiaries> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Keep writing diaries',
+                'keep_writing_diaries'.tr,
                 style: TextStyle(fontSize: 18, color: Colorpallete.bgColor),
               ),
               IconButton(
@@ -112,7 +110,7 @@ class _TotalDiariesState extends State<TotalDiaries> {
                 ),
               )),
           Text(
-            'A Diary Means Yes Indeed',
+            'diary_motto'.tr,
             style: TextStyle(
               fontStyle: FontStyle.italic,
               fontSize: 20,

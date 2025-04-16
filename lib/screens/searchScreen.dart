@@ -1,8 +1,6 @@
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -59,7 +57,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 controller: _searchController,
                 onChanged: _filterEntries,
                 decoration: InputDecoration(
-                  hintText: "Search entries...",
+                  hintText: 'search_entries'.tr,
                   hintStyle: TextStyle(color: Colorpallete.backgroundColor),
                   prefixIcon:
                       Icon(Icons.search, color: Colorpallete.backgroundColor),
@@ -78,7 +76,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     borderSide: BorderSide(
                         color: Colorpallete.backgroundColor, width: 2),
                   ),
+                  ),
                 ),
+                style: TextStyle(color: Colorpallete.backgroundColor),
+              ),
                 style: TextStyle(color: Colorpallete.backgroundColor),
               ),
               const SizedBox(height: 16),
@@ -92,7 +93,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     if (_diaryController.errorMessage.value.isNotEmpty) {
                       return Center(
                         child: Text(
-                          'Error: ${_diaryController.errorMessage.value}',
+                          'error'.tr +
+                              ": ${_diaryController.errorMessage.value}",
                           style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
@@ -107,7 +109,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'No diaries found',
+                              'no_diaries_found'.tr, // Localized
                               style: TextStyle(
                                 color: Colorpallete.textColor,
                                 fontSize: 16,
@@ -120,7 +122,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   controller.refreshEntries();
                                 });
                               },
-                              child: const Text('Refresh'),
+                              child: Text('refresh'.tr), // Localized
                             ),
                           ],
                         ),
@@ -134,7 +136,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _filteredEntries.length,
                         itemBuilder: (context, index) {
-                          // Safe way to get the entry without crashing
                           var entry;
                           try {
                             entry = _diaryController.entries.firstWhere(
@@ -176,6 +177,29 @@ class _SearchScreenState extends State<SearchScreen> {
                             controller.refreshEntries();
                           });
                         });
+                                context,
+                                DiaryDetailScreen.route(
+                                  id: entry.id,
+                                  title: entry.title,
+                                  content: entry.content,
+                                  mood: entry.mood,
+                                  tags: entry.tags,
+                                  date: entry.date,
+                                  images: entry.images ?? [],
+                                  videos: entry.videos ?? [],
+                                  audioRecordings: entry.audioRecordings ?? [],
+                                  bulletPoints: entry.bulletPoints ?? [],
+                                  textColor: entry.textColor ?? Colors.black,
+                                  textStyle: entry.textStyle ??
+                                      const TextStyle(
+                                          fontSize: 16, color: Colors.black),
+                                ),
+                              ).then((_) {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  controller.refreshEntries();
+                                });
+                              });
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -223,6 +247,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   },
                 ),
               ),
+            ],
+          ),
             ],
           ),
         ),

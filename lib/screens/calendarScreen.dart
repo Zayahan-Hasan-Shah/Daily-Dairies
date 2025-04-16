@@ -280,7 +280,6 @@ class CalendarScreen extends GetView<DiaryController> {
 
   CalendarScreen({super.key});
 
-  // Method to filter diaries based on selected date
   List<dynamic> _getDiariesForSelectedDate() {
     final selectedDate = DateFormat('yyyy-MM-dd').format(_selectedDay.value);
     return controller.entries
@@ -294,7 +293,7 @@ class CalendarScreen extends GetView<DiaryController> {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Calendar"),
+        title: Text("calendar_title".tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
         elevation: 0,
@@ -345,7 +344,6 @@ class CalendarScreen extends GetView<DiaryController> {
                     defaultBuilder: (context, day, focusedDay) {
                       final formattedDay = DateFormat('yyyy-MM-dd').format(day);
 
-                      // Find diaries for the given day
                       final diariesForDay = controller.entries
                           .where((entry) =>
                               DateFormat('yyyy-MM-dd').format(entry.date) ==
@@ -409,7 +407,6 @@ class CalendarScreen extends GetView<DiaryController> {
                     ),
                   ),
                 )),
-
             const SizedBox(height: 20),
             Obx(() => Text(
                   DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay.value),
@@ -421,8 +418,6 @@ class CalendarScreen extends GetView<DiaryController> {
                   ),
                 )),
             const SizedBox(height: 20),
-
-            // Displaying filtered diaries
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
@@ -434,7 +429,7 @@ class CalendarScreen extends GetView<DiaryController> {
                 if (selectedDiaries.isEmpty) {
                   return Center(
                     child: Text(
-                      "No entries for this date",
+                      "no_entries".tr,
                       style: TextStyle(
                         color: Colorpallete.backgroundColor,
                         fontSize: 18,

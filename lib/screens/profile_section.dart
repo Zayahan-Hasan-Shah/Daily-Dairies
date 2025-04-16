@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 // import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:image_cropper/image_cropper.dart';
@@ -71,49 +72,6 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
       });
     }
   }
-
-  // Future<void> _pickImage(ImageSource source) async {
-  //   final picker = ImagePicker();
-  //   final pickedFile = await picker.pickImage(source: source);
-
-  //   if (pickedFile != null) {
-  //     // Crop the image
-  //     final croppedFile = await ImageCropper().cropImage(
-  //       sourcePath: pickedFile.path,
-  //       compressFormat: ImageCompressFormat.png,
-  //       uiSettings: [
-  //         AndroidUiSettings(
-  //           toolbarTitle: 'Crop Image',
-  //           toolbarColor: Colors.deepOrange,
-  //           toolbarWidgetColor: Colors.white,
-  //           lockAspectRatio: false,
-  //         ),
-  //         IOSUiSettings(
-  //           title: 'Crop Image',
-  //         ),
-  //       ],
-  //     );
-
-  //     if (croppedFile != null) {
-  //       // Compress the image
-  //       final compressedImage = await FlutterImageCompress.compressAndGetFile(
-  //         croppedFile.path,
-  //         '${(await getTemporaryDirectory()).path}/profile_compressed.png',
-  //         quality: 80, // Adjust compression quality (0 - 100)
-  //       );
-
-  //       if (compressedImage != null) {
-  //         final directory = await getApplicationDocumentsDirectory();
-  //         final savedImage =
-  //             await compressedImage.copy('${directory.path}/profile_image.png');
-
-  //         setState(() {
-  //           _profileImage = savedImage;
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
 
   Future<void> _removeImage() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -264,12 +222,58 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
     );
   }
 
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colorpallete.bgColor,
+//       appBar: AppBar(
+//         title: const Text("My Profile"),
+//         foregroundColor: Colorpallete.bottomNavigationColor,
+//         backgroundColor: Colorpallete.backgroundColor,
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             GestureDetector(
+//               onTap: () => _showImageOptions(),
+//               child: CircleAvatar(
+//                 radius: 50,
+//                 backgroundColor: Colors.grey.shade300,
+//                 backgroundImage:
+//                     _profileImage != null ? FileImage(_profileImage!) : null,
+//                 child: _profileImage == null
+//                     ? const Icon(Icons.person, size: 50, color: Colors.white)
+//                     : null,
+//               ),
+//             ),
+//             const SizedBox(height: 10),
+//             TextButton(
+//               onPressed: () {},
+//               child: Text(user == null ? "Tap to login" : "Logged in"),
+//             ),
+//             const SizedBox(height: 20),
+//             _buildProfileTile("Username", user?.displayName ?? "No Username",
+//                 editable: true),
+//             _buildProfileTile(
+//                 "Bio", userData?['bio'] ?? "Each day provides its own gifts.",
+//                 editable: true),
+//             _buildProfileTile("Account", user?.email ?? "No Account",
+//                 isSignOut: true),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("My Profile"),
+        title: Text("my_profile".tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
@@ -293,15 +297,14 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
             const SizedBox(height: 10),
             TextButton(
               onPressed: () {},
-              child: Text(user == null ? "Tap to login" : "Logged in"),
+              child: Text(user == null ? "tap_to_login".tr : "logged_in".tr),
             ),
             const SizedBox(height: 20),
-            _buildProfileTile("Username", user?.displayName ?? "No Username",
+            _buildProfileTile("username".tr, user?.displayName ?? "No Username",
                 editable: true),
-            _buildProfileTile(
-                "Bio", userData?['bio'] ?? "Each day provides its own gifts.",
+            _buildProfileTile("bio".tr, userData?['bio'] ?? "default_bio".tr,
                 editable: true),
-            _buildProfileTile("Account", user?.email ?? "No Account",
+            _buildProfileTile("account".tr, user?.email ?? "No Account",
                 isSignOut: true),
           ],
         ),

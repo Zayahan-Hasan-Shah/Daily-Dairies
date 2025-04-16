@@ -1086,7 +1086,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                 foregroundColor: Colors.white,
               ),
               onPressed: _toggleEditMode,
-              child: Text(isEditing ? "Save" : "Edit"),
+              child: Text(isEditing ? "save".tr : "edit".tr),
             ),
           ),
         ],

@@ -1,16 +1,16 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/controllers/diary_controller.dart';
-import 'package:daily_dairies/models/diary_entry.dart';
+// import 'package:daily_dairies/models/diary_entry.dart';
 import 'package:daily_dairies/screens/addDiaryScreen.dart';
 import 'package:daily_dairies/screens/calendarScreen.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
 import 'package:daily_dairies/screens/profileScreen.dart';
-import 'package:daily_dairies/screens/searchScreen.dart';
+// import 'package:daily_dairies/screens/searchScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         title: Text(
-          context.tr("app_title"),
+          "app_title".tr,
           style: const TextStyle(fontFamily: 'Poppins'),
         ),
         foregroundColor: Colorpallete.bottomNavigationColor,
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              context.tr("diaries"),
+              "diaries".tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'No diaries found',
+                            'no_diaries_found'.tr,
                             style: TextStyle(
                               color: Colorpallete.textColor,
                               fontSize: 16,
@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 controller.refreshEntries();
                               });
                             },
-                            child: const Text('Refresh'),
+                            child: Text('refresh'.tr),
                           ),
                         ],
                       ),

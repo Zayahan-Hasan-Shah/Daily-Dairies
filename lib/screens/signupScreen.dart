@@ -21,7 +21,7 @@ class SignupScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Sign Up",
+              "sign_up".tr,
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -31,30 +31,29 @@ class SignupScreen extends StatelessWidget {
             const SizedBox(height: 20),
             _buildTextField(
               controller: signupController.fullNameController,
-              labelText: "Full Name",
+              labelText: "full_name".tr,
             ),
             const SizedBox(height: 10),
             _buildTextField(
               controller: signupController.emailController,
-              labelText: "Email",
+              labelText: "email".tr,
             ),
             const SizedBox(height: 10),
             _buildTextField(
               controller: signupController.passwordController,
-              labelText: "Password",
+              labelText: "password".tr,
               obscureText: true,
             ),
             const SizedBox(height: 10),
             _buildTextField(
               controller: signupController.confirmPasswordController,
-              labelText: "Confirm Password",
+              labelText: "confirm_password".tr,
               obscureText: true,
             ),
             const SizedBox(height: 10),
             _buildTextField(
               controller: signupController.bioController,
-              labelText: "Enter Bio",
-              // obscureText: true,
+              labelText: "enter_bio".tr,
             ),
             const SizedBox(height: 20),
             signupButton(signupController, context),
@@ -64,7 +63,7 @@ class SignupScreen extends StatelessWidget {
                 context.go('/login');
               },
               child: Text(
-                "Already have an account? Login",
+                "already_have_account".tr,
                 style: TextStyle(color: Colorpallete.textColor),
               ),
             ),
@@ -91,38 +90,6 @@ class SignupScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget signupButton(SignupController signupController, BuildContext context) {
-  //   return Obx(() => signupController.isLoading.value
-  //       ? const CircularProgressIndicator()
-  //       : Container(
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(8),
-  //             color: Colors.white,
-  //           ),
-  //           width: double.infinity,
-  //           child: ElevatedButton(
-  //             style: ElevatedButton.styleFrom(
-  //               elevation: 0,
-  //               backgroundColor: Colors.transparent,
-  //               foregroundColor: Colorpallete.backgroundColor,
-  //             ),
-  //             onPressed: () async {
-  //               final model = SignupModel(
-  //                 fullName: signupController.fullNameController.text.trim(),
-  //                 email: signupController.emailController.text.trim(),
-  //                 password: signupController.passwordController.text,
-  //                 confirmPassword:
-  //                     signupController.confirmPasswordController.text,
-  //               );
-
-  //               await signupController.signup(model);
-  //               context.go('/');
-  //             },
-  //             child: const Text("Sign Up", style: TextStyle(fontSize: 24)),
-  //           ),
-  //         ));
-  // }
 
   Widget signupButton(SignupController signupController, BuildContext context) {
     return Obx(() => signupController.isLoading.value
@@ -151,20 +118,21 @@ class SignupScreen extends StatelessWidget {
                   ),
                   onPressed: () async {
                     final model = SignupModel(
-                        fullName:
-                            signupController.fullNameController.text.trim(),
-                        email: signupController.emailController.text.trim(),
-                        password: signupController.passwordController.text,
-                        confirmPassword:
-                            signupController.confirmPasswordController.text,
-                        bio: signupController.bioController.text);
+                      fullName: signupController.fullNameController.text.trim(),
+                      email: signupController.emailController.text.trim(),
+                      password: signupController.passwordController.text,
+                      confirmPassword:
+                          signupController.confirmPasswordController.text,
+                      bio: signupController.bioController.text,
+                    );
 
                     final success = await signupController.signup(model);
                     if (success) {
-                      context.go('/login'); // Navigate to home on success
+                      context.go('/login');
                     }
                   },
-                  child: const Text("Sign Up", style: TextStyle(fontSize: 24)),
+                  child:
+                      Text("sign_up".tr, style: const TextStyle(fontSize: 24)),
                 ),
               ),
             ],
