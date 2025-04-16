@@ -17,57 +17,64 @@ class SignupScreen extends StatelessWidget {
       backgroundColor: Colorpallete.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "sign_up".tr,
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colorpallete.textColor,
+        child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height - 32, // Subtract padding
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "sign_up".tr,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colorpallete.textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    controller: signupController.fullNameController,
+                    labelText: "full_name".tr,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    controller: signupController.emailController,
+                    labelText: "email".tr,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    controller: signupController.passwordController,
+                    labelText: "password".tr,
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    controller: signupController.confirmPasswordController,
+                    labelText: "confirm_password".tr,
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTextField(
+                    controller: signupController.bioController,
+                    labelText: "enter_bio".tr,
+                  ),
+                  const SizedBox(height: 20),
+                  signupButton(signupController, context),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () {
+                      context.go('/login');
+                    },
+                    child: Text(
+                      "already_have_account".tr,
+                      style: TextStyle(color: Colorpallete.textColor),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-            _buildTextField(
-              controller: signupController.fullNameController,
-              labelText: "full_name".tr,
-            ),
-            const SizedBox(height: 10),
-            _buildTextField(
-              controller: signupController.emailController,
-              labelText: "email".tr,
-            ),
-            const SizedBox(height: 10),
-            _buildTextField(
-              controller: signupController.passwordController,
-              labelText: "password".tr,
-              obscureText: true,
-            ),
-            const SizedBox(height: 10),
-            _buildTextField(
-              controller: signupController.confirmPasswordController,
-              labelText: "confirm_password".tr,
-              obscureText: true,
-            ),
-            const SizedBox(height: 10),
-            _buildTextField(
-              controller: signupController.bioController,
-              labelText: "enter_bio".tr,
-            ),
-            const SizedBox(height: 20),
-            signupButton(signupController, context),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                context.go('/login');
-              },
-              child: Text(
-                "already_have_account".tr,
-                style: TextStyle(color: Colorpallete.textColor),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
