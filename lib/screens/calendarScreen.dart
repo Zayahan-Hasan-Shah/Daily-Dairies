@@ -453,27 +453,27 @@ class CalendarScreen extends GetView<DiaryController> {
                         Navigator.push(
                           context,
                           DiaryDetailScreen.route(
-                            tags: diary.tags,
+                            textColor: diary.textColor,
+                            date: diary.date,
+                            id: diary.id,
                             title: diary.title,
                             content: diary.content,
                             mood: diary.mood,
-                            date: diary.date,
+                            tags: diary.tags,
+                            currentTextColor: diary.textColor,
+                            bulletPointColor:
+                                diary.bulletPointColor ?? diary.textColor,
                             images: diary.images ?? [],
                             videos: diary.videos ?? [],
                             audioRecordings: diary.audioRecordings ?? [],
                             bulletPoints: diary.bulletPoints ?? [],
-                            textColor: diary.textColor,
-                            currentTextColor: diary.currentTextColor,
-                            bulletPointColor: diary.bulletPointColor,
-                            textStyle: diary.textStyle ??
-                                TextStyle(
-                                  fontSize: 16,
-                                  color: diary.textColor,
-                                ),
-                            id: '',
+                            textStyle: diary.textStyle,
                           ),
                         ).then((_) {
-                          controller.refreshEntries();
+                          // Use post frame callback for refresh after navigation
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            controller.refreshEntries();
+                          });
                         });
                       },
                       child: Container(

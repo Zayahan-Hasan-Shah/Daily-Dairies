@@ -152,30 +152,30 @@ class _SearchScreenState extends State<SearchScreen> {
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
-                                context,
-                                DiaryDetailScreen.route(
-                                  bulletPointColor:
-                                      entry.bulletPointColor ?? entry.textColor,
-                                  currentTextColor: entry.textColor,
-                                  id: entry.id,
-                                  title: entry.title,
-                                  content: entry.content,
-                                  mood: entry.mood,
-                                  tags: entry.tags,
-                                  date: entry.date,
-                                  images: entry.images ?? [],
-                                  videos: entry.videos ?? [],
-                                  audioRecordings: entry.audioRecordings ?? [],
-                                  bulletPoints: entry.bulletPoints ?? [],
-                                  textColor: entry.textColor ?? Colors.black,
-                                  textStyle: entry.textStyle,
-                                ),
-                              ).then((_) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  controller.refreshEntries();
-                                });
-                              });
+                          context,
+                          DiaryDetailScreen.route(
+                            textColor: entry.textColor,
+                            date: entry.date,
+                            id: entry.id,
+                            title: entry.title,
+                            content: entry.content,
+                            mood: entry.mood,
+                            tags: entry.tags,
+                            currentTextColor: entry.textColor,
+                            bulletPointColor:
+                                entry.bulletPointColor ?? entry.textColor,
+                            images: entry.images ?? [],
+                            videos: entry.videos ?? [],
+                            audioRecordings: entry.audioRecordings ?? [],
+                            bulletPoints: entry.bulletPoints ?? [],
+                            textStyle: entry.textStyle,
+                          ),
+                        ).then((_) {
+                          // Use post frame callback for refresh after navigation
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            controller.refreshEntries();
+                          });
+                        });
                             },
                             child: Container(
                               decoration: BoxDecoration(
