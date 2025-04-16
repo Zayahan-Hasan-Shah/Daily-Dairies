@@ -124,9 +124,76 @@ class DiaryEntry {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
+  // toMap method for Firebase with Firestore Timestamp
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'userId': userId,
+      'title': title,
+      'content': content,
+      'date': date.toUtc(),
+      'mood': mood,
+      'tags': tags,
+      'textColor': textColor.value,
+      'bulletPointColor': bulletPointColor.value,
+      // Store text style properties directly in the main map
+      'fontSize': textStyle.fontSize,
+      'fontWeight': textStyle.fontWeight?.index,
+      'fontStyle': textStyle.fontStyle?.index,
+      'letterSpacing': textStyle.letterSpacing,
+      // Keep textStyle map for backward compatibility
+      'textStyle': {
+        'fontSize': textStyle.fontSize,
+        'fontWeight': textStyle.fontWeight?.index,
+        'fontStyle': textStyle.fontStyle?.index,
+        'letterSpacing': textStyle.letterSpacing,
+        'color': textStyle.color?.value ?? Colors.black.value,
+      },
+      'images': images,
+      'videos': videos,
+      'audioRecordings': audioRecordings,
+      'bulletPoints': bulletPoints,
+      'createdAt': createdAt.toUtc(),
+    };
+  }
+
   // fromMap method with Firestore Timestamp handling
   factory DiaryEntry.fromMap(Map<String, dynamic> map) {
     final dateFormatter = DateFormat('dd-MM-yyyy');
+
+    // Helper function to convert fontWeight integer to FontWeight
+    FontWeight getFontWeight(int? weightIndex) {
+      if (weightIndex == null) return FontWeight.normal;
+
+      // Map index to actual FontWeight values
+      switch (weightIndex) {
+        case 0:
+          return FontWeight.w100;
+        case 1:
+          return FontWeight.w200;
+        case 2:
+          return FontWeight.w300;
+        case 3:
+          return FontWeight.w400; // normal
+        case 4:
+          return FontWeight.w500;
+        case 5:
+          return FontWeight.w600;
+        case 6:
+          return FontWeight.w700; // bold
+        case 7:
+          return FontWeight.w800;
+        case 8:
+          return FontWeight.w900;
+        default:
+          return FontWeight.normal;
+      }
+    }
+
+    // Get fontWeight value from map
+    final int? fontWeightIndex =
+        map['fontWeight'] as int? ?? map['textStyle']?['fontWeight'] as int?;
+
     return DiaryEntry(
       id: map['id'] ?? '',
       userId: map['userId'] ?? '',
@@ -139,11 +206,23 @@ class DiaryEntry {
       textColor: Color(map['textColor'] ?? Colors.black.value),
       bulletPointColor: Color(map['bulletPointColor'] ?? Colors.black.value),
       textStyle: TextStyle(
-        fontSize: (map['textStyle']?['fontSize'] as num?)?.toDouble() ?? 16.0,
-        fontStyle: FontStyle.values[map['textStyle']?['fontStyle'] ?? 0],
-        letterSpacing:
-            (map['textStyle']?['letterSpacing'] as num?)?.toDouble() ?? 0.0,
-        color: Color(map['textStyle']?['textColor'] ?? Colors.black.value),
+        // Get fontSize from direct property first, or textStyle map, or default
+        fontSize: (map['fontSize'] as num?)?.toDouble() ??
+            (map['textStyle']?['fontSize'] as num?)?.toDouble() ??
+            16.0,
+        // Use the helper function to convert fontWeight
+        fontWeight: getFontWeight(fontWeightIndex),
+        // Get fontStyle from direct property first, or textStyle map, or default
+        fontStyle: map['fontStyle'] != null
+            ? FontStyle.values[map['fontStyle'] as int]
+            : map['textStyle']?['fontStyle'] != null
+                ? FontStyle.values[map['textStyle']['fontStyle'] as int]
+                : FontStyle.normal,
+        // Get letterSpacing from direct property first, or textStyle map, or default
+        letterSpacing: (map['letterSpacing'] as num?)?.toDouble() ??
+            (map['textStyle']?['letterSpacing'] as num?)?.toDouble() ??
+            0.0,
+        color: Color(map['textColor'] ?? Colors.black.value),
       ),
       tags: List<String>.from(map['tags'] ?? []),
       images: List<String>.from(map['images'] ?? []),
@@ -157,32 +236,32 @@ class DiaryEntry {
   }
 
   // toMap method for Firebase with Firestore Timestamp
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'userId': userId,
-      'title': title,
-      'content': content,
-      'date': date.toUtc(),
-      'mood': mood,
-      'tags': tags,
-      'textColor': textColor.value,
-      'bulletPointColor': bulletPointColor.value,
-      'textStyle': {
-        'fontSize': textStyle.fontSize,
-        'fontWeight': textStyle.fontWeight?.index,
-        'fontStyle': textStyle.fontStyle?.index,
-        'letterSpacing': textStyle.letterSpacing,
-        'color': textStyle.color?.value ?? Colors.black.value,
-      },
-      // 'tags': tags,
-      'images': images,
-      'videos': videos,
-      'audioRecordings': audioRecordings,
-      'bulletPoints': bulletPoints,
-      'createdAt': createdAt.toUtc(),
-    };
-  }
+  // Map<String, dynamic> toMap() {
+  //   return {
+  //     'id': id,
+  //     'userId': userId,
+  //     'title': title,
+  //     'content': content,
+  //     'date': date.toUtc(),
+  //     'mood': mood,
+  //     'tags': tags,
+  //     'textColor': textColor.value,
+  //     'bulletPointColor': bulletPointColor.value,
+  //     'textStyle': {
+  //       'fontSize': textStyle.fontSize,
+  //       'fontWeight': textStyle.fontWeight?.index,
+  //       'fontStyle': textStyle.fontStyle?.index,
+  //       'letterSpacing': textStyle.letterSpacing,
+  //       'color': textStyle.color?.value ?? Colors.black.value,
+  //     },
+  //     // 'tags': tags,
+  //     'images': images,
+  //     'videos': videos,
+  //     'audioRecordings': audioRecordings,
+  //     'bulletPoints': bulletPoints,
+  //     'createdAt': createdAt.toUtc(),
+  //   };
+  // }
 
   // factory DiaryEntry.fromMap(Map<String, dynamic> map) {
   //   return DiaryEntry(

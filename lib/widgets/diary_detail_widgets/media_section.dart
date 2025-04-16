@@ -18,6 +18,52 @@ class MediaSection extends StatelessWidget {
     this.isEditing = false,
   });
 
+  Widget buildImage(File imageFile) {
+    if (!imageFile.existsSync()) {
+      return Container(
+        width: 100,
+        height: 100,
+        color: Colors.grey[300],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, color: Colors.red),
+            SizedBox(height: 8),
+            Text(
+              'Media not found',
+              style: TextStyle(color: Colors.red),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Image.file(
+      imageFile,
+      width: 100,
+      height: 100,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: 100,
+          height: 100,
+          color: Colors.grey[300],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, color: Colors.red),
+              SizedBox(height: 8),
+              Text(
+                'Error loading media',
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
+          ),
+        );
+      },
+      fit: BoxFit.cover,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,12 +90,7 @@ class MediaSection extends StatelessWidget {
           onTap: isEditing ? () => onDeleteImage?.call(entry.key) : null,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.file(
-              entry.value,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
+            child: buildImage(entry.value),
           ),
         );
       }).toList(),

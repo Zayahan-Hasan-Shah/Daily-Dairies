@@ -64,17 +64,14 @@ class Tagscreen extends StatelessWidget {
                       tags: entry.tags,
                       textColor: entry.textColor ?? Colors.black,
                       currentTextColor: entry.textColor,
-                      bulletPointColor: entry.textColor,
+                      bulletPointColor:
+                          entry.bulletPointColor ?? entry.textColor,
                       date: entry.date,
                       images: entry.images ?? [],
                       videos: entry.videos ?? [],
                       audioRecordings: entry.audioRecordings ?? [],
                       bulletPoints: entry.bulletPoints ?? [],
-                      textStyle: entry.textStyle ??
-                          const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
+                      textStyle: entry.textStyle,
                     ),
                   ).then((_) {
                     // Use post frame callback for refresh after navigation

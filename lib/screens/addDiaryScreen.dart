@@ -1,3 +1,4 @@
+
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/models/diary_entry.dart';
@@ -67,12 +68,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     super.initState();
     selectedDate = DateTime.now();
     selectedEmoji = '😊';
-    // currentTextColor = Colors.black;
-    currentTextStyle = TextStyle(
-      fontSize: 16,
+    // Fix the circular reference in currentTextStyle initialization
+    currentTextStyle =  TextStyle(
+      fontSize: currentTextStyle?.fontSize ?? 16,
       color: currentTextColor,
-      fontWeight: currentTextStyle?.fontWeight,
-      letterSpacing: currentTextStyle?.letterSpacing,
+      fontWeight: currentTextStyle?.fontWeight ?? FontWeight.normal,
+      letterSpacing: currentTextStyle?.letterSpacing ?? 0.0,
     );
   }
 
@@ -137,13 +138,12 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         tags: tags,
         textColor: currentTextColor,
         bulletPointColor: bulletPointColor,
-        // textStyle: currentTextStyle ??
-        //     const TextStyle(fontSize: 16, color: Colors.black),
+        // Make sure all text style properties are explicitly included
         textStyle: TextStyle(
           fontSize: currentTextStyle?.fontSize ?? 16,
-          fontWeight: currentTextStyle?.fontWeight,
-          fontStyle: currentTextStyle?.fontStyle,
-          letterSpacing: currentTextStyle?.letterSpacing,
+          fontWeight: currentTextStyle?.fontWeight ?? FontWeight.normal,
+          fontStyle: currentTextStyle?.fontStyle ?? FontStyle.normal,
+          letterSpacing: currentTextStyle?.letterSpacing ?? 0.0,
           color: currentTextColor,
         ),
         images: selectedImages.map((file) => file.path).toList(),
@@ -154,6 +154,13 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
 
       print(
           'Saving diary entry with bullet points: ${currentBulletPoints}'); // Debug print
+      // Add debug print for text style properties
+      print(
+          'Saving diary with text style: fontSize=${entry.textStyle.fontSize}, '
+          'fontWeight=${entry.textStyle.fontWeight}, '
+          'fontStyle=${entry.textStyle.fontStyle}, '
+          'letterSpacing=${entry.textStyle.letterSpacing}');
+
       await _diaryController.addEntry(entry);
 
       // Remove loading overlay
@@ -348,7 +355,15 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       ),
       onTap: () {
         setState(() {
-          currentTextStyle = style.copyWith(color: currentTextColor);
+          // When updating the text style, preserve the current color but use other properties from the selected style
+          currentTextStyle = style.copyWith(
+            color: currentTextColor,
+            // Explicitly keep all style properties
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            fontStyle: style.fontStyle,
+            letterSpacing: style.letterSpacing,
+          );
           selectedTool = "Text"; // This ensures the style is maintained
         });
         Navigator.of(dialogContext).pop();
@@ -1007,7 +1022,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                       textSpans.add(
                         TextSpan(
                           text: value,
-                          style: currentTextStyle!.copyWith(color: currentTextColor),
+                          style: currentTextStyle!
+                              .copyWith(color: currentTextColor),
                         ),
                       );
                     });

@@ -511,10 +511,25 @@ class DiaryController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      await _firestore
-          .collection('diaries')
-          .doc(entry.id)
-          .update(entry.toMap());
+      // Log text style properties for debugging
+      print(
+          'Updating entry with text style: fontSize=${entry.textStyle.fontSize}, '
+          'fontWeight=${entry.textStyle.fontWeight}, '
+          'fontStyle=${entry.textStyle.fontStyle}, '
+          'letterSpacing=${entry.textStyle.letterSpacing}');
+
+      // Convert entry to map with all text style properties
+      final Map<String, dynamic> entryMap = entry.toMap();
+
+      // Add additional logging to verify the data being sent
+      print('Sending to Firestore: Text style properties: '
+          'fontSize=${entryMap['fontSize']}, '
+          'fontWeight=${entryMap['fontWeight']}, '
+          'fontStyle=${entryMap['fontStyle']}, '
+          'letterSpacing=${entryMap['letterSpacing']}');
+
+      // Update the entry with the complete map
+      await _firestore.collection('diaries').doc(entry.id).update(entryMap);
 
       await refreshEntries();
     } catch (e) {

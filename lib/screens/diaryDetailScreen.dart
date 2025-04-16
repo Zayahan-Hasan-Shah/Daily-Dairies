@@ -63,9 +63,33 @@ class DiaryDetailScreen extends StatefulWidget {
     required Color textColor,
     required TextStyle textStyle,
     required List<String> tags,
-    required Color bulletPointColor, // Add this line
-    required Color currentTextColor, // Add this line
+    required Color bulletPointColor,
+    required Color currentTextColor,
   }) {
+    // Print the exact values from the received textStyle
+    print('DiaryDetailScreen.route: Creating route with exact textStyle: '
+        'fontSize=${textStyle.fontSize}, '
+        'fontWeight=${textStyle.fontWeight}, '
+        'fontStyle=${textStyle.fontStyle}, '
+        'letterSpacing=${textStyle.letterSpacing}, '
+        'color=${textStyle.color}');
+
+    // Create a complete TextStyle that explicitly includes all properties
+    final completeTextStyle = TextStyle(
+      fontSize: textStyle.fontSize,
+      fontWeight: textStyle.fontWeight,
+      fontStyle: textStyle.fontStyle,
+      letterSpacing: textStyle.letterSpacing,
+      color: textColor,
+    );
+
+    print('DiaryDetailScreen.route: Using final textStyle: '
+        'fontSize=${completeTextStyle.fontSize}, '
+        'fontWeight=${completeTextStyle.fontWeight}, '
+        'fontStyle=${completeTextStyle.fontStyle}, '
+        'letterSpacing=${completeTextStyle.letterSpacing}, '
+        'color=${completeTextStyle.color}');
+
     return MaterialPageRoute(
       builder: (_) => DiaryDetailScreen(
         id: id,
@@ -78,12 +102,10 @@ class DiaryDetailScreen extends StatefulWidget {
         audioRecordings: audioRecordings,
         bulletPoints: bulletPoints,
         textColor: textColor,
-        textStyle: textStyle,
+        textStyle: completeTextStyle, // Use the explicitly defined style
         tags: tags,
-        // bulletPointColor: bulletPointColor, // Add this line
-        // currentTextColor: currentTextColor, // Add this line
-        bulletPointColor: textColor,
-        currentTextColor: textColor,
+        bulletPointColor: bulletPointColor,
+        currentTextColor: currentTextColor,
       ),
     );
   }
@@ -129,18 +151,23 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Debug the incoming text style properties
+    print('DiaryDetailScreen.initState: Received textStyle: '
+        'fontSize=${widget.textStyle.fontSize}, '
+        'fontWeight=${widget.textStyle.fontWeight}, '
+        'fontStyle=${widget.textStyle.fontStyle}, '
+        'letterSpacing=${widget.textStyle.letterSpacing}');
+
     titleController = TextEditingController(text: widget.title);
     contentController = TextEditingController(text: widget.content);
     selectedDate = widget.date;
     selectedEmoji = widget.mood;
-    // currentTextColor = widget.textColor;
-    currentTextStyle = TextStyle(
-      fontSize: widget.textStyle.fontSize,
-      color: widget.textColor,
-      fontWeight: widget.textStyle.fontWeight,
-      letterSpacing: widget.textStyle.letterSpacing,
-    );
-    ;
+    currentTextColor = widget.textColor;
+    bulletPointColor = widget.bulletPointColor;
+
+    // Store the incoming TextStyle directly without creating a new one
+    currentTextStyle = widget.textStyle;
 
     // Initialize bullet points directly from widget
     bulletPoints.clear();
@@ -156,24 +183,51 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
   }
 
   void _initializeMediaFiles() {
+    bool hasMissingFiles = false;
     try {
       for (String path in widget.images) {
         final file = File(path);
         if (file.existsSync()) {
           images.add(file);
+        } else {
+          hasMissingFiles = true;
         }
       }
       for (String path in widget.videos) {
         final file = File(path);
         if (file.existsSync()) {
           videos.add(file);
+        } else {
+          hasMissingFiles = true;
         }
       }
       for (String path in widget.audioRecordings) {
         final file = File(path);
         if (file.existsSync()) {
           audioRecordings.add(file);
+        } else {
+          hasMissingFiles = true;
         }
+      }
+      if (hasMissingFiles) {
+        // Show a snackbar message
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Some media files are missing. This may be because the app was reinstalled or cache was cleared.'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'Dismiss',
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
+          );
+        });
       }
     } catch (e) {
       debugPrint('Error initializing media files: $e');
@@ -209,6 +263,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
   }
 
   Widget _buildContent() {
+    // Print the exact style being used to render content
+    print('_buildContent using style with: '
+        'fontSize=${widget.textStyle.fontSize}, '
+        'fontWeight=${widget.textStyle.fontWeight}, '
+        'fontStyle=${widget.textStyle.fontStyle}, '
+        'letterSpacing=${widget.textStyle.letterSpacing}');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -221,12 +282,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        // Use the direct TextStyle from the widget without any modifications
         Text(
           widget.content,
-          style: TextStyle(
-            fontSize: widget.textStyle.fontSize,
-            color: widget.textStyle.color,
-          ),
+          style: widget.textStyle,
         ),
         if (widget.bulletPoints.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -235,11 +294,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('•  ', style: widget.textStyle),
+                    // Use the direct TextStyle for bullet points too
+                    Text(
+                      '•  ',
+                      style: widget.textStyle.copyWith(
+                        color: widget.bulletPointColor,
+                      ),
+                    ),
                     Expanded(
                       child: Text(
                         point,
-                        style: widget.textStyle,
+                        style: widget.textStyle.copyWith(
+                          color: widget.textColor,
+                        ),
                       ),
                     ),
                   ],
