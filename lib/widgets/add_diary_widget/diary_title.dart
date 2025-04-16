@@ -3,10 +3,12 @@ import 'package:daily_dairies/core/colorPallete.dart';
 
 class DiaryTitle extends StatelessWidget {
   final TextEditingController controller;
+  final Color titleColor;
 
   const DiaryTitle({
     super.key,
     required this.controller,
+    required this.titleColor,
   });
 
   @override
@@ -24,7 +26,7 @@ class DiaryTitle extends StatelessWidget {
         hintText: "Enter diary title",
         labelStyle: TextStyle(color: Colorpallete.backgroundColor),
         hintStyle: TextStyle(
-          color: Colorpallete.backgroundColor,
+          color: titleColor,
         ),
       ),
     );

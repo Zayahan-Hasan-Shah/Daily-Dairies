@@ -36,13 +36,14 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   final TextEditingController contentController = TextEditingController();
   final TextEditingController dateController =
       TextEditingController(); // Date Controller
+  final TextEditingController bulletPointController =
+      TextEditingController(); // Bullet point controller
   final Color descriptionTextColor = Colorpallete.backgroundColor;
   String? selectedTool;
   List<TextSpan> textSpans = [];
   List<File> selectedImages = [];
   List<File> seletedVideos = [];
   List<File> recordedAudio = [];
-  // final Record _audioRecorder = Record();
   final AudioRecorder _audioRecorder = AudioRecorder();
   bool isRecording = false;
   Timer? _timer;
@@ -50,7 +51,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   String recordDuration = '00:00';
   List<double> audioAmplitudes = [];
   bool isPlaying = false;
-  Color? currentTextColor;
+  // Color? currentTextColor;
   TextStyle? currentTextStyle;
   bool showBulletPoints = false;
   late DateTime selectedDate;
@@ -58,17 +59,20 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   List<String> currentBulletPoints = [];
   List<String> tags = [];
   bool showTags = false;
-  // List<String> selectedTags = [];
-
+  Color currentTextColor = Colors.black; // For content color
+  Color bulletPointColor = Colors.black;
+  Color titleTextColor = Colors.black;
   @override
   void initState() {
     super.initState();
     selectedDate = DateTime.now();
     selectedEmoji = '😊';
-    currentTextColor = Colors.black;
-    currentTextStyle = const TextStyle(
-      fontSize: 16,
-      color: Colors.black,
+    // Fix the circular reference in currentTextStyle initialization
+    currentTextStyle =  TextStyle(
+      fontSize: currentTextStyle?.fontSize ?? 16,
+      color: currentTextColor,
+      fontWeight: currentTextStyle?.fontWeight ?? FontWeight.normal,
+      letterSpacing: currentTextStyle?.letterSpacing ?? 0.0,
     );
   }
 
@@ -77,10 +81,20 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     titleController.dispose();
     contentController.dispose();
     dateController.dispose();
+    bulletPointController.dispose(); // Dispose of the bullet point controller
     for (var controller in _bulletPoints) {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  void _selectColor(Color color) {
+    setState(() {
+      currentTextColor = color; // Update content color
+      bulletPointColor = color; // Update bullet point color
+      titleTextColor = color;
+    });
+    Navigator.of(context).pop();
   }
 
   Future<void> _saveDiaryEntry() async {
@@ -121,12 +135,16 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
         date: selectedDate,
         mood: selectedEmoji,
         tags: tags,
-        textColor: currentTextColor ?? Colors.black,
-        textStyle: currentTextStyle ??
-            const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-            ),
+        textColor: currentTextColor,
+        bulletPointColor: bulletPointColor,
+        // Make sure all text style properties are explicitly included
+        textStyle: TextStyle(
+          fontSize: currentTextStyle?.fontSize ?? 16,
+          fontWeight: currentTextStyle?.fontWeight ?? FontWeight.normal,
+          fontStyle: currentTextStyle?.fontStyle ?? FontStyle.normal,
+          letterSpacing: currentTextStyle?.letterSpacing ?? 0.0,
+          color: currentTextColor,
+        ),
         images: selectedImages.map((file) => file.path).toList(),
         videos: seletedVideos.map((file) => file.path).toList(),
         audioRecordings: recordedAudio.map((file) => file.path).toList(),
@@ -135,6 +153,13 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
 
       print(
           'Saving diary entry with bullet points: ${currentBulletPoints}'); // Debug print
+      // Add debug print for text style properties
+      print(
+          'Saving diary with text style: fontSize=${entry.textStyle.fontSize}, '
+          'fontWeight=${entry.textStyle.fontWeight}, '
+          'fontStyle=${entry.textStyle.fontStyle}, '
+          'letterSpacing=${entry.textStyle.letterSpacing}');
+
       await _diaryController.addEntry(entry);
 
       // Remove loading overlay
@@ -329,7 +354,15 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       ),
       onTap: () {
         setState(() {
-          currentTextStyle = style.copyWith(color: currentTextColor);
+          // When updating the text style, preserve the current color but use other properties from the selected style
+          currentTextStyle = style.copyWith(
+            color: currentTextColor,
+            // Explicitly keep all style properties
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            fontStyle: style.fontStyle,
+            letterSpacing: style.letterSpacing,
+          );
           selectedTool = "Text"; // This ensures the style is maintained
         });
         Navigator.of(dialogContext).pop();
@@ -510,7 +543,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
       textAlignVertical: TextAlignVertical.top,
       maxLines: 1,
       controller: titleController,
-      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+      style: TextStyle(
+          fontSize: 32, fontWeight: FontWeight.w600, color: titleTextColor),
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide.none,
@@ -869,10 +903,14 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      currentTextColor = colors[index];
-                      currentTextStyle = currentTextStyle!.copyWith(
-                        color: colors[index],
-                      );
+                      // currentTextColor = colors[index];
+                      // currentTextStyle = currentTextStyle!.copyWith(
+                      //   color: colors[index],
+                      // );
+                      currentTextColor = colors[index]; // Update content color
+                      bulletPointColor =
+                          colors[index]; // Update bullet point color
+                      titleTextColor = colors[index];
                       selectedTool = "Style";
                     });
                     Navigator.of(context).pop();
@@ -897,9 +935,15 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   }
 
   void _addBulletPoint() {
-    setState(() {
-      _bulletPoints.add(TextEditingController());
-    });
+    String bulletPointText = bulletPointController.text.trim();
+    if (bulletPointText.isNotEmpty) {
+      setState(() {
+        currentBulletPoints.add(bulletPointText); // Add the bullet point
+        print('Added bullet point: $bulletPointText'); // Debug print
+        bulletPointController.clear(); // Clear the input field
+      });
+    }
+    print('Current bullet points: $currentBulletPoints'); // Debug print
   }
 
   void _removeBulletPoint(int index) {
@@ -966,6 +1010,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 const SizedBox(height: 16),
                 DiaryTitle(
                   controller: titleController,
+                  titleColor: currentTextColor,
                 ),
                 const SizedBox(height: 2),
                 DiaryContent(
@@ -976,7 +1021,8 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                       textSpans.add(
                         TextSpan(
                           text: value,
-                          style: currentTextStyle,
+                          style: currentTextStyle!
+                              .copyWith(color: currentTextColor),
                         ),
                       );
                     });
@@ -985,17 +1031,20 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 if (showBulletPoints) ...[
                   const SizedBox(height: 10),
                   BulletPointWidget(
-                    currentTextStyle: currentTextStyle ??
-                        const TextStyle(fontSize: 16, color: Colors.black),
-                    onTextChanged: (text) {
-                      setState(() {
-                        if (!currentBulletPoints.contains(text)) {
-                          currentBulletPoints.add(text);
-                        }
-                      });
-                    },
+                    bulletPoints: currentBulletPoints,
+                    bulletPointController: bulletPointController,
+                    onAddBulletPoint: _addBulletPoint,
+                    onRemoveBulletPoint: _removeBulletPoint,
+                    currentTextStyle: TextStyle(
+                      fontSize: currentTextStyle?.fontSize ?? 16,
+                      fontWeight: currentTextStyle?.fontWeight,
+                      fontStyle: currentTextStyle?.fontStyle,
+                      letterSpacing: currentTextStyle?.letterSpacing,
+                      color: currentTextColor,
+                    ),
                   ),
                 ],
+
                 const SizedBox(height: 10),
                 // Media section
                 MediaSection(

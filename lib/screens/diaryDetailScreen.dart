@@ -7,6 +7,7 @@ import 'package:daily_dairies/widgets/diary_detail_widgets/diary_edit_toolbar.da
 import 'package:daily_dairies/widgets/diary_detail_widgets/diary_header.dart';
 import 'package:daily_dairies/widgets/diary_detail_widgets/media_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -14,6 +15,7 @@ import 'package:record/record.dart';
 import 'package:video_player/video_player.dart';
 import 'package:get/get.dart';
 import 'package:daily_dairies/controllers/diary_controller.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class DiaryDetailScreen extends StatefulWidget {
   final String id;
@@ -28,6 +30,8 @@ class DiaryDetailScreen extends StatefulWidget {
   final Color textColor;
   final TextStyle textStyle;
   final List<String> tags;
+  final Color currentTextColor;
+  final Color bulletPointColor;
 
   const DiaryDetailScreen({
     super.key,
@@ -43,6 +47,8 @@ class DiaryDetailScreen extends StatefulWidget {
     required this.textColor,
     required this.textStyle,
     required this.tags,
+    required this.bulletPointColor,
+    required this.currentTextColor,
   });
 
   static MaterialPageRoute route({
@@ -58,7 +64,33 @@ class DiaryDetailScreen extends StatefulWidget {
     required Color textColor,
     required TextStyle textStyle,
     required List<String> tags,
+    required Color bulletPointColor,
+    required Color currentTextColor,
   }) {
+    // Print the exact values from the received textStyle
+    print('DiaryDetailScreen.route: Creating route with exact textStyle: '
+        'fontSize=${textStyle.fontSize}, '
+        'fontWeight=${textStyle.fontWeight}, '
+        'fontStyle=${textStyle.fontStyle}, '
+        'letterSpacing=${textStyle.letterSpacing}, '
+        'color=${textStyle.color}');
+
+    // Create a complete TextStyle that explicitly includes all properties
+    final completeTextStyle = TextStyle(
+      fontSize: textStyle.fontSize,
+      fontWeight: textStyle.fontWeight,
+      fontStyle: textStyle.fontStyle,
+      letterSpacing: textStyle.letterSpacing,
+      color: textColor,
+    );
+
+    print('DiaryDetailScreen.route: Using final textStyle: '
+        'fontSize=${completeTextStyle.fontSize}, '
+        'fontWeight=${completeTextStyle.fontWeight}, '
+        'fontStyle=${completeTextStyle.fontStyle}, '
+        'letterSpacing=${completeTextStyle.letterSpacing}, '
+        'color=${completeTextStyle.color}');
+
     return MaterialPageRoute(
       builder: (_) => DiaryDetailScreen(
         id: id,
@@ -71,8 +103,10 @@ class DiaryDetailScreen extends StatefulWidget {
         audioRecordings: audioRecordings,
         bulletPoints: bulletPoints,
         textColor: textColor,
-        textStyle: textStyle,
+        textStyle: completeTextStyle, // Use the explicitly defined style
         tags: tags,
+        bulletPointColor: bulletPointColor,
+        currentTextColor: currentTextColor,
       ),
     );
   }
@@ -90,15 +124,27 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
   late DateTime selectedDate;
   late String selectedEmoji;
   bool isEditing = false;
-  TextStyle currentTextStyle = const TextStyle(
-    fontSize: 16,
-    color: Colors.black,
-  );
+  late TextStyle currentTextStyle;
+  Color currentTextColor = Colors.black; // For content color
+  Color bulletPointColor = Colors.black;
+
+  // Bullet points data - using a simplified approach
+  final List<String> bulletPoints = []; // Fixed list of bullet points
+  late TextEditingController
+      bulletPointController; // Single controller for adding new bullet points
+
+  // Tags (mutable copy)
+  late List<String> tags;
 
   // Media related variables
   List<File> images = [];
   List<File> videos = [];
   List<File> audioRecordings = [];
+
+  // Audio playback state
+  AudioPlayer? currentlyPlayingAudio;
+  int? currentlyPlayingIndex;
+  bool isAudioPlaying = false;
 
   // Recording state
   bool isRecording = false;
@@ -108,23 +154,108 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
 
   // UI state
   String? selectedTool;
-  Color currentTextColor = Colors.black;
+
+  final FocusNode bulletPointFocusNode = FocusNode();
+
+  bool isTextSelected = true; // Added for color picker UI
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with existing data
+
+    // Debug the incoming text style properties
+    print('DiaryDetailScreen.initState: Received textStyle: '
+        'fontSize=${widget.textStyle.fontSize}, '
+        'fontWeight=${widget.textStyle.fontWeight}, '
+        'fontStyle=${widget.textStyle.fontStyle}, '
+        'letterSpacing=${widget.textStyle.letterSpacing}');
+
     titleController = TextEditingController(text: widget.title);
     contentController = TextEditingController(text: widget.content);
     selectedDate = widget.date;
     selectedEmoji = widget.mood;
+    currentTextColor = widget.textColor;
+    bulletPointColor = widget.bulletPointColor;
+
+    // Store the incoming TextStyle directly without creating a new one
+    currentTextStyle = widget.textStyle;
+
+    // Initialize bullet points directly from widget
+    bulletPoints.clear();
+    bulletPoints
+        .addAll(widget.bulletPoints.where((point) => point.trim().isNotEmpty));
+
+    // Initialize tags list from widget
+    tags = List<String>.from(widget.tags);
+
+    // Initialize single bullet point controller
+    bulletPointController = TextEditingController();
+
+    _initializeMediaFiles();
+    bulletPointFocusNode
+        .requestFocus(); // Request focus on the bullet point input
+  }
+
+  void _initializeMediaFiles() {
+    bool hasMissingFiles = false;
+    try {
+      for (String path in widget.images) {
+        final file = File(path);
+        if (file.existsSync()) {
+          images.add(file);
+        } else {
+          hasMissingFiles = true;
+        }
+      }
+      for (String path in widget.videos) {
+        final file = File(path);
+        if (file.existsSync()) {
+          videos.add(file);
+        } else {
+          hasMissingFiles = true;
+        }
+      }
+      for (String path in widget.audioRecordings) {
+        final file = File(path);
+        if (file.existsSync()) {
+          audioRecordings.add(file);
+        } else {
+          hasMissingFiles = true;
+        }
+      }
+      if (hasMissingFiles) {
+        // Show a snackbar message
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Some media files are missing. This may be because the app was reinstalled or cache was cleared.'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'Dismiss',
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
+          );
+        });
+      }
+    } catch (e) {
+      debugPrint('Error initializing media files: $e');
+    }
   }
 
   @override
   void dispose() {
     titleController.dispose();
     contentController.dispose();
+    bulletPointController.dispose();
     recordingTimer?.cancel();
+    currentlyPlayingAudio?.dispose(); // Dispose audio player
+    bulletPointFocusNode.dispose(); // Dispose of the focus node
     super.dispose();
   }
 
@@ -147,6 +278,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
   }
 
   Widget _buildContent() {
+    // Print the exact style being used to render content
+    print('_buildContent using style with: '
+        'fontSize=${widget.textStyle.fontSize}, '
+        'fontWeight=${widget.textStyle.fontWeight}, '
+        'fontStyle=${widget.textStyle.fontStyle}, '
+        'letterSpacing=${widget.textStyle.letterSpacing}');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -159,6 +297,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        // Use the direct TextStyle from the widget without any modifications
         Text(
           widget.content,
           style: widget.textStyle,
@@ -170,11 +309,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('•  ', style: widget.textStyle),
+                    // Use the direct TextStyle for bullet points too
+                    Text(
+                      '•  ',
+                      style: widget.textStyle.copyWith(
+                        color: widget.bulletPointColor,
+                      ),
+                    ),
                     Expanded(
                       child: Text(
                         point,
-                        style: widget.textStyle,
+                        style: widget.textStyle.copyWith(
+                          color: widget.textColor,
+                        ),
                       ),
                     ),
                   ],
@@ -195,22 +342,29 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           ),
         ],
         const SizedBox(height: 16),
-        if (widget.images.isNotEmpty || widget.videos.isNotEmpty)
+        if (images.isNotEmpty || videos.isNotEmpty)
           MediaSection(
-            images: widget.images.map((path) => File(path)).toList(),
-            videos: widget.videos.map((path) => File(path)).toList(),
-            isEditing: false,
+            images: images,
+            videos: videos,
             onPlayVideo: _playVideo,
+            onViewImage: _viewImage,
           ),
-        if (widget.audioRecordings.isNotEmpty)
+        const SizedBox(
+          height: 20,
+        ),
+        if (audioRecordings.isNotEmpty)
           AudioRecordingSection(
-            recordings:
-                widget.audioRecordings.map((path) => File(path)).toList(),
+            recordings: audioRecordings,
             isRecording: false,
             recordDuration: '',
-            isPlaying: false,
+            isPlaying: isAudioPlaying,
+            currentPlayingIndex: currentlyPlayingIndex,
             onPlayAudio: (audio) {
-              // Implement audio playback
+              // Get the index of the audio in the list
+              final index = audioRecordings.indexOf(audio);
+              if (index != -1) {
+                _playAudio(audio, index);
+              }
             },
           ),
       ],
@@ -241,7 +395,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         TextField(
           controller: contentController,
           maxLines: null,
-          style: currentTextStyle.copyWith(
+          style: currentTextStyle?.copyWith(
             color: currentTextColor,
           ),
           decoration: InputDecoration(
@@ -253,121 +407,21 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
             hintStyle: TextStyle(color: Colorpallete.backgroundColor),
           ),
         ),
-        if (widget.bulletPoints.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          ...widget.bulletPoints.map((point) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('•  ', style: currentTextStyle),
-                    Expanded(
-                      child: Text(
-                        point,
-                        style: currentTextStyle,
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-        ],
-        if (widget.tags.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: widget.tags
-                .map((tag) => Chip(
-                      label: Text(tag),
-                      backgroundColor: Colors.blue.withOpacity(0.2),
-                      deleteIcon: const Icon(Icons.close, size: 18),
-                      onDeleted: () {
-                        setState(() {
-                          widget.tags.remove(tag);
-                        });
-                      },
-                    ))
-                .toList(),
-          ),
-        ],
         const SizedBox(height: 16),
-        MediaSection(
-          images: images,
-          videos: videos,
-          isEditing: true,
-          onDeleteImage: (index) {
-            setState(() => images.removeAt(index));
-          },
-          onPlayVideo: _playVideo,
-        ),
-        const SizedBox(height: 10),
-        AudioRecordingSection(
-          isRecording: isRecording,
-          recordDuration:
-              '${recordingDuration ~/ 60}:${(recordingDuration % 60).toString().padLeft(2, '0')}',
-          recordings: audioRecordings,
-          isPlaying: false,
-          onPlayAudio: (audio) {
-            // Implement audio playback
-          },
-          onDeleteAudio: (index) {
-            setState(() => audioRecordings.removeAt(index));
-          },
-        ),
+        _buildBulletPointInput(),
+        const SizedBox(height: 16),
+        _buildBulletPointsList(),
+        const SizedBox(height: 16),
+        _buildTagInputArea(),
+        const SizedBox(height: 20),
+        _buildMediaSection(),
       ],
     );
   }
 
-  void _playVideo(File video) {
-    final VideoPlayerController controller = VideoPlayerController.file(video);
-
-    controller.initialize().then((_) {
-      showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          backgroundColor: Colors.transparent,
-          child: AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
-            child: Stack(
-              alignment: Alignment.topRight,
-              children: [
-                VideoPlayer(controller),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () {
-                    controller.dispose();
-                    Navigator.pop(context);
-                  },
-                ),
-                Center(
-                  child: IconButton(
-                    icon: Icon(
-                      controller.value.isPlaying
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        controller.value.isPlaying
-                            ? controller.pause()
-                            : controller.play();
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-      controller.play();
-    });
-  }
-
   Widget _buildMediaSection() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         MediaSection(
           images: images,
@@ -377,21 +431,46 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
             setState(() => images.removeAt(index));
           },
           onPlayVideo: (video) {
-            // Implement video playback
             _playVideo(video);
           },
+          onViewImage: isEditing ? null : _viewImage,
+          onDeleteVideo: isEditing
+              ? (index) {
+                  setState(() => videos.removeAt(index));
+                }
+              : null,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 30),
         AudioRecordingSection(
           isRecording: isRecording,
           recordDuration:
               '${recordingDuration ~/ 60}:${(recordingDuration % 60).toString().padLeft(2, '0')}',
           recordings: audioRecordings,
-          isPlaying: false, // Manage playing state
+          isPlaying: isAudioPlaying,
+          currentPlayingIndex: currentlyPlayingIndex,
           onPlayAudio: (audio) {
-            // Implement audio playback
+            // Get the index of the audio in the list
+            final index = audioRecordings.indexOf(audio);
+            if (index != -1) {
+              _playAudio(audio, index);
+            }
           },
           onDeleteAudio: (index) {
+            // Stop playback if this is the currently playing audio
+            if (currentlyPlayingIndex == index && isAudioPlaying) {
+              currentlyPlayingAudio?.stop();
+              setState(() {
+                isAudioPlaying = false;
+                currentlyPlayingIndex = null;
+              });
+            }
+            // Update the currently playing index if needed
+            if (currentlyPlayingIndex != null &&
+                currentlyPlayingIndex! > index) {
+              setState(() {
+                currentlyPlayingIndex = currentlyPlayingIndex! - 1;
+              });
+            }
             setState(() => audioRecordings.removeAt(index));
           },
         ),
@@ -532,8 +611,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  // Add these methods to your _DiaryDetailScreenState class
-
   void _showColorPicker() {
     final List<Color> colors = [
       Colors.black,
@@ -561,46 +638,109 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colorpallete.backgroundColor,
-          title: const Text(
-            'Pick a color',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: Container(
-            width: double.maxFinite,
-            child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 5,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: colors.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      currentTextColor = colors[index];
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colors[index],
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,
-                        width: currentTextColor == colors[index] ? 2 : 0,
-                      ),
-                    ),
-                  ),
-                );
-              },
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colorpallete.backgroundColor,
+            title: const Text(
+              'Pick a color',
+              style: TextStyle(color: Colors.white),
             ),
-          ),
-        );
+            content: Container(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildColorTargetSelector(
+                          'Text',
+                          isTextSelected,
+                          (selected) =>
+                              setState(() => isTextSelected = selected)),
+                      _buildColorTargetSelector(
+                          'Bullet Points',
+                          !isTextSelected,
+                          (selected) =>
+                              setState(() => isTextSelected = !selected)),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: colors.length,
+                    itemBuilder: (context, index) {
+                      final bool isTextColorSelected =
+                          currentTextColor == colors[index];
+                      final bool isBulletColorSelected =
+                          bulletPointColor == colors[index];
+                      final bool isSelected = isTextSelected
+                          ? isTextColorSelected
+                          : isBulletColorSelected;
+
+                      return GestureDetector(
+                        onTap: () {
+                          if (isTextSelected) {
+                            this.setState(() {
+                              currentTextColor = colors[index];
+                              // Also update the text style color
+                              if (currentTextStyle != null) {
+                                currentTextStyle = currentTextStyle!.copyWith(
+                                  color: colors[index],
+                                );
+                              }
+                            });
+                          } else {
+                            this.setState(() {
+                              bulletPointColor = colors[index];
+                            });
+                          }
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: colors[index],
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: isSelected ? 2 : 0,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
       },
+    );
+  }
+
+  Widget _buildColorTargetSelector(
+      String label, bool isSelected, Function(bool) onTap) {
+    return GestureDetector(
+      onTap: () => onTap(!isSelected),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 
@@ -715,112 +855,216 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  // UI Building Methods
-  Widget _buildViewMode() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildBulletPointInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildHeader(),
-            const SizedBox(height: 16),
-            _buildContent(),
-            // Add media display widgets here if needed
+            Text(
+              'Bullet Points',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: currentTextColor,
+              ),
+            ),
+            TextButton.icon(
+              icon: const Icon(Icons.add),
+              label: const Text("Add"),
+              onPressed: _addBulletPoint,
+            ),
           ],
         ),
-      ),
+        // Single bullet point input field
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            children: [
+              Text('•  ', style: currentTextStyle),
+              Expanded(
+                child: TextField(
+                  controller: bulletPointController,
+                  focusNode: bulletPointFocusNode,
+                  style: currentTextStyle.copyWith(color: currentTextColor),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    hintText: "Type and press Enter to add a bullet point",
+                    hintStyle: TextStyle(color: Colorpallete.backgroundColor),
+                  ),
+                  onSubmitted: (_) => _addBulletPoint(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildEditMode() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildEditHeader(),
-            const SizedBox(height: 16),
-            _buildEditContent(),
-            _buildMediaSection(),
-          ],
-        ),
-      ),
+  Widget _buildBulletPointsList() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: bulletPoints.asMap().entries.map((entry) {
+        final index = entry.key;
+        final point = entry.value;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            children: [
+              Text('•  ', style: currentTextStyle),
+              Expanded(
+                child: Text(
+                  point,
+                  style: currentTextStyle.copyWith(color: currentTextColor),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  setState(() {
+                    bulletPoints.removeAt(index);
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
-  // Helper Methods
-  void _toggleEditMode() {
-    if (isEditing) {
-      // If we're currently editing, save changes
-      _saveChanges();
-    } else {
-      // Enter edit mode
+  Widget _buildTagInputArea() {
+    final TextEditingController tagController = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Tags',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: currentTextColor,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ...tags.map((tag) {
+              return InputChip(
+                label: Text('# $tag'),
+                backgroundColor: Colors.blue.withOpacity(0.2),
+                onDeleted: () {
+                  setState(() {
+                    tags.remove(tag);
+                  });
+                },
+              );
+            }),
+
+            // Tag input field as a chip
+            SizedBox(
+              width: 100,
+              child: TextField(
+                controller: tagController,
+                decoration: const InputDecoration(
+                  hintText: '#',
+                  border: InputBorder.none,
+                ),
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    setState(() {
+                      tags.add(value.trim());
+                      tagController.clear();
+                    });
+                  }
+                },
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _addBulletPoint() {
+    final String text = bulletPointController.text.trim();
+    if (text.isNotEmpty) {
       setState(() {
-        isEditing = true;
+        bulletPoints.add(text);
+        bulletPointController.clear();
       });
+      // Re-focus the bullet point input field
+      bulletPointFocusNode.requestFocus();
     }
   }
 
+  void _removeBulletPoint(int index) {
+    setState(() {
+      bulletPoints.removeAt(index);
+    });
+  }
+
+  void _toggleEditMode() {
+    if (isEditing) {
+      // If exiting edit mode, save changes
+      _saveChanges();
+    } else {
+      // If entering edit mode, stop any audio playback
+      if (isAudioPlaying && currentlyPlayingAudio != null) {
+        currentlyPlayingAudio!.stop();
+        setState(() {
+          isAudioPlaying = false;
+          currentlyPlayingIndex = null;
+        });
+      }
+    }
+
+    setState(() {
+      isEditing = !isEditing;
+    });
+  }
+
   void _saveChanges() async {
-    // Create a loading overlay
-    final loadingOverlay = OverlayEntry(
-      builder: (context) => Container(
-        color: Colors.black.withOpacity(0.5),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
-
     try {
-      // Show loading overlay
-      Overlay.of(context).insert(loadingOverlay);
-
-      // Create updated diary entry
-      final updatedEntry = DiaryEntry(
+      final entry = DiaryEntry(
         id: widget.id,
         userId: _diaryController.userId!,
         title: titleController.text.trim(),
         content: contentController.text.trim(),
         date: selectedDate,
         mood: selectedEmoji,
-        textColor: currentTextColor,
+        tags: tags, // Use our mutable tags list
+        textColor: currentTextColor ?? Colors.black,
+        bulletPointColor: bulletPointColor ?? Colors.black,
         textStyle: currentTextStyle,
         images: images.map((file) => file.path).toList(),
         videos: videos.map((file) => file.path).toList(),
         audioRecordings: audioRecordings.map((file) => file.path).toList(),
-        bulletPoints: widget.bulletPoints,
-        tags: widget.tags,
+        bulletPoints:
+            List.from(bulletPoints), // Use a copy of the bullet points
       );
 
-      // Update the entry in Firestore
-      await _diaryController.updateEntry(updatedEntry);
+      await _diaryController.updateEntry(entry);
 
-      // Remove loading overlay
-      loadingOverlay.remove();
-
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Diary entry updated successfully'),
           backgroundColor: Colors.green,
         ),
       );
-
-      // Exit edit mode
-      setState(() {
-        isEditing = false;
-      });
     } catch (e) {
-      // Remove loading overlay
-      loadingOverlay.remove();
-
-      // Show error message
+      print('Error updating diary entry: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update diary entry: ${e.toString()}'),
+          content: Text('Failed to update diary: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -852,6 +1096,170 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
         height: double.infinity,
         decoration: BoxDecoration(color: Colorpallete.bgColor),
         child: isEditing ? _buildEditMode() : _buildViewMode(),
+      ),
+    );
+  }
+
+  Widget _buildViewMode() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 16),
+            _buildContent(),
+            // Add media display widgets here if needed
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditMode() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildEditHeader(),
+            const SizedBox(height: 16),
+            _buildEditContent(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Audio playback functionality
+  void _playAudio(File audioFile, int index) async {
+    try {
+      // If there's currently an audio playing
+      if (currentlyPlayingAudio != null) {
+        await currentlyPlayingAudio!.stop();
+
+        // If tapping the same audio that's already playing, just stop it
+        if (currentlyPlayingIndex == index && isAudioPlaying) {
+          setState(() {
+            isAudioPlaying = false;
+            currentlyPlayingIndex = null;
+          });
+          return;
+        }
+      }
+
+      // Create a new audio player or reuse existing one
+      currentlyPlayingAudio ??= AudioPlayer();
+
+      // Set the currently playing index
+      setState(() {
+        currentlyPlayingIndex = index;
+        isAudioPlaying = true;
+      });
+
+      // Play the audio
+      await currentlyPlayingAudio!.play(DeviceFileSource(audioFile.path));
+
+      // Listen for playback completion
+      currentlyPlayingAudio!.onPlayerComplete.listen((event) {
+        setState(() {
+          isAudioPlaying = false;
+          currentlyPlayingIndex = null;
+        });
+      });
+    } catch (e) {
+      print('Error playing audio: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error playing audio: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+      setState(() {
+        isAudioPlaying = false;
+        currentlyPlayingIndex = null;
+      });
+    }
+  }
+
+  void _playVideo(File video) {
+    final VideoPlayerController controller = VideoPlayerController.file(video);
+
+    controller.initialize().then((_) {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                VideoPlayer(controller),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () {
+                    controller.dispose();
+                    Navigator.pop(context);
+                  },
+                ),
+                Center(
+                  child: IconButton(
+                    icon: Icon(
+                      controller.value.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        controller.value.isPlaying
+                            ? controller.pause()
+                            : controller.play();
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      controller.play();
+    });
+  }
+
+  // Add this method for viewing images
+  void _viewImage(File image) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(8),
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4,
+              child: Image.file(
+                image,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       ),
     );
   }

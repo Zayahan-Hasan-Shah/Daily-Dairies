@@ -84,7 +84,7 @@ class Settingscreen extends StatelessWidget {
         trailing: const Icon(Icons.arrow_forward_ios,
             color: Colors.blue, size: 18), // Arrow in blue
         onTap: () {
-          context.go(route); // Use GoRouter for navigation
+          context.push(route); // Use GoRouter for navigation
         },
       ),
     );
