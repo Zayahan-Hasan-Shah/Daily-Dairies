@@ -131,5 +131,11 @@
   "full_name": "الاسم الكامل",
   "confirm_password": "تأكيد كلمة المرور",
   "enter_bio": "أدخل نبذة عنك",
-  "already_have_account": "هل لديك حساب بالفعل؟ تسجيل الدخول"
+  "already_have_account": "هل لديك حساب بالفعل؟ تسجيل الدخول",
+  "enter_diary_title": "أدخل عنوان المذكرة",
+  "write_diary_entry": "اكتب مذكرتك هنا...",
+  "export_to_pdf": "تصدير إلى .PDF",
+  "export_to_txt": "تصدير إلى .TXT",
+  "export_successful": "تم التصدير بنجاح",
+  "export_notification_body": "تم تصدير مذكرتك بنجاح."
 }

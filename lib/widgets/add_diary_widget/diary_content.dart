@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
+import 'package:get/get.dart';
 
 class DiaryContent extends StatelessWidget {
   final TextEditingController controller;
@@ -29,7 +30,7 @@ class DiaryContent extends StatelessWidget {
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(0),
           ),
-          hintText: "Write your diary entry here...",
+          hintText: "write_diary_entry".tr,
           hintStyle: TextStyle(
             color: Colorpallete.backgroundColor,
           ),

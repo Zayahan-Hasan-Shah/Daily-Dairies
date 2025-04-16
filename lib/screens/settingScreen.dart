@@ -41,8 +41,8 @@ class Settingscreen extends StatelessWidget {
                 "tag".tr, Icons.tag_outlined, '/tagmanagement', context),
             _buildSettingItem("diary_lock".tr, Icons.lock_outline_sharp,
                 '/diarylock', context),
-            _buildSettingItem(
-                "backup_restore".tr, Icons.backup_outlined, '/backup', context),
+            _buildSettingItem("export_diary".tr, Icons.backup_outlined,
+                '/exportdata', context),
             const SizedBox(height: 20),
             _buildSectionTitle("about".tr), // About Section
             _buildSettingItem("language".tr, Icons.language_outlined,

@@ -131,5 +131,11 @@
   "full_name": "پورا نام",
   "confirm_password": "پاس ورڈ کی تصدیق کریں",
   "enter_bio": "اپنا تعارف درج کریں",
-  "already_have_account": "پہلے سے اکاؤنٹ ہے؟ لاگ ان کریں"
+  "already_have_account": "پہلے سے اکاؤنٹ ہے؟ لاگ ان کریں",
+  "enter_diary_title": "ڈائری کا عنوان درج کریں",
+  "write_diary_entry": "یہاں اپنی ڈائری لکھیں...",
+  "export_to_pdf": ".PDF میں ایکسپورٹ کریں",
+  "export_to_txt": ".TXT میں ایکسپورٹ کریں",
+  "export_successful": "ایکسپورٹ کامیاب",
+  "export_notification_body": "آپ کی ڈائری کامیابی سے ایکسپورٹ ہو گئی ہے۔"
 }

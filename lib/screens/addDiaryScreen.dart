@@ -68,7 +68,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     selectedDate = DateTime.now();
     selectedEmoji = '😊';
     // Fix the circular reference in currentTextStyle initialization
-    currentTextStyle =  TextStyle(
+    currentTextStyle = TextStyle(
       fontSize: currentTextStyle?.fontSize ?? 16,
       color: currentTextColor,
       fontWeight: currentTextStyle?.fontWeight ?? FontWeight.normal,
@@ -550,7 +550,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
           borderSide: BorderSide.none,
           borderRadius: BorderRadius.circular(0),
         ),
-        hintText: "Enter diary title",
+        hintText: 'enter_diary_title'.tr,
         labelStyle: TextStyle(color: Colorpallete.backgroundColor),
         hintStyle: TextStyle(
           color: Colorpallete.backgroundColor,
@@ -677,7 +677,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0),
               ),
-              hintText: "Write your diary entry here...",
+              hintText: 'write_diary_entry'.tr,
               hintStyle: TextStyle(
                 color: Colorpallete.backgroundColor,
               ),
@@ -975,7 +975,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
                   foregroundColor: Colors.white,
                 ),
                 onPressed: _saveDiaryEntry,
-                child: const Text("Save Entry"),
+                child: Text("save".tr),
               ),
             ),
           ),

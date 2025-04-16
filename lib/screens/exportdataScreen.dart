@@ -330,7 +330,7 @@ class ExportScreen extends StatelessWidget {
         return AlertDialog(
           backgroundColor: Colorpallete.backgroundColor,
           title: Text(
-            'Select Export Duration'.tr,
+            'select_export_duration'.tr,
             style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontStyle: FontStyle.italic,
@@ -343,9 +343,9 @@ class ExportScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildFileSelectionRadioTile('All Files'.tr),
-                _buildFileSelectionRadioTile('Last 7 Days'.tr),
-                _buildFileSelectionRadioTile('Last 30 Days'.tr),
+                _buildFileSelectionRadioTile(context, 'all_files'.tr),
+                _buildFileSelectionRadioTile(context, 'last_7_days'.tr),
+                _buildFileSelectionRadioTile(context, 'last_30_days'.tr),
               ],
             ),
           ),
@@ -364,7 +364,7 @@ class ExportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFileSelectionRadioTile(String value) {
+  Widget _buildFileSelectionRadioTile(BuildContext context, String value) {
     return Obx(
       () => RadioListTile<String>(
         title: Text(value, style: const TextStyle(color: Colors.white)),
@@ -372,7 +372,7 @@ class ExportScreen extends StatelessWidget {
         groupValue: controller.selectedExportDuration.value,
         onChanged: (val) {
           controller.selectedExportDuration.value = val!;
-          Get.back();
+          Navigator.pop(context);
         },
         activeColor: Colorpallete.bgColor,
       ),
@@ -393,7 +393,7 @@ class ExportScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text('Select Export Duration'.tr,
+              title: Text('select_export_duration'.tr,
                   style: TextStyle(color: Colorpallete.textColor)),
               trailing: Obx(() => Text(
                     controller.selectedExportDuration.value,
@@ -401,11 +401,10 @@ class ExportScreen extends StatelessWidget {
                   )),
               onTap: () => _showFileSelectionDialog(context),
             ),
-            const SizedBox(height: 20),
-            _exportOption(
-                'Export to .TXT'.tr, 'Only text will be exported'.tr, false),
             const SizedBox(height: 15),
-            _exportOption('Export to .PDF'.tr, 'Include pictures'.tr, true),
+            _exportOption('export_to_pdf'.tr, 'include_pictures'.tr, true),
+            const SizedBox(height: 20),
+            _exportOption('export_to_txt'.tr, 'only_text_exported'.tr, false),
           ],
         ),
       ),
@@ -441,15 +440,15 @@ class ExportScreen extends StatelessWidget {
               if (isPremium) {
                 await exportDiaryPdf.printDiaryPDF();
                 // Show notification after export
-                _showNotification("Export Successful",
-                    "Your diary has been exported successfully.");
+                _showNotification(
+                    "export_successful".tr, "export_notification_body".tr);
               }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colorpallete.backgroundColor,
               foregroundColor: Colors.white,
             ),
-            child: Text('EXPORT'.tr),
+            child: Text('export'.tr),
           ),
         ],
       ),

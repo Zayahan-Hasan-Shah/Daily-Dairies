@@ -19,7 +19,7 @@ class SignupScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).size.height - 32, // Subtract padding
+            height: MediaQuery.of(context).size.height - 32,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

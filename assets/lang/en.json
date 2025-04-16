@@ -131,5 +131,11 @@
   "full_name": "Full Name",
   "confirm_password": "Confirm Password",
   "enter_bio": "Enter Bio",
-  "already_have_account": "Already have an account? Login"
+  "already_have_account": "Already have an account? Login",
+  "enter_diary_title": "Enter diary title",
+  "write_diary_entry": "Write your diary entry here...",
+  "include_pictures": "Include pictures",
+  "only_text_exported": "Only text will be exported",  
+  "export_successful": "Export Successful",
+  "export_notification_body": "Your diary has been exported successfully."
 }
