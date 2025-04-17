@@ -37,6 +37,8 @@ class Settingscreen extends StatelessWidget {
             _buildSectionTitle("general".tr), // General Section
             _buildSettingItem("mood_style".tr, Icons.emoji_emotions_outlined,
                 '/moodstylemanagment', context),
+            _buildSettingItem("Theme Style".tr, Icons.format_color_fill_sharp,
+                '/thememanagment', context),
             _buildSettingItem(
                 "tag".tr, Icons.tag_outlined, '/tagmanagement', context),
             _buildSettingItem("diary_lock".tr, Icons.lock_outline_sharp,
