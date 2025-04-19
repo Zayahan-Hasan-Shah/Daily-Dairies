@@ -16,7 +16,7 @@ class EntriesByTagScreen extends StatelessWidget {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: Text('#$tag Entries'),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
       body: Obx(() {

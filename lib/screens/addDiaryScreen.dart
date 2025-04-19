@@ -1,4 +1,3 @@
-
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/models/diary_entry.dart';
@@ -69,7 +68,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
     selectedDate = DateTime.now();
     selectedEmoji = '😊';
     // Fix the circular reference in currentTextStyle initialization
-    currentTextStyle =  TextStyle(
+    currentTextStyle = TextStyle(
       fontSize: currentTextStyle?.fontSize ?? 16,
       color: currentTextColor,
       fontWeight: currentTextStyle?.fontWeight ?? FontWeight.normal,
@@ -963,7 +962,7 @@ class _AddDiaryScreenState extends State<AddDiaryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
         actions: [
           Container(

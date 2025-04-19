@@ -1,4 +1,3 @@
-
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:daily_dairies/screens/diaryDetailScreen.dart';
@@ -43,6 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
         iconTheme: IconThemeData(color: Colorpallete.textColor),
         leading: IconButton(
@@ -153,34 +153,35 @@ class _SearchScreenState extends State<SearchScreen> {
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
-                          context,
-                          DiaryDetailScreen.route(
-                            textColor: entry.textColor,
-                            date: entry.date,
-                            id: entry.id,
-                            title: entry.title,
-                            content: entry.content,
-                            mood: entry.mood,
-                            tags: entry.tags,
-                            currentTextColor: entry.textColor,
-                            bulletPointColor:
-                                entry.bulletPointColor ?? entry.textColor,
-                            images: entry.images ?? [],
-                            videos: entry.videos ?? [],
-                            audioRecordings: entry.audioRecordings ?? [],
-                            bulletPoints: entry.bulletPoints ?? [],
-                            textStyle: entry.textStyle,
-                          ),
-                        ).then((_) {
-                          // Use post frame callback for refresh after navigation
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            controller.refreshEntries();
-                          });
-                        });
+                                context,
+                                DiaryDetailScreen.route(
+                                  textColor: entry.textColor,
+                                  date: entry.date,
+                                  id: entry.id,
+                                  title: entry.title,
+                                  content: entry.content,
+                                  mood: entry.mood,
+                                  tags: entry.tags,
+                                  currentTextColor: entry.textColor,
+                                  bulletPointColor:
+                                      entry.bulletPointColor ?? entry.textColor,
+                                  images: entry.images ?? [],
+                                  videos: entry.videos ?? [],
+                                  audioRecordings: entry.audioRecordings ?? [],
+                                  bulletPoints: entry.bulletPoints ?? [],
+                                  textStyle: entry.textStyle,
+                                ),
+                              ).then((_) {
+                                // Use post frame callback for refresh after navigation
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  controller.refreshEntries();
+                                });
+                              });
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colorpallete.drawericonColor,
+                                color: Colorpallete.backgroundColor,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               margin: const EdgeInsets.only(bottom: 10),

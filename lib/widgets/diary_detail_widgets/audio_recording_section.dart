@@ -38,7 +38,7 @@ class AudioRecordingSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colorpallete.backgroundColor,
+        color: Colorpallete.appBarTextColor,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Row(

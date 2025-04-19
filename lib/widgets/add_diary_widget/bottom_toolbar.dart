@@ -230,6 +230,7 @@
 //   }
 // }
 
+import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
 
 class BottomToolbar extends StatelessWidget {
@@ -247,8 +248,8 @@ class BottomToolbar extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(28, 50, 91, 1),
+      decoration: BoxDecoration(
+        color: Colorpallete.backgroundColor,
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,

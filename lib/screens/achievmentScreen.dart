@@ -43,7 +43,7 @@ class AchievementsScreen extends StatelessWidget {
         title: const Text('All Achievements'),
         backgroundColor: Colorpallete.backgroundColor,
         iconTheme: IconThemeData(color: Colorpallete.bgColor),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

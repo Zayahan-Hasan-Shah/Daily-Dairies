@@ -17,7 +17,7 @@ class Settingscreen extends StatelessWidget {
           style:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        foregroundColor: Colors.white,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
         elevation: 5,
         shadowColor: Colors.black54,

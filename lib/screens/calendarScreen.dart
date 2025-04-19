@@ -294,7 +294,7 @@ class CalendarScreen extends GetView<DiaryController> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: Text("calendar_title".tr),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
         elevation: 0,
       ),
