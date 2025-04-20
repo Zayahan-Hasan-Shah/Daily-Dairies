@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: Text("major_stats".tr),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
         actions: [
           IconButton(

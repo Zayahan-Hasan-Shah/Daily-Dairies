@@ -78,6 +78,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daily_dairies/api/firebase_api.dart';
 import 'package:daily_dairies/controllers/diary_controller.dart';
 import 'package:daily_dairies/controllers/biometric_controller.dart';
+import 'package:daily_dairies/controllers/theme_controller.dart';
 import 'package:daily_dairies/core/translations.dart';
 import 'package:daily_dairies/routes/app_routes.dart';
 import 'package:flutter/material.dart' as flutter;
@@ -104,6 +105,7 @@ void main() async {
 
   Get.put(BiometricServices());
   Get.put(DiaryController());
+  Get.put(ThemeController());
 
   final box = GetStorage();
 

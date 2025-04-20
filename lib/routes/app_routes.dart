@@ -28,6 +28,7 @@ import 'package:daily_dairies/screens/settingScreen.dart';
 import 'package:daily_dairies/screens/signupScreen.dart';
 import 'package:daily_dairies/screens/splashScreen.dart';
 import 'package:daily_dairies/screens/tagScreen.dart';
+import 'package:daily_dairies/screens/themeScreen.dart';
 import 'package:daily_dairies/widgets/app_drawer.dart';
 import 'package:daily_dairies/screens/profile_section.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -114,6 +115,10 @@ class AppRoutes {
           GoRoute(
             path: '/moodstylemanagment',
             builder: (context, state) => const Moodstylescreen(),
+          ),
+          GoRoute(
+            path: '/thememanagment',
+            builder: (context, state) => const ThemeScreen(),
           ),
           GoRoute(
             path: '/lanaguagemanagement',

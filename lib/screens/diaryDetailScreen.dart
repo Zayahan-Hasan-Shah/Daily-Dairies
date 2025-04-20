@@ -1076,7 +1076,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colorpallete.backgroundColor,
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),

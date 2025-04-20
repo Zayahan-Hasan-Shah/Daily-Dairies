@@ -18,7 +18,7 @@ class Tagscreen extends StatelessWidget {
       drawer: AppDrawer(),
       appBar: AppBar(
         title: Text("tag_management".tr),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
         leading: Builder(
           builder: (context) => IconButton(
@@ -81,7 +81,7 @@ class Tagscreen extends StatelessWidget {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colorpallete.drawericonColor,
+                    color: Colorpallete.backgroundColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   margin: const EdgeInsets.only(bottom: 10),

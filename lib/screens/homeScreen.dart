@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
           "app_title".tr,
           style: const TextStyle(fontFamily: 'Poppins'),
         ),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
         leading: Builder(
           builder: (context) => IconButton(
@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colorpallete.drawericonColor,
+                              color: Colorpallete.backgroundColor,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             margin: const EdgeInsets.only(bottom: 10),

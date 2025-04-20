@@ -137,7 +137,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: Text("select_language".tr), // Localized text
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
       body: SingleChildScrollView(
@@ -160,7 +160,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: selectedLanguage == language['code']
-                          ? Colorpallete.backgroundColor
+                          ? Colorpallete.backgroundColor.withOpacity(0.4)
                           : Colorpallete.drawericonColor.withOpacity(0.4),
                       border: Border.all(
                         color: selectedLanguage == language['code']

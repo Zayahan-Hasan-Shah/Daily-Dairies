@@ -18,7 +18,7 @@ class _MoodstylescreenState extends State<Moodstylescreen> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: const Text("Mood Style"),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
       body: Padding(
