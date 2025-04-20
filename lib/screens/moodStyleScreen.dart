@@ -1,5 +1,6 @@
 import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Moodstylescreen extends StatefulWidget {
   const Moodstylescreen({super.key});
@@ -17,7 +18,7 @@ class _MoodstylescreenState extends State<Moodstylescreen> {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: const Text("Mood Style"),
+        title: Text("mood_style_title".tr),
         foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
@@ -53,7 +54,7 @@ class _MoodstylescreenState extends State<Moodstylescreen> {
                           activeColor: Colorpallete.bgColor,
                         ),
                         Text(
-                          "Select moods ${groupIndex + 1}", // Label for the group
+                          "${'select_moods'.tr} ${groupIndex + 1}",
                           style: const TextStyle(color: Colors.white),
                         ),
                       ],

@@ -137,5 +137,9 @@
   "export_to_pdf": ".PDF میں ایکسپورٹ کریں",
   "export_to_txt": ".TXT میں ایکسپورٹ کریں",
   "export_successful": "ایکسپورٹ کامیاب",
-  "export_notification_body": "آپ کی ڈائری کامیابی سے ایکسپورٹ ہو گئی ہے۔"
+  "export_notification_body": "آپ کی ڈائری کامیابی سے ایکسپورٹ ہو گئی ہے۔",
+  "theme_color": "تھیم رنگ",
+  "select_mood": "موڈ منتخب کریں",
+  "mood_style_title": "موڈ اسٹائل",
+  "select_moods": "موڈ منتخب کریں"
 }

@@ -60,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 controller: _searchController,
                 onChanged: _filterEntries,
                 decoration: InputDecoration(
-                  hintText: "Search entries...",
+                  hintText: 'search_entries'.tr,
                   hintStyle: TextStyle(color: Colorpallete.backgroundColor),
                   prefixIcon:
                       Icon(Icons.search, color: Colorpallete.backgroundColor),
@@ -93,7 +93,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     if (_diaryController.errorMessage.value.isNotEmpty) {
                       return Center(
                         child: Text(
-                          'Error: ${_diaryController.errorMessage.value}',
+                          '${'error'.tr}: ${_diaryController.errorMessage.value}',
                           style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
@@ -108,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'No diaries found',
+                              'no_diaries_found'.tr,
                               style: TextStyle(
                                 color: Colorpallete.textColor,
                                 fontSize: 16,
@@ -121,7 +121,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   controller.refreshEntries();
                                 });
                               },
-                              child: const Text('Refresh'),
+                              child: Text('refresh'.tr),
                             ),
                           ],
                         ),

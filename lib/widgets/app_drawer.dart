@@ -37,6 +37,12 @@ class AppDrawer extends StatelessWidget {
               ),
               _buildDrawerItem(
                 context,
+                icon: Icons.format_color_fill_sharp,
+                text: 'theme_color'.tr,
+                route: '/thememanagment',
+              ),
+              _buildDrawerItem(
+                context,
                 icon: Icons.tag,
                 text: 'tags'.tr,
                 route: '/tagmanagement',

@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ProfileSectionWidget extends StatefulWidget {
+  static Route route() =>
+      MaterialPageRoute(builder: (_) => const ProfileSectionWidget());
   const ProfileSectionWidget({super.key});
 
   @override
@@ -273,7 +275,7 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: Text("my_profile".tr),
+        title: Text('my_profile'.tr),
         foregroundColor: Colorpallete.bottomNavigationColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),

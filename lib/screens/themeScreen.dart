@@ -36,7 +36,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
       return Scaffold(
         backgroundColor: Colorpallete.bgColor,
         appBar: AppBar(
-          title: const Text("Theme Color"),
+          title: Text('theme_color'.tr),
           foregroundColor: Colorpallete.appBarTextColor,
           backgroundColor: Colorpallete.backgroundColor,
         ),
@@ -82,7 +82,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                           ),
                           Container(
                             child: Text(
-                              "Select moods ${groupIndex + 1}",
+                              "${'select_mood'.tr} ${groupIndex + 1}",
                               style: const TextStyle(color: Colors.white),
                             ),
                           ),

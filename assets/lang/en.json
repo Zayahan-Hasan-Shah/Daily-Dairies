@@ -34,7 +34,7 @@
   "other": "Other",
   "other_questions": "Other questions",
   "no_tags_message": "No tags in your Diaries",
-  "search_entries": "Search entries",
+  "search_entries": "Search entries...",
   "no_diaries_found": "No diaries found",
   "refresh": "Refresh",
   "tag_management": "Tag management",
@@ -137,5 +137,9 @@
   "include_pictures": "Include pictures",
   "only_text_exported": "Only text will be exported",  
   "export_successful": "Export Successful",
-  "export_notification_body": "Your diary has been exported successfully."
+  "export_notification_body": "Your diary has been exported successfully.",
+  "theme_color": "Theme Color",
+  "select_mood": "Select mood",
+  "mood_style_title": "Mood Style",
+  "select_moods": "Select moods"
 }
