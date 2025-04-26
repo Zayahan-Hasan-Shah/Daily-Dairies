@@ -212,7 +212,7 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
       title: Text(title),
       subtitle: Text(value),
       trailing: isSignOut
-          ? const Icon(Icons.logout, color: Colors.red)
+          ?  Icon(Icons.logout, color: Colorpallete.disabledErrorColor)
           : editable
               ? const Icon(Icons.edit, size: 18)
               : const Icon(Icons.arrow_forward_ios, size: 16),
