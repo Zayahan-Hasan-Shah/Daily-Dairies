@@ -106,7 +106,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/settings',
-            builder: (context, state) => const Settingscreen(),
+            builder: (context, state) =>  Settingscreen(),
           ),
           GoRoute(
             path: '/calendar',

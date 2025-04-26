@@ -111,7 +111,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
     ),
     ThemeColorModel(
       appBarColor: const Color.fromRGBO(100, 130, 173, 1),
-      bodyColor: const Color.fromRGBO(245, 237, 237, 1),
+      bodyColor: const Color.fromRGBO(225, 170, 116, 1),
     ),
     ThemeColorModel(
       appBarColor: const Color.fromRGBO(53, 66, 89, 1),

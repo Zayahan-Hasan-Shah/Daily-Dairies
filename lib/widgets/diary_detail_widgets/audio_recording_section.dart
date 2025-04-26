@@ -94,8 +94,8 @@ class AudioRecordingSection extends StatelessWidget {
             icon: Icon(
               isCurrentlyPlaying ? Icons.pause : Icons.play_arrow,
               color: isCurrentlyPlaying
-                  ? Colors.red
-                  : Colorpallete.bottomNavigationColor,
+                  ? Colorpallete.appBarTextColor
+                  : Colorpallete.appBarTextColor,
             ),
             onPressed: () {
               if (onPlayAudio != null) {
@@ -105,9 +105,9 @@ class AudioRecordingSection extends StatelessWidget {
           ),
           if (onDeleteAudio != null)
             IconButton(
-              icon: const Icon(
+              icon:  Icon(
                 Icons.delete_outline,
-                color: Colors.red,
+                color: Colorpallete.appBarTextColor,
               ),
               onPressed: () {
                 if (onDeleteAudio != null) {

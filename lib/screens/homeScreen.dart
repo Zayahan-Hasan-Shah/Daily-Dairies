@@ -257,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        color: Colorpallete.bottomNavigationColor.withOpacity(0.4),
+        color: Colorpallete.bottomNavigationColor.withOpacity(0.6),
         shape: const CircularNotchedRectangle(),
         notchMargin: 10.0,
         child: Padding(

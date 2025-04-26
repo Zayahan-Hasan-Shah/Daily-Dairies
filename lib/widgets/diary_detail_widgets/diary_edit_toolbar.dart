@@ -70,6 +70,7 @@
 //   }
 // }
 
+import 'package:daily_dairies/core/colorPallete.dart';
 import 'package:flutter/material.dart';
 
 class DiaryEditToolbar extends StatelessWidget {
@@ -85,10 +86,10 @@ class DiaryEditToolbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
-        color: Color.fromRGBO(28, 50, 91, 1),
+        color: Colorpallete.backgroundColor,
       ),
       child: SafeArea(
         child: Container(
