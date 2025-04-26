@@ -274,7 +274,7 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: Text("my_profile".tr),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
       body: Padding(

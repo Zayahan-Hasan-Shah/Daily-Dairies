@@ -85,7 +85,7 @@ class AudioRecordingSection extends StatelessWidget {
             child: Text(
               'Recording ${index + 1}',
               style: TextStyle(
-                color: Colorpallete.bottomNavigationColor,
+                color: Colorpallete.appBarTextColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
