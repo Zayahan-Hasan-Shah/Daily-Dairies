@@ -203,9 +203,9 @@ class CalendarScreen extends GetView<DiaryController> {
                           ),
                         ).then((_) {
                           // Use post frame callback for refresh after navigation
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            controller.refreshEntries();
-                          });
+                          // WidgetsBinding.instance.addPostFrameCallback((_) {
+                          controller.refreshEntries();
+                          // });
                         });
                       },
                       child: Container(

@@ -4,41 +4,63 @@ import 'package:get/get.dart';
 import '../controllers/theme_controller.dart';
 import '../models/theme_color_model.dart';
 
-class ThemeScreen extends StatefulWidget {
+class ThemeScreen extends StatelessWidget {
   const ThemeScreen({super.key});
 
-  @override
-  State<ThemeScreen> createState() => _ThemeScreenState();
-}
-
-class _ThemeScreenState extends State<ThemeScreen> {
-  final ThemeController _themeController = Get.find<ThemeController>();
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Select the first theme by default if none is selected
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     if (_themeController.selectedTheme.value.appBarColor ==
-  //             const Color.fromRGBO(28, 50, 91, 1) &&
-  //         _themeController.selectedTheme.value.bodyColor ==
-  //             const Color.fromRGBO(132, 166, 230, 1)) {
-  //       _themeController.setTheme(themeColorList[0]);
-  //     }
-  //   });
-  // }
-  // final DummyController dummy = Get.put(DummyController());
+  static const List<ThemeColorModel> themeColorList = [
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(28, 50, 91, 1),
+      bodyColor: Color.fromRGBO(132, 166, 230, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(142, 125, 190, 1),
+      bodyColor: Color.fromRGBO(228, 177, 240, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(114, 191, 120, 1),
+      bodyColor: Color.fromRGBO(254, 255, 159, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(100, 130, 173, 1),
+      bodyColor: Color.fromRGBO(245, 237, 237, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(53, 66, 89, 1),
+      bodyColor: Color.fromRGBO(236, 229, 199, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(73, 54, 40, 1),
+      bodyColor: Color.fromRGBO(228, 234, 225, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(142, 22, 22, 1),
+      bodyColor: Color.fromRGBO(216, 64, 64, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(236, 82, 40, 1),
+      bodyColor: Color.fromRGBO(239, 150, 81, 1),
+    ),
+    ThemeColorModel(
+      appBarColor: Color.fromRGBO(87, 73, 100, 1),
+      bodyColor: Color.fromRGBO(255, 218, 179, 1),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController _themeController = Get.find<ThemeController>();
+
     return Obx(() {
       final selectedTheme = _themeController.selectedTheme.value;
+      final backgroundColor = _themeController.backgroundColor.value;
+      final bgColor = _themeController.bgColor.value;
+
       return Scaffold(
-        backgroundColor: Colorpallete.bgColor,
+        backgroundColor: bgColor,
         appBar: AppBar(
           title: Text('theme_color'.tr),
           foregroundColor: Colorpallete.appBarTextColor,
-          backgroundColor: Colorpallete.backgroundColor,
+          backgroundColor: backgroundColor,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -98,42 +120,6 @@ class _ThemeScreenState extends State<ThemeScreen> {
       );
     });
   }
-
-  final List<ThemeColorModel> themeColorList = [
-    ThemeController.defaultTheme,
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(142, 125, 190, 1),
-      bodyColor: const Color.fromRGBO(228, 177, 240, 1),
-    ),
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(114, 191, 120, 1),
-      bodyColor: const Color.fromRGBO(254, 255, 159, 1),
-    ),
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(100, 130, 173, 1),
-      bodyColor: const Color.fromRGBO(245, 237, 237, 1),
-    ),
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(53, 66, 89, 1),
-      bodyColor: const Color.fromRGBO(236, 229, 199, 1),
-    ),
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(73, 54, 40, 1),
-      bodyColor: const Color.fromRGBO(228, 234, 225, 1),
-    ),
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(142, 22, 22, 1),
-      bodyColor: const Color.fromRGBO(216, 64, 64, 1),
-    ),
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(236, 82, 40, 1),
-      bodyColor: const Color.fromRGBO(239, 150, 81, 1),
-    ),
-    ThemeColorModel(
-      appBarColor: const Color.fromRGBO(87, 73, 100, 1),
-      bodyColor: const Color.fromRGBO(255, 218, 179, 1),
-    ),
-  ];
 }
 
 // class DummyController extends GetxController {

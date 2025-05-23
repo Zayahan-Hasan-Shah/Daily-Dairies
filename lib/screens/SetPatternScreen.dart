@@ -25,7 +25,7 @@ class _SetPatternScreenState extends State<SetPatternScreen> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: const Text("Set Pattern Lock"),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
       body: Column(

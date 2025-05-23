@@ -4,5 +4,8 @@ class ThemeColorModel {
   final Color appBarColor;
   final Color bodyColor;
 
-  ThemeColorModel({required this.appBarColor, required this.bodyColor});
+  const ThemeColorModel({
+    required this.appBarColor,
+    required this.bodyColor,
+  });
 }

@@ -79,7 +79,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/add-diary',
-            builder: (context, state) =>  AddDiaryScreen(),
+            builder: (context, state) => AddDiaryScreen(),
           ),
           GoRoute(
             path: '/tagmanagement',
@@ -106,7 +106,7 @@ class AppRoutes {
           ),
           GoRoute(
             path: '/settings',
-            builder: (context, state) => const Settingscreen(),
+            builder: (context, state) => const SettingScreen(),
           ),
           GoRoute(
             path: '/calendar',

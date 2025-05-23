@@ -11,7 +11,11 @@ class ThemeController extends GetxController {
     bodyColor: const Color.fromRGBO(132, 166, 230, 1),
   );
 
-  Rx<ThemeColorModel> selectedTheme = defaultTheme.obs;
+  final Rx<ThemeColorModel> selectedTheme = defaultTheme.obs;
+  final Rx<Color> backgroundColor = Colorpallete.backgroundColor.obs;
+  final Rx<Color> bottomNavigationColor =
+      Colorpallete.bottomNavigationColor.obs;
+  final Rx<Color> bgColor = Colorpallete.bgColor.obs;
 
   @override
   void onInit() {
@@ -21,9 +25,15 @@ class ThemeController extends GetxController {
 
   void setTheme(ThemeColorModel theme) async {
     selectedTheme.value = theme;
+    backgroundColor.value = theme.appBarColor;
+    bottomNavigationColor.value = theme.appBarColor;
+    bgColor.value = theme.bodyColor;
+
+    // Update static colors
     Colorpallete.backgroundColor = theme.appBarColor;
     Colorpallete.bottomNavigationColor = theme.appBarColor;
     Colorpallete.bgColor = theme.bodyColor;
+
     update();
     await saveThemeToFirestore(theme);
   }
@@ -54,11 +64,7 @@ class ThemeController extends GetxController {
         appBarColor: Color(data['appBarColor']),
         bodyColor: Color(data['bodyColor']),
       );
-      selectedTheme.value = theme;
-      Colorpallete.backgroundColor = theme.appBarColor;
-      Colorpallete.bottomNavigationColor = theme.appBarColor;
-      Colorpallete.bgColor = theme.bodyColor;
-      update();
+      setTheme(theme);
     }
   }
 }

@@ -77,7 +77,7 @@ class AudioRecordingSection extends StatelessWidget {
         children: [
           Icon(
             Icons.multitrack_audio,
-            color: Colorpallete.bottomNavigationColor,
+            color: Colorpallete.appBarTextColor,
             size: 20,
           ),
           const SizedBox(width: 8),
@@ -85,7 +85,7 @@ class AudioRecordingSection extends StatelessWidget {
             child: Text(
               'Recording ${index + 1}',
               style: TextStyle(
-                color: Colorpallete.bottomNavigationColor,
+                color: Colorpallete.appBarTextColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -95,7 +95,7 @@ class AudioRecordingSection extends StatelessWidget {
               isCurrentlyPlaying ? Icons.pause : Icons.play_arrow,
               color: isCurrentlyPlaying
                   ? Colors.red
-                  : Colorpallete.bottomNavigationColor,
+                  : Colorpallete.appBarTextColor,
             ),
             onPressed: () {
               if (onPlayAudio != null) {

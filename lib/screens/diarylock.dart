@@ -173,7 +173,7 @@ class _DiarylockScreenState extends State<DiarylockScreen> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: Text("set_diary_lock".tr),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
         backgroundColor: Colorpallete.backgroundColor,
       ),
       drawer: const AppDrawer(),

@@ -224,59 +224,16 @@ class _ProfileSectionWidgetState extends State<ProfileSectionWidget> {
     );
   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colorpallete.bgColor,
-//       appBar: AppBar(
-//         title: const Text("My Profile"),
-//         foregroundColor: Colorpallete.bottomNavigationColor,
-//         backgroundColor: Colorpallete.backgroundColor,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: [
-//             GestureDetector(
-//               onTap: () => _showImageOptions(),
-//               child: CircleAvatar(
-//                 radius: 50,
-//                 backgroundColor: Colors.grey.shade300,
-//                 backgroundImage:
-//                     _profileImage != null ? FileImage(_profileImage!) : null,
-//                 child: _profileImage == null
-//                     ? const Icon(Icons.person, size: 50, color: Colors.white)
-//                     : null,
-//               ),
-//             ),
-//             const SizedBox(height: 10),
-//             TextButton(
-//               onPressed: () {},
-//               child: Text(user == null ? "Tap to login" : "Logged in"),
-//             ),
-//             const SizedBox(height: 20),
-//             _buildProfileTile("Username", user?.displayName ?? "No Username",
-//                 editable: true),
-//             _buildProfileTile(
-//                 "Bio", userData?['bio'] ?? "Each day provides its own gifts.",
-//                 editable: true),
-//             _buildProfileTile("Account", user?.email ?? "No Account",
-//                 isSignOut: true),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
-        title: Text('my_profile'.tr),
-        foregroundColor: Colorpallete.bottomNavigationColor,
+        foregroundColor: Colorpallete.appBarTextColor,
+        title: Text(
+          'my_profile'.tr,
+          style: TextStyle(color: Colorpallete.appBarTextColor),
+        ),
         backgroundColor: Colorpallete.backgroundColor,
       ),
       body: Padding(

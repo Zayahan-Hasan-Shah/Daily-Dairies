@@ -112,7 +112,7 @@ class _SetPinScreenState extends State<SetPinScreen> {
       backgroundColor: Colorpallete.bgColor,
       appBar: AppBar(
         title: const Text("Set PIN Code"),
-        backgroundColor: Colorpallete.backgroundColor,
+        backgroundColor: Colorpallete.appBarTextColor,
         foregroundColor: Colorpallete.bottomNavigationColor,
       ),
       body: Padding(
